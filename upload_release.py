@@ -40,13 +40,16 @@ parser = argparse.ArgumentParser(description='Grab tarball and release it '
 parser.add_argument('project', help='Project to publish release for (nova)')
 parser.add_argument('version', help='Version under development (2013.1)')
 parser.add_argument("--milestone", help='Milestone to publish (grizzly-3)')
-parser.add_argument("--tarball", default='milestone-proposed',
-                    help='Tarball to fetch (defaults to milestone-proposed)')
+parser.add_argument("--tarball",
+                    help='Tarball to fetch (defaults to version[~milestone])')
 parser.add_argument("--test", action='store_const', const='staging',
                     default='production', help='Use LP staging server to test')
 args = parser.parse_args()
+
 if args.milestone is None:
-    args.milestone = args.version
+    milestone = args.version
+else:
+    milestone = args.milestone
 
 # Connect to LP
 print "Connecting to Launchpad..."
@@ -60,26 +63,27 @@ print "Checking milestone..."
 try:
     lp_proj = launchpad.projects[args.project]
 except KeyError:
-    abort(2, 'Could not find args.args.project: %s' % args.project)
+    abort(2, 'Could not find project: %s' % args.project)
 
 for lp_milestone in lp_proj.all_milestones:
-    if lp_milestone.name == args.milestone:
+    if lp_milestone.name == milestone:
         if lp_milestone.release:
-            abort(2, 'Milestone %s was already released !' % args.milestone)
-        if args.milestone != args.version:
-            codename = "~" + lp_milestone.code_name.lower()
-            if len(codename) < 3 or len(codename) > 4:
-                abort(2, 'Bad code name for milestone: %s' % codename)
-        else:
-            codename = ""
+            abort(2, 'Milestone %s was already released !' % milestone)
+        if args.milestone:
+            short_ms = lp_milestone.code_name.lower()
+            if len(short_ms) < 2 or len(short_ms) > 3:
+                abort(2, 'Bad code name for milestone: %s' % short_ms)
         break
 else:
-    abort(2, 'Could not find milestone: %s' % args.milestone)
+    abort(2, 'Could not find milestone: %s' % milestone)
 
 # Retrieve tgz, check contents and MD5
 print "Downloading tarball..."
 tmpdir = tempfile.mkdtemp()
-base_tgz = "%s-%s.tar.gz" % (args.project, args.tarball)
+if args.tarball is None:
+    base_tgz = "%s-%s~%s.tar.gz" % (args.project, args.version, short_ms)
+else:
+    base_tgz = "%s-%s.tar.gz" % (args.project, args.tarball)
 url_tgz = "http://tarballs.openstack.org/%s/%s" % (args.project, base_tgz)
 tgz = os.path.join(tmpdir, base_tgz)
 
@@ -107,7 +111,7 @@ with open(sig) as sig_file:
 
 # Mark milestone released
 print "Marking milestone released..."
-if codename:
+if args.milestone:
     release_notes = "This is another milestone (%s) on the road to %s %s." \
         % (args.milestone, args.project.capitalize(), args.version)
 else:
@@ -125,12 +129,13 @@ lp_milestone.lp_save()
 
 # Upload file
 print "Uploading release files..."
-final_tgz = "%s-%s%s.tar.gz" % (args.project, args.version, codename)
-if codename:
+if args.milestone:
+    final_tgz = "%s-%s~%s.tar.gz" % (args.project, args.version, short_ms)
     description = '%s "%s" milestone' % \
                   (args.project.capitalize(), args.milestone)
 else:
-    description = '%s %s release' % (args.project.capitalize(), args.milestone)
+    final_tgz = "%s-%s.tar.gz" % (args.project, args.version)
+    description = '%s %s release' % (args.project.capitalize(), args.version)
 
 lp_file = lp_release.add_file(file_type='Code Release Tarball',
                               description=description,
