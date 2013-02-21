@@ -81,7 +81,7 @@ else:
 print "Downloading tarball..."
 tmpdir = tempfile.mkdtemp()
 if args.tarball is None:
-    base_tgz = "%s-%s~%s.tar.gz" % (args.project, args.version, short_ms)
+    base_tgz = "%s-%s.%s.tar.gz" % (args.project, args.version, short_ms)
 else:
     base_tgz = "%s-%s.tar.gz" % (args.project, args.tarball)
 url_tgz = "http://tarballs.openstack.org/%s/%s" % (args.project, base_tgz)
@@ -130,7 +130,7 @@ lp_milestone.lp_save()
 # Upload file
 print "Uploading release files..."
 if args.milestone:
-    final_tgz = "%s-%s~%s.tar.gz" % (args.project, args.version, short_ms)
+    final_tgz = "%s-%s.%s.tar.gz" % (args.project, args.version, short_ms)
     description = '%s "%s" milestone' % \
                   (args.project.capitalize(), args.milestone)
 else:
