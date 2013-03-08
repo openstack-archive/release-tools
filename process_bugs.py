@@ -50,16 +50,16 @@ launchpad = Launchpad.login_with('openstack-releasing', args.test)
 # Retrieve bugs
 print "Retrieving project..."
 proj = launchpad.projects[args.projectname]
-numtasks = 1
+changes = True
 
-while numtasks > 0:
+while changes:
+    changes = False
     bugtasks = proj.searchTasks(status=args.status)
-    numtasks = int(bugtasks._wadl_resource.representation['total_size'])
 
     # Process bugs
     for b in bugtasks:
         bug = b.bug
-        # Skip already-milestoned bugs witghh a different milestone
+        # Skip already-milestoned bugs with a different milestone
         if args.settarget and b.milestone:
             if b.milestone.name != args.settarget:
                 continue
@@ -68,9 +68,14 @@ while numtasks > 0:
             print " - excepted"
             continue
         if args.settarget:
-            b.milestone = milestonelink
-            print " - milestoned",
+            if not b.milestone:
+                changes = True
+                b.milestone = milestonelink
+                print " - milestoned",
+            else:
+                print " - milestone already set",
         if args.fixrelease:
+            changes = True
             print " - fixreleased",
             b.status = 'Fix Released'
         b.lp_save()
