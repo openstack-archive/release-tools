@@ -8,6 +8,28 @@ You'll need the following Python modules installed:
  - launchpadlib
 
 
+process_bugs.py
+-----------------
+
+This script fetches bugs for a project (by default all "FixCommitted" bugs)
+and sets a milestone target for them (--settarget) and/or sets their status
+to "Fix Released" (--fixrelease).
+
+It ignores bugs that have already a milestone set, if that milestone does
+not match the one in --settarget.
+
+Examples:
+
+./process_bugs.py nova --settarget=grizzly-3 --fixrelease
+
+  Sets the target for all Nova FixCommitted bugs to grizzly-3 
+  and mark them 'Fix Released'.
+
+./process_bugs.py glance --settarget=grizzly-2 --status='Fix Released' --test
+
+  Test setting the target for all untargeted Glance FixReleased bugs to
+  grizzly-2 on Launchpad Staging servers.
+
 upload_release.py
 -----------------
 
