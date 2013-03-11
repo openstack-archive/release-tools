@@ -8,8 +8,25 @@ You'll need the following Python modules installed:
  - launchpadlib
 
 
+repo_tarball_diff.sh
+--------------------
+
+This script fetches a specific branch from a git repository into a temp
+directory and compares its content with the content of a tarball produced
+from it (using "python setup.py sdist"). The difference should only contain
+additional generated files (Changelog, AUTHORS...) and missing ignored
+files (.gitignore...).
+
+Example:
+
+./repo_tarball_diff.sh nova master
+
+  Check the difference between Nova master branch contant and a tarball
+  that would be generated from it.
+
+
 process_bugs.py
------------------
+---------------
 
 This script fetches bugs for a project (by default all "FixCommitted" bugs)
 and sets a milestone target for them (--settarget) and/or sets their status
