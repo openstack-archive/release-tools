@@ -81,7 +81,10 @@ else:
 print "Downloading tarball..."
 tmpdir = tempfile.mkdtemp()
 if args.tarball is None:
-    base_tgz = "%s-%s.%s.tar.gz" % (args.project, args.version, short_ms)
+    if args.milestone is None:
+        base_tgz = "%s-%s.tar.gz" % (args.project, args.version)
+    else:
+        base_tgz = "%s-%s.%s.tar.gz" % (args.project, args.version, short_ms)
 else:
     base_tgz = "%s-%s.tar.gz" % (args.project, args.tarball)
 url_tgz = "http://tarballs.openstack.org/%s/%s" % (args.project, base_tgz)

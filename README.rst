@@ -65,8 +65,8 @@ Examples:
 
 ./upload_release.py glance 2013.1 --test
 
-  Uploads Glance's current glance-milestone-proposed.tar.gz to the final
-  "2013.1" milestone as glance-2013.1.tar.gz, on Launchpad staging server
+  Uploads Glance's glance-2013.1.tar.gz to the final "2013.1" milestone
+  as glance-2013.1.tar.gz, on Launchpad staging server
 
 ./upload_release.py cinder 2012.2.3 --tarball=stable-folsom
 
