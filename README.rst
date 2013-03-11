@@ -60,8 +60,8 @@ Examples:
 
 ./upload_release.py nova 2013.1 --milestone=grizzly-3
 
-  Uploads Nova's nova-2013.1~g3.tar.gz to the grizzly-3
-  milestone as nova-2013.1~g3.tar.gz
+  Uploads Nova's nova-2013.1.g3.tar.gz to the grizzly-3
+  milestone as nova-2013.1.g3.tar.gz
 
 ./upload_release.py glance 2013.1 --test
 
