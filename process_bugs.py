@@ -36,7 +36,7 @@ parser.add_argument('exceptions', type=int, nargs='*', help='Bugs to ignore')
 args = parser.parse_args()
 
 if args.settarget:
-    if args.test:
+    if args.test == 'staging':
         site = "https://api.staging.launchpad.net/1.0"
     else:
         site = "https://api.launchpad.net/1.0"
