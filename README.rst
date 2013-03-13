@@ -7,6 +7,8 @@ Prerequisites
 You'll need the following Python modules installed:
  - launchpadlib
 
+similar_tarballs.sh also requires that you have tardiff installed.
+
 
 repo_tarball_diff.sh
 --------------------
@@ -23,6 +25,19 @@ Example:
 
   Check the difference between Nova master branch contant and a tarball
   that would be generated from it.
+
+
+similar_tarballs.sh
+-------------------
+
+This script compares the content of two tarballs on tarballs.openstack.org.
+
+Example:
+
+./similar_tarballs.sh nova milestone-proposed 2013.1.rc1
+
+  Check content differences between nova-milestone-proposed.tar.gz and
+  nova-2013.1.rc1.tar.gz, as found on http://tarballs.openstack.org.
 
 
 process_bugs.py
