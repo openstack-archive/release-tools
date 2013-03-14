@@ -161,4 +161,5 @@ if md5 != result_md5:
     abort(3, 'MD5sums (%s/%s) do not match !' % (md5, result_md5))
 
 # Finished
+print md5
 print "Done!"
