@@ -62,6 +62,7 @@ Examples:
   Test setting the target for all untargeted Glance FixReleased bugs to
   grizzly-2 on Launchpad Staging servers.
 
+
 upload_release.py
 -----------------
 
@@ -88,3 +89,34 @@ Examples:
   Uploads Cinder's current cinder-stable-folsom.tar.gz to the 2012.2.3
   milestone as cinder-2012.2.3.tar.gz
 
+
+consolidate_release_page.py
+---------------------------
+
+This script moves blueprints and bugs from interim milestones to the final
+release milestone page, in order to show all bugs and features fixed during
+the cycle. For Swift, this will only move X-rc* bugs and blueprints to
+final X release.
+
+The --copytask mode is an experimental variant where a series bugtask is
+created and the release milestone is set on that bugtask, preserving the
+information from the "development" bugtask (and the milestone the bug was
+fixed in).
+
+Examples:
+
+./consolidate_release_page.py cinder grizzly 2013.1
+
+  Moves Cinder blueprints and bugs from intermediary grizzly milestones
+  to the final 2013.1 milestone page.
+
+./consolidate_release_page.py --test swift grizzly 1.8.0
+
+  Moves Swift 1.8.0-rc* blueprints and bugs to the final 1.8.0 page, on
+  Launchpad staging server
+
+./consolidate_release_page.py --copytask glance grizzly 2013.1
+
+  Moves Glance blueprints from intermediary grizzly milestones to the final
+  2013.1 milestone page. Creates grizzly series task for all grizzly bugs
+  and sets the milestone for those to 2013.1.
