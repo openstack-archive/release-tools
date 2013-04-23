@@ -120,3 +120,17 @@ Examples:
   Moves Glance blueprints from intermediary grizzly milestones to the final
   2013.1 milestone page. Creates grizzly series task for all grizzly bugs
   and sets the milestone for those to 2013.1.
+
+
+create_milestones.py
+--------------------
+
+This script lets you create milestones in Launchpad in bulk. It is given a
+YAML description of the milestone dates and the projects to add milestones
+to. The script is idempotent and can safely be run multiple times. See
+create_milestones.sample.yaml for an example configuration file.
+
+Example:
+
+./create_milestones.py havana.yaml
+

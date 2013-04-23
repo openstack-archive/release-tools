@@ -1,0 +1,21 @@
+# Name of the series
+series: havana
+
+# Short milestone codes, with number of weeks leading to them
+# The last one should be the release date
+milestones:
+   '1': '2013-05-30'
+   '2': '2013-07-18'
+   '3': '2013-09-05'
+
+# Set of projects to create milestones for
+projects:
+ - nova
+ - glance
+ - keystone
+ - horizon
+ - quantum
+ - cinder
+ - oslo
+ - heat
+ - ceilometer
