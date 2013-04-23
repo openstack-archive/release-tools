@@ -20,6 +20,7 @@
 import argparse
 import sys
 from launchpadlib.launchpad import Launchpad
+from lazr.restfulclient.errors import BadRequest
 
 # Parameters
 parser = argparse.ArgumentParser(description="Consolidate milestone pages"
@@ -109,23 +110,27 @@ for milestone in milestones:
     bugsleft = True
     while bugsleft:
         bugsleft = False
-        for bt in proj.searchTasks(status=statuses,milestone=milestone):
+        for bt in proj.searchTasks(status=statuses, milestone=milestone):
             bug = bt.bug
             print bug.id,
             if not args.dryrun:
                 if args.copytask:
-                    newbt = bug.addTask(target=series)
-                    newbt.assignee = bt.assignee
-                    newbt.status = bt.status
-                    newbt.importance = bt.importance
-                    newbt.milestone = release
-                    newbt.lp_save()
-                    print " - copytasked",
+                    try:
+                        newbt = bug.addTask(target=series)
+                        newbt.assignee = bt.assignee
+                        newbt.status = bt.status
+                        newbt.importance = bt.importance
+                        newbt.milestone = release
+                        newbt.lp_save()
+                        print " - copytasked",
+                        bugsleft = True
+                    except BadRequest:
+                        print " - task already exists, skipping",
                 else:
                     bt.milestone = release
                     bt.lp_save()
                     print " - released",
-                bugsleft = True
+                    bugsleft = True
             if bt.status != 'Fix Released':
                 print " (not in FixReleased status!)",
             print
