@@ -63,6 +63,26 @@ Examples:
   grizzly-2 on Launchpad Staging servers.
 
 
+wait_for_tarball.py
+-------------------
+
+This script queries Jenkins tarball-building jobs to find either a job
+matching the provided --mpsha SHA building milestone-proposed.tar.gz,
+or a job matching the provided --tag. It then waits for that job completion
+and reports the built tarball name.
+
+Examples:
+
+./wait_for_tarball.py cinder --mpsha=59089e56f674f5f94f67c5986e9a616bb669d846
+
+  Looks for a cinder-branch-tarball job matching SHA 59089e... which would
+  produce a milestone-proposed.tar.gz tarball, and waits for completion
+
+./wait_for_tarball.py cinder --tag=2013.1.1
+
+  Looks for a cinder-tarball job for tag "2013.1.1" and waits for completion.
+
+
 upload_release.py
 -----------------
 
