@@ -154,3 +154,14 @@ Example:
 
 ./create_milestones.py havana.yaml
 
+
+mpdelivery.sh
+-------------
+
+Script that does in one shot everything that is needed to deliver a
+development milestone. It calls other scripts from openstack-releasing
+to do its task.
+
+Example:
+
+./mpdelivery.sh 2013.2 havana-1 2013.2.b1 horizon
