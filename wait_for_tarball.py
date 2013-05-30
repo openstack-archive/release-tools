@@ -33,7 +33,7 @@ def get_from_jenkins(task, tree=None):
     return r.json()
 
 
-def find_job(project, sha=None, tag=None, retries=8, wait=5):
+def find_job(project, sha=None, tag=None, retries=60, wait=10):
     retry = 0
     if tag:
         jobname = "job/%s-tarball" % project
@@ -59,7 +59,7 @@ def find_job(project, sha=None, tag=None, retries=8, wait=5):
         raise IOError("timeout")
 
 
-def wait_for_completion(job, retries=8, wait=10):
+def wait_for_completion(job, retries=60, wait=10):
     retry = 0
     while retry < retries:
         job_json = get_from_jenkins(job)
