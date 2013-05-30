@@ -71,6 +71,8 @@ for lp_milestone in lp_proj.all_milestones:
             abort(2, 'Milestone %s was already released !' % milestone)
         if args.milestone:
             short_ms = lp_milestone.code_name.lower()
+            if not short_ms.startswith("rc"):
+                short_ms = "b" + args.milestone[-1:]
             if len(short_ms) < 2 or len(short_ms) > 3:
                 abort(2, 'Bad code name for milestone: %s' % short_ms)
         break
