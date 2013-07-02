@@ -57,7 +57,11 @@ $TOOLSDIR/similar_tarballs.sh $PROJECT milestone-proposed $PUBVERSION
 read -sn 1 -p "Press any key to continue..."
 
 title "Uploading tarball to Launchpad"
-$TOOLSDIR/upload_release.py $PROJECT $DEVVERSION --milestone=$MILESTONE
+if [ "$PROJECT" == "swift" ]; then
+  $TOOLSDIR/upload_release.py $PROJECT $DEVVERSION
+else
+  $TOOLSDIR/upload_release.py $PROJECT $DEVVERSION --milestone=$MILESTONE
+fi
 
 title "Cleaning up"
 cd ../..
