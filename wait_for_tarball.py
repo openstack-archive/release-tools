@@ -47,11 +47,14 @@ def find_job(project, sha=None, tag=None, retries=60, wait=10):
             job_json = get_from_jenkins(job,
                                         tree="actions[parameters[name,value]]")
             params = {}
-            for param in job_json['actions'][0]['parameters']:
-                params[param['name']] = param['value']
-            if ((sha and params['GERRIT_REFNAME'] == "milestone-proposed" and
-               params['GERRIT_NEWREV'] == sha) or
-               (tag and params['GERRIT_REFNAME'] == "refs/tags/%s" % tag)):
+            for action in job_json['actions']:
+                if 'parameters' in action.keys():
+                    for param in action['parameters']:
+                        params[param['name']] = param['value']
+                    break
+            if ((sha and params['ZUUL_REFNAME'] == "milestone-proposed" and
+               params['ZUUL_NEWREV'] == sha) or
+               (tag and params['ZUUL_REFNAME'] == "refs/tags/%s" % tag)):
                     return job
         retry += 1
         time.sleep(wait)
