@@ -47,10 +47,11 @@ git review -s
 
 title "Tagging $PUBVERSION (${PROJECT^} $MILESTONE milestone)"
 git tag -m "${PROJECT^} $MILESTONE milestone ($PUBVERSION)" -s "$PUBVERSION"
+SHA=`git show-ref -s "$PUBVERSION"`
 git push gerrit $PUBVERSION
 
-title "Waiting for https://jenkins.openstack.org/job/$PROJECT-tarball/"
-$TOOLSDIR/wait_for_tarball.py $PROJECT --tag=$PUBVERSION
+title "Waiting for tarball from $SHA"
+$TOOLSDIR/wait_for_tarball.py $SHA
 
 title "Checking tarball is similar to last milestone-proposed.tar.gz"
 $TOOLSDIR/similar_tarballs.sh $PROJECT milestone-proposed $PUBVERSION

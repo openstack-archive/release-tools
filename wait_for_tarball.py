@@ -18,54 +18,48 @@
 #    under the License.
 
 import argparse
+import re
 import requests
 import time
 
 
-def get_from_jenkins(task, tree=None):
-    server = "jenkins.openstack.org"
-    url = "https://%s/%s/api/json" % (server, task)
+def get_from_jenkins(job_url, tree=None):
+    api_job_url = job_url + "api/json"
     if tree:
-        url += "?tree=%s" % tree
-    r = requests.get(url)
+        api_job_url += "?tree=%s" % tree
+    r = requests.get(api_job_url, verify=False)
     if r.status_code != 200:
-        raise IOError("Return code %d from %s" % (r.status_code, url))
+        raise IOError("Return code %d from %s" % (r.status_code, api_job_url))
     return r.json()
 
 
-def find_job(project, sha=None, tag=None, retries=60, wait=10):
+def find_job_url(sha=None, retries=60, wait=10):
     retry = 0
-    if tag:
-        jobname = "job/%s-tarball" % project
-    else:
-        jobname = "job/%s-branch-tarball" % project
+    shaexpr = (r'https://review\.openstack\.org/gitweb\?p=.*\.git;'
+               'a=commitdiff;h=(.*)$')
 
     while retry < retries:
-        builds_json = get_from_jenkins(jobname, tree="builds[number]")
-        for build in builds_json['builds']:
-            job = "%s/%s" % (jobname, build['number'])
-            job_json = get_from_jenkins(job,
-                                        tree="actions[parameters[name,value]]")
-            params = {}
-            for action in job_json['actions']:
-                if 'parameters' in action.keys():
-                    for param in action['parameters']:
-                        params[param['name']] = param['value']
-                    break
-            if ((sha and params['ZUUL_REFNAME'] == "milestone-proposed" and
-               params['ZUUL_NEWREV'] == sha) or
-               (tag and params['ZUUL_REFNAME'] == "refs/tags/%s" % tag)):
-                    return job
+        statusjson = requests.get('http://zuul.openstack.org/status.json')
+        status = statusjson.json()
+        for pipeline in status['pipelines']:
+            for queue in pipeline['change_queues']:
+                for head in queue['heads']:
+                    for r in head:
+                        for job in r['jobs']:
+                            if job['name'].endswith('-tarball'):
+                                c = re.match(shaexpr, r['url'])
+                                if c and c.group(1).startswith(sha):
+                                    return job['url']
         retry += 1
         time.sleep(wait)
     else:
         raise IOError("timeout")
 
 
-def wait_for_completion(job, retries=60, wait=10):
+def wait_for_completion(job_url, retries=60, wait=10):
     retry = 0
     while retry < retries:
-        job_json = get_from_jenkins(job)
+        job_json = get_from_jenkins(job_url)
         if not job_json['building']:
             return job_json['artifacts'][0]['displayPath']
         retry += 1
@@ -77,16 +71,12 @@ def wait_for_completion(job, retries=60, wait=10):
 # Argument parsing
 parser = argparse.ArgumentParser(description='Wait for a tarball to be built '
                                              'on Jenkins.')
-parser.add_argument('project', help='Project to look tarballs for')
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('--mpsha', help='Wait for a milestone-proposed tarball '
-                                   'with given SHA')
-group.add_argument('--tag', help='Wait for a tarball for given tag')
+parser.add_argument('sha', help='commit that will generate the tarball')
 args = parser.parse_args()
 
 print "Looking for matching job..."
-job = find_job(args.project, sha=args.mpsha, tag=args.tag)
-print "Found at %s" % job
+job_url = find_job_url(sha=args.sha)
+print "Found at %s" % job_url
 print "Waiting for job completion..."
-tarball = wait_for_completion(job)
+tarball = wait_for_completion(job_url)
 print "Tarball generated at %s" % tarball
