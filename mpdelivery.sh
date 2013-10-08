@@ -41,12 +41,17 @@ function title {
 title "Cloning repository for $PROJECT"
 MYTMPDIR=`mktemp -d`
 cd $MYTMPDIR
-git clone https://github.com/openstack/$PROJECT -b milestone-proposed
+git clone git://git.openstack.org/openstack/$PROJECT -b milestone-proposed
 cd $PROJECT
 git review -s
 
-title "Tagging $PUBVERSION (${PROJECT^} $MILESTONE milestone)"
-git tag -m "${PROJECT^} $MILESTONE milestone ($PUBVERSION)" -s "$PUBVERSION"
+if [ "$DEVVERSION" == "$PUBVERSION" ]; then
+  TAGMSG = "${PROJECT^} $PUBVERSION"
+else
+  TAGMSG = "${PROJECT^} $MILESTONE milestone ($PUBVERSION)"
+fi
+title "Tagging $PUBVERSION ($TAGMSG)"
+git tag -m "$TAGMSG" -s "$PUBVERSION"
 SHA=`git show-ref -s "$PUBVERSION"`
 git push gerrit $PUBVERSION
 
@@ -58,7 +63,7 @@ $TOOLSDIR/similar_tarballs.sh $PROJECT milestone-proposed $PUBVERSION
 read -sn 1 -p "Press any key to continue..."
 
 title "Uploading tarball to Launchpad"
-if [ "$PROJECT" == "swift" ]; then
+if [ "$DEVVERSION" == "$PUBVERSION" ]; then
   $TOOLSDIR/upload_release.py $PROJECT $DEVVERSION
 else
   $TOOLSDIR/upload_release.py $PROJECT $DEVVERSION --milestone=$MILESTONE
