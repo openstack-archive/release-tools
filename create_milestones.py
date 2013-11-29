@@ -32,6 +32,8 @@ def abort(code, errmsg):
 # Argument parsing
 parser = argparse.ArgumentParser(description='Create milestones on LP')
 parser.add_argument('configfile', help='YAML file describing milestones')
+parser.add_argument('--createseries', action='store_true',
+                    help="Create series if it's missing")
 args = parser.parse_args()
 
 with open(args.configfile) as f:
@@ -57,8 +59,15 @@ for projectname in config['projects']:
     # Retrieve series
     series = project.getSeries(name=config['series'])
     if series is None:
-        abort(2, '  Could not find series %s in project %s' % (
-              config['series'], projectname))
+        if args.createseries:
+            summary = 'This is the "%s" series.' % config['series']
+            series = project.newSeries(name=config['series'],
+                                       summary=summary)
+            series.status = 'Future'
+            series.lp_save()
+        else:
+            abort(2, '  Could not find series %s in project %s' % (
+                  config['series'], projectname))
 
     # Check each milestone in config file
     for m, d in config['milestones'].iteritems():
@@ -78,6 +87,6 @@ for projectname in config['projects']:
         else:
             print "    Does not exist yet...",
             series.newMilestone(name=series.name + "-" + m,
-                                date_targeted=d,
+                                date_targeted=d or None,
                                 code_name=series.name[0:1] + m)
             print "created"
