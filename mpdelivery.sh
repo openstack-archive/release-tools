@@ -46,9 +46,9 @@ cd $PROJECT
 git review -s
 
 if [ "$DEVVERSION" == "$PUBVERSION" ]; then
-  TAGMSG = "${PROJECT^} $PUBVERSION"
+  TAGMSG="${PROJECT^} $PUBVERSION"
 else
-  TAGMSG = "${PROJECT^} $MILESTONE milestone ($PUBVERSION)"
+  TAGMSG="${PROJECT^} $MILESTONE milestone ($PUBVERSION)"
 fi
 title "Tagging $PUBVERSION ($TAGMSG)"
 git tag -m "$TAGMSG" -s "$PUBVERSION"
