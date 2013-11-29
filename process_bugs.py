@@ -19,6 +19,7 @@
 
 from argparse import ArgumentParser
 from launchpadlib.launchpad import Launchpad
+from lazr.restfulclient.errors import ServerError
 
 # Parameters
 parser = ArgumentParser(description="Change bugs status in bulk")
@@ -51,6 +52,7 @@ launchpad = Launchpad.login_with('openstack-releasing', args.test)
 print "Retrieving project..."
 proj = launchpad.projects[args.projectname]
 changes = True
+failed = set()
 
 while changes:
     changes = False
@@ -59,6 +61,9 @@ while changes:
     # Process bugs
     for b in bugtasks:
         bug = b.bug
+        # Skip bugs which triggered timeouts in previous runs
+        if bug.id in failed:
+            continue
         # Skip already-milestoned bugs with a different milestone
         if args.settarget and b.milestone:
             if b.milestone.name != args.settarget:
@@ -69,14 +74,24 @@ while changes:
             continue
         if args.settarget:
             if not b.milestone:
-                changes = True
                 b.milestone = milestonelink
                 print " - milestoned",
             else:
                 print " - milestone already set",
         if args.fixrelease:
-            changes = True
             print " - fixreleased",
             b.status = 'Fix Released'
-        b.lp_save()
+        try:
+            b.lp_save()
+            if (args.settarget and not b.milestone) or args.fixrelease:
+                changes = True
+        except ServerError as e:
+            print " - TIMEOUT during save !",
+            failed.add(bug.id)
         print
+
+if failed:
+    print
+    print "Some bugs could not be automatically updated due to LP timeouts:"
+    for bugid in failed:
+        print "http://bugs.launchpad.net/bugs/%d" % bugid
