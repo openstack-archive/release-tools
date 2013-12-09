@@ -124,8 +124,8 @@ else:
         % (args.project.capitalize(), args.version)
 
 lp_release = lp_milestone.createProductRelease(
-                 date_released=datetime.datetime.utcnow(),
-                 release_notes=release_notes)
+    date_released=datetime.datetime.utcnow(),
+    release_notes=release_notes)
 
 # Mark milestone inactive
 print "Marking milestone inactive..."

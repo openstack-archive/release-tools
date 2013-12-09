@@ -19,6 +19,7 @@
 
 import argparse
 import sys
+
 from launchpadlib.launchpad import Launchpad
 from lazr.restfulclient.errors import BadRequest
 
@@ -26,7 +27,7 @@ from lazr.restfulclient.errors import BadRequest
 parser = argparse.ArgumentParser(description="Consolidate milestone pages"
                                  " at release time")
 parser.add_argument('project', help='project to act on')
-parser.add_argument('series',  help='series to handle')
+parser.add_argument('series', help='series to handle')
 parser.add_argument('release', help='release milestone')
 parser.add_argument('--copytask', action='store_true',
                     help='Enable CopyTask mode')
@@ -76,7 +77,7 @@ for milestone in seriesmilestones:
         release_is_in_series = True
     else:
         if (args.project == "swift" and
-            not milestone.name.startswith(release.name+"-rc")):
+            not milestone.name.startswith(release.name + "-rc")):
             continue
         milestones.insert(0, milestone)
 print "Found",
