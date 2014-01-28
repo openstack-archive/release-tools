@@ -29,11 +29,12 @@ if [ $# -lt 2 ]; then
 fi
 
 TMPDIR=`mktemp -d`
-git clone -b $2 https://github.com/openstack/$1 $TMPDIR/repo || error "close failed"
+git clone -b $2 https://github.com/openstack/$1 $TMPDIR/repo || error "clone failed"
 cd $TMPDIR/repo
 git archive -o $TMPDIR/repo.tar HEAD
 tar tf $TMPDIR/repo.tar | sort -g > $TMPDIR/repo.contents
 python setup.py sdist > /dev/null 2>&1 || error "sdist failed"
 tar tzf dist/*.tar.gz | cut -f2- -d/ | grep -v ^$ | sort -g > $TMPDIR/tarball.contents
-diff -u0 $TMPDIR/repo.contents $TMPDIR/tarball.contents | grep -v '^@@' | grep -v "^+$1.egg-info/" | grep -v '^+PKG-INFO' | tail -n +3
+pymodulename=${1//-/_}
+diff -u0 $TMPDIR/repo.contents $TMPDIR/tarball.contents | grep -v '^@@' | grep -v "^+$1.egg-info/" | grep -v "^+$pymodulename.egg-info/" | grep -v '^+PKG-INFO' | tail -n +3
 rm -rf $TMPDIR
