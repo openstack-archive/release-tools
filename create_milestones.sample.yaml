@@ -1,8 +1,8 @@
 # Name of the series
 series: icehouse
 
-# Short milestone codes, with number of weeks leading to them
-# The last one should be the release date
+# Milestone codes (series- will be prefixed)
+# Value is the release date (or empty string if not set yet)
 milestones:
    '1': '2013-12-05'
    '2': '2014-01-23'
