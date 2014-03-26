@@ -33,7 +33,7 @@ def get_from_jenkins(job_url, tree=None):
     return r.json()
 
 
-def find_job_url(sha=None, retries=60, wait=10):
+def find_job_url(sha=None, retries=30, wait=30):
     retry = 0
     shaexpr = (r'https://review\.openstack\.org/gitweb\?p=.*\.git;'
                'a=commitdiff;h=(.*)$')
@@ -47,16 +47,17 @@ def find_job_url(sha=None, retries=60, wait=10):
                     for r in head:
                         for job in r['jobs']:
                             if job['name'].endswith('-tarball'):
-                                c = re.match(shaexpr, r['url'])
-                                if c and c.group(1).startswith(sha):
-                                    return job['url']
+                                if job['url'] is not None:
+                                    c = re.match(shaexpr, r['url'])
+                                    if c and c.group(1).startswith(sha):
+                                        return job['url']
         retry += 1
         time.sleep(wait)
     else:
         raise IOError("timeout")
 
 
-def wait_for_completion(job_url, retries=60, wait=10):
+def wait_for_completion(job_url, retries=30, wait=30):
     retry = 0
     while retry < retries:
         job_json = get_from_jenkins(job_url)
