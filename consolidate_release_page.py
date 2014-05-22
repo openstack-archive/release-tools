@@ -20,7 +20,7 @@
 import argparse
 import sys
 from launchpadlib.launchpad import Launchpad
-from lazr.restfulclient.errors import BadRequest
+from lazr.restfulclient.errors import BadRequest, ServerError
 
 # Parameters
 parser = argparse.ArgumentParser(description="Consolidate milestone pages"
@@ -109,6 +109,7 @@ for milestone in milestones:
         print "Moving %s bugs to %s..." % (milestone.name, release.name)
     bugsleft = True
     while bugsleft:
+        failed = set()
         bugsleft = False
         for bt in proj.searchTasks(status=statuses, milestone=milestone):
             bug = bt.bug
@@ -128,10 +129,19 @@ for milestone in milestones:
                         print " - task already exists, skipping",
                 else:
                     bt.milestone = release
-                    bt.lp_save()
-                    print " - released",
+                    try:
+                        bt.lp_save()
+                        print " - released",
+                    except ServerError as e:
+                        print " - TIMEOUT during save !",
+                        failed.add(bug.id)
                     bugsleft = True
             if bt.status != 'Fix Released':
                 print " (not in FixReleased status!)",
             print
+        if failed:
+            print
+            print "Some bugs could not be automatically updated due to LP timeouts:"
+            for bugid in failed:
+                print "http://bugs.launchpad.net/bugs/%d" % bugid
     print
