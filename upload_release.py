@@ -40,6 +40,8 @@ parser = argparse.ArgumentParser(description='Grab tarball and release it '
 parser.add_argument('project', help='Project to publish release for (nova)')
 parser.add_argument('version', help='Version under development (2013.1)')
 parser.add_argument("--milestone", help='Milestone to publish (grizzly-3)')
+parser.add_argument("--nop", action='store_true',
+                    help='Only create release, do not upload tarball')
 parser.add_argument("--tarball",
                     help='Tarball to fetch (defaults to version[~milestone])')
 parser.add_argument("--test", action='store_const', const='staging',
@@ -79,89 +81,98 @@ for lp_milestone in lp_proj.all_milestones:
 else:
     abort(2, 'Could not find milestone: %s' % milestone)
 
-# Retrieve tgz, check contents and MD5
-print "Downloading tarball..."
-tmpdir = tempfile.mkdtemp()
-if args.tarball is None:
-    if args.milestone is None:
-        base_tgz = "%s-%s.tar.gz" % (args.project, args.version)
+if not args.nop:
+    # Retrieve tgz, check contents and MD5
+    print "Downloading tarball..."
+    tmpdir = tempfile.mkdtemp()
+    if args.tarball is None:
+        if args.milestone is None:
+            base_tgz = "%s-%s.tar.gz" % (args.project, args.version)
+        else:
+            base_tgz = "%s-%s.%s.tar.gz" \
+                % (args.project, args.version, short_ms)
     else:
-        base_tgz = "%s-%s.%s.tar.gz" % (args.project, args.version, short_ms)
-else:
-    base_tgz = "%s-%s.tar.gz" % (args.project, args.tarball)
-url_tgz = "http://tarballs.openstack.org/%s/%s" % (args.project, base_tgz)
-tgz = os.path.join(tmpdir, base_tgz)
+        base_tgz = "%s-%s.tar.gz" % (args.project, args.tarball)
+    url_tgz = "http://tarballs.openstack.org/%s/%s" % (args.project, base_tgz)
+    tgz = os.path.join(tmpdir, base_tgz)
 
-(tgz, message) = urllib.urlretrieve(url_tgz, filename=tgz)
+    (tgz, message) = urllib.urlretrieve(url_tgz, filename=tgz)
 
-try:
-    subprocess.check_call(['tar', 'ztvf', tgz])
-except subprocess.CalledProcessError, e:
-    abort(2, '%s is not a tarball. Bad revision specified ?' % base_tgz)
+    try:
+        subprocess.check_call(['tar', 'ztvf', tgz])
+    except subprocess.CalledProcessError, e:
+        abort(2, '%s is not a tarball. Bad revision specified ?' % base_tgz)
 
-md5 = subprocess.check_output(['md5sum', tgz]).split()[0]
+    md5 = subprocess.check_output(['md5sum', tgz]).split()[0]
 
-# Sign tgz
-print "Signing tarball..."
-sig = tgz + '.asc'
-if not os.path.exists(sig):
-    print 'Calling GPG to create tgz signature...'
-    subprocess.check_call(['gpg', '--armor', '--sign', '--detach-sig', tgz])
+    # Sign tgz
+    print "Signing tarball..."
+    sig = tgz + '.asc'
+    if not os.path.exists(sig):
+        print 'Calling GPG to create tgz signature...'
+        subprocess.check_call(
+            ['gpg', '--armor', '--sign', '--detach-sig', tgz])
 
-# Read contents
-with open(tgz) as tgz_file:
-    tgz_content = tgz_file.read()
-with open(sig) as sig_file:
-    sig_content = sig_file.read()
+    # Read contents
+    with open(tgz) as tgz_file:
+        tgz_content = tgz_file.read()
+    with open(sig) as sig_file:
+        sig_content = sig_file.read()
 
 # Mark milestone released
 print "Marking milestone released..."
-if args.milestone:
-    release_notes = "This is another milestone (%s) on the road to %s %s." \
-        % (args.milestone, args.project.capitalize(), args.version)
+if args.nop:
+    rel_notes = ""
 else:
-    release_notes = "This is %s %s release." \
-        % (args.project.capitalize(), args.version)
+    if args.milestone:
+        rel_notes = "This is another milestone (%s) on the road to %s %s." \
+            % (args.milestone, args.project.capitalize(), args.version)
+    else:
+        rel_notes = "This is %s %s release." \
+            % (args.project.capitalize(), args.version)
 
 lp_release = lp_milestone.createProductRelease(
-                 date_released=datetime.datetime.utcnow(),
-                 release_notes=release_notes)
+    date_released=datetime.datetime.utcnow(),
+    release_notes=rel_notes)
 
 # Mark milestone inactive
 print "Marking milestone inactive..."
 lp_milestone.is_active = False
 lp_milestone.lp_save()
 
-# Upload file
-print "Uploading release files..."
-if args.milestone:
-    final_tgz = "%s-%s.%s.tar.gz" % (args.project, args.version, short_ms)
-    description = '%s "%s" milestone' % \
-                  (args.project.capitalize(), args.milestone)
-else:
-    final_tgz = "%s-%s.tar.gz" % (args.project, args.version)
-    description = '%s %s release' % (args.project.capitalize(), args.version)
+if not args.nop:
+    # Upload file
+    print "Uploading release files..."
+    if args.milestone:
+        final_tgz = "%s-%s.%s.tar.gz" % (args.project, args.version, short_ms)
+        description = '%s "%s" milestone' % \
+                      (args.project.capitalize(), args.milestone)
+    else:
+        final_tgz = "%s-%s.tar.gz" % (args.project, args.version)
+        description = '%s %s release' % \
+                      (args.project.capitalize(), args.version)
 
-lp_file = lp_release.add_file(file_type='Code Release Tarball',
-                              description=description,
-                              file_content=tgz_content,
-                              filename=final_tgz,
-                              signature_content=sig_content,
-                              signature_filename=final_tgz + '.asc',
-                              content_type="application/x-gzip; "
-                                           "charset=binary")
+    lp_file = lp_release.add_file(file_type='Code Release Tarball',
+                                  description=description,
+                                  file_content=tgz_content,
+                                  filename=final_tgz,
+                                  signature_content=sig_content,
+                                  signature_filename=final_tgz + '.asc',
+                                  content_type="application/x-gzip; "
+                                               "charset=binary")
 
-# Check LP-reported MD5
-print "Checking MD5s..."
-time.sleep(2)
-result_md5_url = "http://launchpad.net/%s/+download/%s/+md5" % \
-                 (lp_release.self_link[30:], final_tgz)
-result_md5_file = urllib.urlopen(result_md5_url)
-result_md5 = result_md5_file.read().split()[0]
-result_md5_file.close()
-if md5 != result_md5:
-    abort(3, 'MD5sums (%s/%s) do not match !' % (md5, result_md5))
+    # Check LP-reported MD5
+    print "Checking MD5s..."
+    time.sleep(2)
+    result_md5_url = "http://launchpad.net/%s/+download/%s/+md5" % \
+                     (lp_release.self_link[30:], final_tgz)
+    result_md5_file = urllib.urlopen(result_md5_url)
+    result_md5 = result_md5_file.read().split()[0]
+    result_md5_file.close()
+    if md5 != result_md5:
+        abort(3, 'MD5sums (%s/%s) do not match !' % (md5, result_md5))
 
-# Finished
-print md5
+    # Finished
+    print md5
+
 print "Done!"
