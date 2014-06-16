@@ -55,7 +55,7 @@ else:
 print "Connecting to Launchpad..."
 try:
     launchpad = Launchpad.login_with('openstack-releasing', args.test)
-except Exception, error:
+except Exception as error:
     abort(2, 'Could not connect to Launchpad: ' + str(error))
 
 # Retrieve milestone
