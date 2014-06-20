@@ -62,7 +62,7 @@ def wait_for_completion(job_url, retries=30, wait=30):
     while retry < retries:
         job_json = get_from_jenkins(job_url)
         if not job_json['building']:
-            return job_json['artifacts'][0]['displayPath']
+            return job_json['artifacts'][-1]['displayPath']
         retry += 1
         time.sleep(wait)
     else:
