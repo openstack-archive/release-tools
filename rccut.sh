@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Script to cut milestone-proposed branches in one shot
+# Script to cut proposed/foo pre-release branch at RC1
 #
-# Copyright 2011-2013 Thierry Carrez <thierry@openstack.org>
+# Copyright 2011-2014 Thierry Carrez <thierry@openstack.org>
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -20,15 +20,16 @@
 set -e
 
 if [ $# -lt 3 ]; then
-    echo "Usage: $0 SHA milestone projectname"
+    echo "Usage: $0 SHA series projectname"
     echo
-    echo "Example: $0 HEAD havana-1 keystone"
+    echo "Example: $0 HEAD juno keystone"
     exit 2
 fi
 
 SHA=$1
-MILESTONE=$2
+SERIES=$2
 PROJECT=$3
+RC1MILESTONE="$2-rc1"
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -37,24 +38,27 @@ function title {
   echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
 }
 
+title "Checking that $RC1MILESTONE exists"
+$TOOLSDIR/ms2version.py --onlycheck $PROJECT $RC1MILESTONE
+
 title "Cloning repository for $PROJECT"
 MYTMPDIR=`mktemp -d`
 cd $MYTMPDIR
 git clone git://git.openstack.org/openstack/$PROJECT
 cd $PROJECT
-git review -s
+LANG=C git review -s
 
-if git show-ref --verify --quiet refs/heads/milestone-proposed; then
-  echo "milestone-proposed branch already exists !"
+if $(git branch -r | grep proposed > /dev/null); then
+  echo "A *proposed* branch already exists !"
   cd ../..
   rm -rf $MYTMPDIR
   exit 1
 fi
 
-title "Creating milestone-proposed at $SHA"
-git branch milestone-proposed $SHA
-REALSHA=`git show-ref -s milestone-proposed`
-git push gerrit milestone-proposed
+title "Creating proposed/$SERIES at $SHA"
+git branch proposed/$SERIES $SHA
+REALSHA=`git show-ref -s proposed/$SERIES`
+git push gerrit proposed/$SERIES
 
 title "Cleaning up repository"
 cd ../..
@@ -64,4 +68,4 @@ title "Waiting for tarball from $REALSHA"
 $TOOLSDIR/wait_for_tarball.py $REALSHA
 
 title "Setting FixCommitted bugs to FixReleased"
-$TOOLSDIR/process_bugs.py $PROJECT --settarget=$MILESTONE --fixrelease
+$TOOLSDIR/process_bugs.py $PROJECT --settarget=$RC1MILESTONE --fixrelease
