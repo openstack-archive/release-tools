@@ -35,6 +35,8 @@ parser = argparse.ArgumentParser(description='Convert milestone code names '
                                              '(2014.2.b1)')
 parser.add_argument('project', help='Project the milestone is defined in')
 parser.add_argument('milestone', help='Milestone code name')
+parser.add_argument('--onlycheck', action='store_true',
+                    help='Only check milestone exists')
 args = parser.parse_args()
 
 # Connect to LP
@@ -55,6 +57,9 @@ for target_milestone in lp_proj.all_milestones:
         break
 else:
     abort(2, 'Could not find milestone: %s' % args.milestone)
+
+if args.onlycheck:
+    sys.exit(0)
 
 ind = string.lowercase.index(target_milestone.name[0:1])
 
