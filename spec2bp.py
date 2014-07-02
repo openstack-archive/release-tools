@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Script to set fields in LP blueprint for an approved spec
 #
