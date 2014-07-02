@@ -22,10 +22,12 @@ from launchpadlib.launchpad import Launchpad
 from lazr.restfulclient.errors import ServerError
 
 # Parameters
-parser = ArgumentParser(description="Change bugs status in bulk")
+parser = ArgumentParser(description="Change Launchpad bugs in bulk")
 parser.add_argument('projectname', help='The project to act on')
-parser.add_argument('--status', default='Fix Committed',
-                    help='Which bug status to bulk-change')
+bugsfrom = parser.add_mutually_exclusive_group()
+bugsfrom.add_argument('--status', default='Fix Committed',
+                      help='All bugs with that status')
+bugsfrom.add_argument('--milestone', help='All open bugs from this milestone')
 parser.add_argument("--test", action='store_const', const='staging',
                     default='production', help='Use LP staging server to test')
 parser.add_argument('--settarget',
@@ -35,14 +37,6 @@ parser.add_argument('--fixrelease', action='store_true',
 parser.add_argument('exceptions', type=int, nargs='*', help='Bugs to ignore')
 
 args = parser.parse_args()
-
-if args.settarget:
-    if args.test == 'staging':
-        site = "https://api.staging.launchpad.net/1.0"
-    else:
-        site = "https://api.launchpad.net/1.0"
-    milestonelink = "%s/%s/+milestone/%s" \
-                    % (site, args.projectname, args.settarget)
 
 # Connect to Launchpad
 print "Connecting to Launchpad..."
@@ -54,9 +48,23 @@ proj = launchpad.projects[args.projectname]
 changes = True
 failed = set()
 
+if args.settarget:
+    to_milestone = proj.getMilestone(name=args.settarget)
+    if not to_milestone:
+        parser.error('Target milestone %s does not exist' % args.milestone)
+
+if args.milestone:
+    open_status = ['New', 'Incomplete', 'Confirmed', 'Triaged', 'In Progress']
+    from_milestone = proj.getMilestone(name=args.milestone)
+    if not from_milestone:
+        parser.error('Origin milestone %s does not exist' % args.milestone)
+
 while changes:
     changes = False
-    bugtasks = proj.searchTasks(status=args.status)
+    if args.milestone:
+        bugtasks = from_milestone.searchTasks(status=open_status)
+    else:
+        bugtasks = proj.searchTasks(status=args.status)
 
     # Process bugs
     for b in bugtasks:
@@ -64,8 +72,9 @@ while changes:
         # Skip bugs which triggered timeouts in previous runs
         if bug.id in failed:
             continue
-        # Skip already-milestoned bugs with a different milestone
-        if args.settarget and b.milestone:
+        # If the action is settarget and you're not in milestone selection
+        # mode, skip already-milestoned bugs with a different milestone
+        if (not args.milestone) and (args.settarget and b.milestone):
             if b.milestone.name != args.settarget:
                 continue
         print bug.id,
@@ -73,8 +82,8 @@ while changes:
             print " - excepted"
             continue
         if args.settarget:
-            if not b.milestone:
-                b.milestone = milestonelink
+            if b.milestone != to_milestone:
+                b.milestone = to_milestone
                 print " - milestoned",
             else:
                 print " - milestone already set",
