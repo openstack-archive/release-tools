@@ -41,6 +41,7 @@ function title {
 if [[ "$PROJECT" == "swift" ]]; then
   echo "Swift mode: skipping fixreleasing (bugs should be set at RC time)"
   SKIPBUGS=1
+  IS_RELEASE=1
 fi
 
 if [[ "$PROJECT" == "oslo-incubator" ]]; then
@@ -56,8 +57,13 @@ if [[ "$PROJECT" == "oslo.messaging" ]]; then
 fi
 
 title "Resolving $MILESTONE to version"
-VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $MILESTONE`
-RELVERSION=${VERSION:0:6}
+if [[ "$IS_RELEASE" == "1" ]]; then
+  VERSION=$MILESTONE
+  RELVERSION=$MILESTONE
+else
+  VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $MILESTONE`
+  RELVERSION=${VERSION:0:6}
+fi
 echo "$MILESTONE is $VERSION (final being $RELVERSION)"
 
 if [[ "$SKIPTAG" != "1" ]]; then
@@ -71,21 +77,25 @@ if [[ "$SKIPTAG" != "1" ]]; then
   HEADSHA=`git log -1 HEAD --format='%H'`
 
   title "Tagging $TARGETSHA as $VERSION"
-  TAGMSG="${PROJECT^} $MILESTONE milestone ($VERSION)"
+  if [[ "$IS_RELEASE" == "1" ]]; then
+    TAGMSG="${PROJECT^} $VERSION release"
+  else
+    TAGMSG="${PROJECT^} $MILESTONE milestone ($VERSION)"
+  fi
   echo "Tag message is '$TAGMSG'"
   if [[ "$TARGETSHA" != "$HEADSHA" ]]; then
     echo "Warning: target SHA does not correspond to HEAD"
   fi
   git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
   git push gerrit $VERSION
-  REALSHA=`git show-ref -s "$VERSION"`
+  REALSHA=`git show-ref -s --tags "$VERSION"`
 
   title "Cleaning up"
   cd ../..
   rm -rf $MYTMPDIR
 fi
 
-if [[ "$SKIPTARBALL" != "1"]]; then
+if [[ "$SKIPTARBALL" != "1" ]]; then
   title "Waiting for tarball from $REALSHA"
   $TOOLSDIR/wait_for_tarball.py $REALSHA
 
@@ -105,7 +115,11 @@ fi
 
 if [[ "$SKIPTARBALL" != "1" ]]; then
   title "Uploading tarball to Launchpad"
-  $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --milestone=$MILESTONE
+  if [[ "$IS_RELEASE" == "1" ]]; then
+    $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION
+  else
+    $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --milestone=$MILESTONE
+  fi
 else
   title "Marking milestone as released in Launchpad"
   $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --milestone=$MILESTONE --nop
