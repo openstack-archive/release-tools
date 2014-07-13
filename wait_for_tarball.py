@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Script to wait for a tarball to be generated in Jenkins
 #

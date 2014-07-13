@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Script to upload an OpenStack release to Launchpad
 #

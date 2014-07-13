@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Script to apply bulk changes to Launchpad bugs
 #

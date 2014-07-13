@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Script to move bugs and blueprints to final release milestone page
 #

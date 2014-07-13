@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Idenpotent script to bulk-create milestones on Launchpad
 #
