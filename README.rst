@@ -333,24 +333,32 @@ spec2bp.py
 ----------
 
 This experimental script facilitates setting blueprint fields for approved
-specs. You point it to a spec file in a -specs repository, and it will set the
-Approver, definition status, spec URL, priority and milestone as you specify.
-By default priority is set to 'Low'.
-
-In order for this to work, the spec must have the same name as the blueprint.
+specs. It takes the project and blueprint name as arguments. For specs that
+are still under review (--in-review) it will set them to "Blocked" (and
+definition status to Review). For approved specs it will set definition
+status to Approved, and set Spec URL. In both cases it will set the target
+milestone, approver name and specified priority (by default, 'Low').
 
 Examples:
 
-./spec2bp.py ../oslo-specs/specs/juno/graduate-oslo-i18n.rst juno-3
+./spec2bp.py glance super-spec --milestone=juno-2 --priority=Medium
 
-  Set the graduate-oslo-i18n oslo blueprint in Launchpad to Approved, set
-  yourself as approver, set the spec URL, priority to Low and milestone to
-  juno-3.
+  Glance's super-spec.rst was approved and you want to add it to juno-2,
+  with Medium priority. This will do it all for you.
 
-./spec2bp.py warp-speed.rst kilo-1 --priority=High --test
+./spec2bp.py nova --specpath=specs/kilo/approved/my-awesome-spec.rst
+  --in-review --milestone=juno-2
 
-  On Launchpad test servers, try setting the warp-speed blueprint fields as
-  above (with priority set to High and milestone set to kilo-1).
+  Nova's my-awesome-spec.rst is still under review, but you would like to
+  add the my-awesome-spec blueprint to juno-2 (marked Blocked). Since it's
+  located in a non-standard path, we specify it using --specpath parameter.
+
+./spec2bp.py nova my-awesome-spec --priority=High
+
+  my-awesome-spec is now approved. You want to flip all the approval bits,
+  but also change its priority to High. There is no need to pass --specpath
+  again, spec2bp will infer it from the blueprint URL field.
+
 
 stable_freeze.py
 ----------------
