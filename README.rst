@@ -7,7 +7,9 @@ Prerequisites
 You'll need the following Python modules installed:
  - launchpadlib
 
-similar_tarballs.sh also requires that you have tardiff installed.
+similar_tarballs.sh also requires that you have tardiff installed.  If it's not
+packaged for your distribution, you can find it at
+http://tardiff.coolprojects.org/.
 
 
 repo_tarball_diff.sh
