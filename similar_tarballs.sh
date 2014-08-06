@@ -32,6 +32,11 @@ project=$1
 tarball1=$2
 tarball2=$3
 
+if ! which tardiff &>/dev/null ; then
+    read -sn 1 -p "Please install tardiff, then press any key to continue..."
+    echo
+fi
+
 TMPDIR=`mktemp -d`
 wget -q http://tarballs.openstack.org/$project/$project-$tarball1.tar.gz -O $TMPDIR/tarball1.tar.gz
 echo -n "$tarball1 "
