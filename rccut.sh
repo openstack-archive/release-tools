@@ -19,7 +19,7 @@
 
 set -e
 
-if [ $# -lt 3 ]; then
+if [[ $# -lt 3 ]]; then
     echo "Usage: $0 SHA series projectname [swift_final_version]"
     echo
     echo "Example: $0 HEAD juno keystone"
@@ -30,8 +30,8 @@ fi
 SHA=$1
 SERIES=$2
 PROJECT=$3
-if [ "$PROJECT" == "swift" ]; then
-  if [ $# -eq 4 ]; then
+if [[ "$PROJECT" == "swift" ]]; then
+  if [[ $# -eq 4 ]]; then
     RC1MILESTONE="$4-rc1"
   else
     echo "Missing Swift final version number argument !"

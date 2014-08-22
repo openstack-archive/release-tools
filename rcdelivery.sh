@@ -19,7 +19,7 @@
 
 set -e
 
-if [ $# -lt 3 ]; then
+if [[ $# -lt 3 ]]; then
     echo "Usage: $0 series rcX|final projectname [swift_final_version]"
     echo
     echo "Example: $0 juno final keystone"
@@ -30,8 +30,8 @@ fi
 SERIES=$1
 RC=$2
 PROJECT=$3
-if [ "$PROJECT" == "swift" ]; then
-  if [ $# -eq 4 ]; then
+if [[ "$PROJECT" == "swift" ]]; then
+  if [[ $# -eq 4 ]]; then
     FINALVERSION=$4
   else
     echo "Missing Swift final version number argument !"
@@ -48,8 +48,8 @@ function title {
 
 title "Resolving $PROJECT $SERIES $RC to version"
 
-if [ "$RC" == "final" ]; then
-  if [ "$PROJECT" != "swift" ]; then
+if [[ "$RC" == "final" ]]; then
+  if [[ "$PROJECT" != "swift" ]]; then
     RC1VERSION=`$TOOLSDIR/ms2version.py $PROJECT $SERIES-rc1`
     FINALVERSION=${RC1VERSION:0:6}
   fi
@@ -57,7 +57,7 @@ if [ "$RC" == "final" ]; then
   VERSION=$FINALVERSION
   $TOOLSDIR/ms2version.py --onlycheck $PROJECT $MILESTONE
 else
-  if [ "$PROJECT" != "swift" ]; then
+  if [[ "$PROJECT" != "swift" ]]; then
     MILESTONE="$SERIES-$RC"
     VERSION=`$TOOLSDIR/ms2version.py $PROJECT $MILESTONE`
   else
@@ -75,7 +75,7 @@ git clone git://git.openstack.org/openstack/$PROJECT -b proposed/$SERIES
 cd $PROJECT
 LANG=C git review -s
 
-if [ "$RC" == "final" ]; then
+if [[ "$RC" == "final" ]]; then
   TAGMSG="${PROJECT^} $VERSION"
 else
   TAGMSG="${PROJECT^} $MILESTONE milestone ($VERSION)"
@@ -93,7 +93,7 @@ $TOOLSDIR/similar_tarballs.sh $PROJECT proposed-$SERIES $VERSION
 read -sn 1 -p "Press any key to continue..."
 
 title "Uploading tarball to Launchpad"
-if [ "$RC" == "final" ]; then
+if [[ "$RC" == "final" ]]; then
   $TOOLSDIR/upload_release.py $PROJECT $VERSION
 else
   $TOOLSDIR/upload_release.py $PROJECT $VERSION --milestone=$MILESTONE
