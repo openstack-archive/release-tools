@@ -30,6 +30,13 @@ fi
 SHA=$1
 SERIES=$2
 PROJECT=$3
+
+if [[ "$PROJECT" == "oslo-incubator" ]]; then
+  echo "Oslo-incubator mode: skipping tarball check"
+  SKIPTARBALL=1
+  PROJECT="oslo"
+fi
+
 if [[ "$PROJECT" == "swift" ]]; then
   if [[ $# -eq 4 ]]; then
     RC1MILESTONE="$4-rc1"
@@ -74,8 +81,10 @@ title "Cleaning up repository"
 cd ../..
 rm -rf $MYTMPDIR
 
-title "Waiting for tarball from $REALSHA"
-$TOOLSDIR/wait_for_tarball.py $REALSHA
+if [[ "$SKIPTARBALL" != "1" ]]; then
+  title "Waiting for tarball from $REALSHA"
+  $TOOLSDIR/wait_for_tarball.py $REALSHA
+fi
 
 title "Setting FixCommitted bugs to FixReleased"
 $TOOLSDIR/process_bugs.py $PROJECT --settarget=$RC1MILESTONE --fixrelease
