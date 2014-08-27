@@ -1,8 +1,9 @@
+==========================================================================
 openstack-releasing - A set of scripts to handle OpenStack release process
 ==========================================================================
 
 Prerequisites
--------------
+=============
 
 You'll need the following Python modules installed:
  - launchpadlib
@@ -10,6 +11,133 @@ You'll need the following Python modules installed:
 similar_tarballs.sh also requires that you have tardiff installed.  If it's not
 packaged for your distribution, you can find it at
 http://tardiff.coolprojects.org/.
+
+
+Top-level scripts
+=================
+
+The top-level scripts call the various base tools to get their work done.
+
+milestone.sh
+------------
+
+This script handles all development milestone publication tasks. It creates
+a tag, pushes it, waits for the tarball build, lets you doublecheck tarball
+similarities, turns FixCommitted bugs into FixReleased ones (and targets them
+to the milestone), and upload the resulting tarball to Launchpad (while
+marking it released).
+
+It supports special cases for the release of a swift intermediary release
+(where bugs should have been processed using swiftrc.sh beforehand), and
+oslo-incubator (where no tarball is generated or needs to be uploaded).
+
+Example:
+
+./milestone.sh juno-3 HEAD keystone
+
+  Apply 2014.2.b3 tag to HEAD of keystone master branch, check resulting
+  tarball, mark FixCommitted bugs as released, upload tarball to Launchpad
+  and mark Launchpad milestone released.
+
+
+swiftrc.sh
+----------
+
+Swift's intermediary releases tag a RC1 candidate on master and let them bake,
+so the all-in-one milestone.sh doesn't work there. swiftrc.sh creates a RC1
+tag, pushes it, waits for the tarball build, lets you doublecheck tarball
+similarities, and turns FixCommitted bugs into FixReleased ones (and targets
+them to the milestone). When the RC1 is deemed ready, you can run milestone.sh
+to tag and upload the final release.
+
+Example:
+
+./swiftrc.sh 7432f32d838ab346c 2.1.0
+
+  Apply 2.1.0.rc1 tag to Swift's 7432f32d838ab346c commit, check resulting
+  tarball, mark FixCommitted bugs as released and target them to the 2.1.0
+  milestone.
+
+
+rccut.sh
+--------
+
+Final release follows a slightly different process. Just before RC1 we need
+to create a proposed/* release branch. rccut.sh creates a proposed/$SERIES
+branch from the specified SHA, and turns all Launchpad bugs for the RC1
+milestone to FixReleased (which means "present in the release branch").
+
+It special-cases Swift, where an additional parameter is provided to specify
+the version number of the final release. It also special-cases oslo-incubator,
+where it doesn't wait for a tarball to be built.
+
+Examples:
+
+./rccut.sh 7432f32d838ab346c juno nova
+
+  Create a proposed/juno branch for Nova at commit 7432f32d838ab346c, and
+  mark FixCommitted bugs FixReleased, while targeting them to the juno-rc1
+  milestone.
+
+./rccut.sh HEAD juno swift 2.2.0
+
+  Create a proposed/juno branch for Swift from master's HEAD commit, and
+  mark FixCommitted bugs FixReleased, while targeting them to the 2.2.0-rc1
+  milestone.
+
+
+rcdelivery.sh
+-------------
+
+This script is used to publish RCs and final release from the proposed/$SERIES
+branch. It applies the RC or final tag, pushes it, waits for the tarball
+build, lets you doublecheck tarball similarities, and upload the resulting
+tarball to Launchpad (while marking it released).
+
+It special-cases Swift, where an additional parameter is provided to specify
+the version number of the final release. It also special-cases oslo-incubator,
+where no tarball is generated or needs to be uploaded.
+
+Examples:
+
+./rcdelivery.sh juno rc1 cinder
+
+  Push 2014.2.rc1 tag to current cinder proposed/juno branch HEAD, wait for the
+  tarball build, and upload the resulting tarball to Launchpad (while marking
+  it released).
+
+./rcdelivery juno rc2 swift 2.3.0
+
+  Push 2.3.0.rc2 tag to current swift proposed/juno branch HEAD, wait for the
+  tarball build, and upload the resulting tarball to Launchpad (while marking
+  it released).
+
+./rcdelivery juno final neutron
+
+  Push 2014.2 final tag to current neutron proposed/juno branch HEAD (which
+  should be the last RC), wait for the tarball build, and upload the resulting
+  tarball to Launchpad (while marking it released).
+
+
+Base tools
+==========
+
+ms2version.py
+-------------
+
+Converts milestone code names (juno-1) to version numbers suitable for tags
+(2014.2.b1). If used with --onlycheck, only checks that the milestone
+exists in Launchpad (useful for Swift where the rules are different).
+
+Examples:
+
+./ms2version.py nova juno-3
+
+  Returns 2014.2.b3 (after checking that the juno-3 milestone exists in Nova)
+
+./ms2version.py swift 2.1.0 --onlycheck
+
+  Exists successfully if there is a 2.1.0 milestone in Swift.
 
 
 repo_tarball_diff.sh
@@ -45,9 +173,10 @@ Example:
 process_bugs.py
 ---------------
 
-This script fetches bugs for a project (by default all "FixCommitted" bugs)
-and sets a milestone target for them (--settarget) and/or sets their status
-to "Fix Released" (--fixrelease).
+This script fetches bugs for a project (by default all "FixCommitted" bugs,
+or all open bugs targeted to a given milestone if you pass the --milestone
+argument) and sets a milestone target for them (--settarget) and/or sets their
+status to "Fix Released" (--fixrelease).
 
 It ignores bugs that have already a milestone set, if that milestone does
 not match the one in --settarget.
@@ -63,6 +192,10 @@ Examples:
 
   Test setting the target for all untargeted Glance FixReleased bugs to
   grizzly-2 on Launchpad Staging servers.
+
+./process_bugs.py neutron --milestone juno-3 --settarget juno-rc1
+
+  Move all juno-3 open bugs from juno-3 to juno-rc1 milestone.
 
 
 wait_for_tarball.py
@@ -90,6 +223,9 @@ upload_release.py
 
 This script grabs a tarball from tarballs.openstack.org and uploads it
 to Launchpad, marking the milestone released and inactive in the process.
+If used with the --nop argument, it will only mark the milestone released and
+inactive (this is used for projects like oslo-incubator which do not release
+source code).
 
 The script prompts you to confirm that the tarball looks like the one you
 intend to release, and to sign the tarball upload.
@@ -157,13 +293,25 @@ Example:
 ./create_milestones.py havana.yaml
 
 
-mpdelivery.sh
--------------
+spec2bp.py
+----------
 
-Script that does in one shot everything that is needed to deliver a
-development milestone. It calls other scripts from openstack-releasing
-to do its task.
+This experimental script facilitates setting blueprint fields for approved
+specs. You point it to a spec file in a -specs repository, and it will set the
+Approver, definition status, spec URL, priority and milestone as you specify.
+By default priority is set to 'Low'.
 
-Example:
+In order for this to work, the spec must have the same name as the blueprint.
 
-./mpdelivery.sh 2013.2 havana-1 2013.2.b1 horizon
+Examples:
+
+./spec2bp.py ../oslo-specs/specs/juno/graduate-oslo-i18n.rst juno-3
+
+  Set the graduate-oslo-i18n oslo blueprint in Launchpad to Approved, set
+  yourself as approver, set the spec URL, priority to Low and milestone to
+  juno-3.
+
+./spec2bp.py warp-speed.rst kilo-1 --priority=High --test
+
+  On Launchpad test servers, try setting the warp-speed blueprint fields as
+  above (with priority set to High and milestone set to kilo-1).
