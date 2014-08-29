@@ -30,12 +30,11 @@ fi
 SERIES=$1
 RC=$2
 PROJECT=$3
-LPROJECT="$PROJECT"
 
 if [[ "$PROJECT" == "oslo-incubator" ]]; then
   echo "Oslo-incubator mode: skipping tarball generation and upload"
   SKIPTARBALL=1
-  LPROJECT="oslo"
+  SKIPUPLOAD=1
 fi
 
 if [[ "$PROJECT" == "swift" ]]; then
@@ -54,24 +53,24 @@ function title {
   echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
 }
 
-title "Resolving $LPROJECT $SERIES $RC to version"
+title "Resolving $PROJECT $SERIES $RC to version"
 
 if [[ "$RC" == "final" ]]; then
-  if [[ "$LPROJECT" != "swift" ]]; then
-    RC1VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $SERIES-rc1`
+  if [[ "$PROJECT" != "swift" ]]; then
+    RC1VERSION=`$TOOLSDIR/ms2version.py $PROJECT $SERIES-rc1`
     FINALVERSION=${RC1VERSION:0:6}
   fi
   MILESTONE=$FINALVERSION
   VERSION=$FINALVERSION
-  $TOOLSDIR/ms2version.py --onlycheck $LPROJECT $MILESTONE
+  $TOOLSDIR/ms2version.py --onlycheck $PROJECT $MILESTONE
 else
-  if [[ "$LPROJECT" != "swift" ]]; then
+  if [[ "$PROJECT" != "swift" ]]; then
     MILESTONE="$SERIES-$RC"
-    VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $MILESTONE`
+    VERSION=`$TOOLSDIR/ms2version.py $PROJECT $MILESTONE`
   else
     MILESTONE="$FINALVERSION-$RC"
     VERSION="$FINALVERSION.$RC"
-    $TOOLSDIR/ms2version.py --onlycheck $LPROJECT $MILESTONE
+    $TOOLSDIR/ms2version.py --onlycheck $PROJECT $MILESTONE
   fi
 fi
 echo "$SERIES $RC (milestone $MILESTONE) is version $VERSION"
@@ -100,19 +99,21 @@ if [[ "$SKIPTARBALL" != "1" ]]; then
   title "Checking tarball is similar to last proposed-$SERIES.tar.gz"
   $TOOLSDIR/similar_tarballs.sh $PROJECT proposed-$SERIES $VERSION
   read -sn 1 -p "Press any key to continue..."
+fi
 
+if [[ "$SKIPUPLOAD" != "1" ]]; then
   title "Uploading tarball to Launchpad"
   if [[ "$RC" == "final" ]]; then
-    $TOOLSDIR/upload_release.py $LPROJECT $VERSION
+    $TOOLSDIR/upload_release.py $PROJECT $VERSION
   else
-    $TOOLSDIR/upload_release.py $LPROJECT $VERSION --milestone=$MILESTONE
+    $TOOLSDIR/upload_release.py $PROJECT $VERSION --milestone=$MILESTONE
   fi
 else
   title "Marking milestone as released in Launchpad"
   if [[ "$RC" == "final" ]]; then
-    $TOOLSDIR/upload_release.py $LPROJECT $VERSION --nop
+    $TOOLSDIR/upload_release.py $PROJECT $VERSION --nop
   else
-    $TOOLSDIR/upload_release.py $LPROJECT $VERSION --milestone=$MILESTONE --nop
+    $TOOLSDIR/upload_release.py $PROJECT $VERSION --milestone=$MILESTONE --nop
   fi
 fi
 

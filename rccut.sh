@@ -34,7 +34,6 @@ PROJECT=$3
 if [[ "$PROJECT" == "oslo-incubator" ]]; then
   echo "Oslo-incubator mode: skipping tarball check"
   SKIPTARBALL=1
-  PROJECT="oslo"
 fi
 
 if [[ "$PROJECT" == "swift" ]]; then

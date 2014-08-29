@@ -1,12 +1,12 @@
 # Name of the series
-series: icehouse
+series: kilo
 
 # Milestone codes (series- will be prefixed)
 # Value is the release date (or empty string if not set yet)
 milestones:
-   '1': '2013-12-05'
-   '2': '2014-01-23'
-   '3': '2014-03-06'
+   '1': '2014-12-05'
+   '2': '2015-01-23'
+   '3': '2015-03-06'
 
 # Set of projects to create milestones for
 projects:
@@ -16,7 +16,8 @@ projects:
  - horizon
  - neutron
  - cinder
- - oslo
+ - oslo-incubator
  - heat
  - ceilometer
  - trove
+ - sahara

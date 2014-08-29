@@ -29,7 +29,6 @@ fi
 MILESTONE=$1
 SHA=$2
 PROJECT=$3
-LPROJECT="$PROJECT"
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -47,13 +46,7 @@ fi
 if [[ "$PROJECT" == "oslo-incubator" ]]; then
   echo "Oslo-incubator mode: skipping tarball generation and upload"
   SKIPTARBALL=1
-  LPROJECT="oslo"
-fi
-
-if [[ "$PROJECT" == "oslo.messaging" ]]; then
-  echo "oslo.messaging mode: skipping tag, tarball generation and upload"
-  SKIPTAG=1
-  SKIPTARBALL=1
+  SKIPUPLOAD=1
 fi
 
 title "Resolving $MILESTONE to version"
@@ -61,39 +54,37 @@ if [[ "$IS_RELEASE" == "1" ]]; then
   VERSION=$MILESTONE
   RELVERSION=$MILESTONE
 else
-  VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $MILESTONE`
+  VERSION=`$TOOLSDIR/ms2version.py $PROJECT $MILESTONE`
   RELVERSION=${VERSION:0:6}
 fi
 echo "$MILESTONE is $VERSION (final being $RELVERSION)"
 
-if [[ "$SKIPTAG" != "1" ]]; then
-  title "Cloning repository for $PROJECT"
-  MYTMPDIR=`mktemp -d`
-  cd $MYTMPDIR
-  git clone git://git.openstack.org/openstack/$PROJECT
-  cd $PROJECT
-  LANG=C git review -s
-  TARGETSHA=`git log -1 $SHA --format='%H'`
-  HEADSHA=`git log -1 HEAD --format='%H'`
+title "Cloning repository for $PROJECT"
+MYTMPDIR=`mktemp -d`
+cd $MYTMPDIR
+git clone git://git.openstack.org/openstack/$PROJECT
+cd $PROJECT
+LANG=C git review -s
+TARGETSHA=`git log -1 $SHA --format='%H'`
+HEADSHA=`git log -1 HEAD --format='%H'`
 
-  title "Tagging $TARGETSHA as $VERSION"
-  if [[ "$IS_RELEASE" == "1" ]]; then
-    TAGMSG="${PROJECT^} $VERSION release"
-  else
-    TAGMSG="${PROJECT^} $MILESTONE milestone ($VERSION)"
-  fi
-  echo "Tag message is '$TAGMSG'"
-  if [[ "$TARGETSHA" != "$HEADSHA" ]]; then
-    echo "Warning: target SHA does not correspond to HEAD"
-  fi
-  git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
-  git push gerrit $VERSION
-  REALSHA=`git show-ref -s --tags "$VERSION"`
-
-  title "Cleaning up"
-  cd ../..
-  rm -rf $MYTMPDIR
+title "Tagging $TARGETSHA as $VERSION"
+if [[ "$IS_RELEASE" == "1" ]]; then
+  TAGMSG="${PROJECT^} $VERSION release"
+else
+  TAGMSG="${PROJECT^} $MILESTONE milestone ($VERSION)"
 fi
+echo "Tag message is '$TAGMSG'"
+if [[ "$TARGETSHA" != "$HEADSHA" ]]; then
+  echo "Warning: target SHA does not correspond to HEAD"
+fi
+git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
+git push gerrit $VERSION
+REALSHA=`git show-ref -s --tags "$VERSION"`
+
+title "Cleaning up"
+cd ../..
+rm -rf $MYTMPDIR
 
 if [[ "$SKIPTARBALL" != "1" ]]; then
   title "Waiting for tarball from $REALSHA"
@@ -109,18 +100,18 @@ fi
 
 if [[ "$SKIPBUGS" != "1" ]]; then
   title "Setting FixCommitted bugs to FixReleased"
-  $TOOLSDIR/process_bugs.py $LPROJECT --settarget=$MILESTONE --fixrelease
+  $TOOLSDIR/process_bugs.py $PROJECT --settarget=$MILESTONE --fixrelease
   read -sn 1 -p "Fix any leftover bugs manually and press key to continue..."
 fi
 
-if [[ "$SKIPTARBALL" != "1" ]]; then
+if [[ "$SKIPUPLOAD" != "1" ]]; then
   title "Uploading tarball to Launchpad"
   if [[ "$IS_RELEASE" == "1" ]]; then
-    $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION
+    $TOOLSDIR/upload_release.py $PROJECT $RELVERSION
   else
-    $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --milestone=$MILESTONE
+    $TOOLSDIR/upload_release.py $PROJECT $RELVERSION --milestone=$MILESTONE
   fi
 else
   title "Marking milestone as released in Launchpad"
-  $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --milestone=$MILESTONE --nop
+  $TOOLSDIR/upload_release.py $PROJECT $RELVERSION --milestone=$MILESTONE --nop
 fi
