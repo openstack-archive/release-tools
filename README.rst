@@ -119,8 +119,44 @@ Examples:
   tarball to Launchpad (while marking it released).
 
 
+oslo_release.sh
+---------------
+
+This script is used to publish alphas and final releases for Oslo libraries.
+Such libraries use a floating "next-$SERIES" milestone (for example,
+'next-kilo'). While under development, when an alpha release is tagged,
+FixCommitted bugs are turned to FixReleased (but remain targeted to
+next-$SERIES). At final release, next-$SERIES is renamed to the final version
+and the milestone is marked released.
+
+Examples:
+
+./oslo_release.sh juno 1.3.0.0a3 HEAD oslo.rootwrap"
+
+  Push a 1.3.0.0a3 tag to oslo.rootwrap current HEAD. Mark all FixCommitted
+  bugs in oslo.rootwrap to FixReleased in next-juno.
+
+./oslo_release.sh juno 1.3.0 HEAD oslo.rootwrap"
+
+  Rename the next-juno milestone to '1.3.0'. Push a 1.3.0 tag to oslo.rootwrap
+  current HEAD. Mark all FixCommitted bugs in oslo.rootwrap (if any) to
+  FixReleased in 1.3.0, and mark 1.3.0 released.
+
+
 Base tools
 ==========
+
+rename_milestone.py
+-------------------
+
+Renames a Launchpad milestone.
+
+Example:
+
+./rename_milestone.py oslo.rootwrap next-juno 1.3.0
+
+  Rename oslo.rootwrap next-juno milestone to 1.3.0.
+
 
 ms2version.py
 -------------
