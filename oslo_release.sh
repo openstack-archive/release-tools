@@ -44,32 +44,45 @@ if [[ $VERSION == *a* ]]; then
     TARGET="next-$SERIES"
 fi
 
+MYTMPDIR=`mktemp -d release-tag-XXX`
+function cleanup_tmp {
+    title "Cleaning up"
+    cd /tmp
+    rm -rf $MYTMPDIR
+}
+trap cleanup_tmp EXIT
+cd $MYTMPDIR
+
+# Some of the repository names don't match the launchpad names.
+REPO=$(echo $PROJECT | sed -e 's|python-||')
+
+title "Cloning repository for $PROJECT"
+git clone git://git.openstack.org/openstack/$REPO
+cd $REPO
+git review -s
+
+if git show-ref "$VERSION"
+then
+    title "Version $VERSION is already tagged in this repository"
+    read -s -p "Press Ctrl-C to cancel or Return to continue..."
+else
+    TARGETSHA=`git log -1 $SHA --format='%H'`
+
+    title "Tagging $TARGETSHA as $VERSION"
+    if [[ "$ALPHA_RELEASE" != "1" ]]; then
+        TAGMSG="$PROJECT $VERSION release"
+    else
+        TAGMSG="$PROJECT $VERSION alpha milestone"
+    fi
+    echo "Tag message is '$TAGMSG'"
+    git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
+    git push gerrit $VERSION
+fi
+
 if [[ "$ALPHA_RELEASE" != "1" ]]; then
   title "Renaming next-$SERIES to $VERSION"
   $TOOLSDIR/rename_milestone.py $PROJECT next-$SERIES $VERSION
 fi
-
-title "Cloning repository for $PROJECT"
-MYTMPDIR=`mktemp -d`
-cd $MYTMPDIR
-git clone git://git.openstack.org/openstack/$PROJECT
-cd $PROJECT
-git review -s
-TARGETSHA=`git log -1 $SHA --format='%H'`
-
-title "Tagging $TARGETSHA as $VERSION"
-if [[ "$ALPHA_RELEASE" != "1" ]]; then
-  TAGMSG="$PROJECT $VERSION release"
-else
-  TAGMSG="$PROJECT $VERSION alpha milestone"
-fi
-echo "Tag message is '$TAGMSG'"
-git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
-git push gerrit $VERSION
-
-title "Cleaning up"
-cd ../..
-rm -rf $MYTMPDIR
 
 title "Setting FixCommitted bugs to FixReleased"
 $TOOLSDIR/process_bugs.py $PROJECT --settarget=$TARGET --fixrelease
