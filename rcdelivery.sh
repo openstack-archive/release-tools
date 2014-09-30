@@ -67,6 +67,7 @@ else
   if [[ "$PROJECT" != "swift" ]]; then
     MILESTONE="$SERIES-$RC"
     VERSION=`$TOOLSDIR/ms2version.py $PROJECT $MILESTONE`
+    FINALVERSION=${VERSION:0:6}
   else
     MILESTONE="$FINALVERSION-$RC"
     VERSION="$FINALVERSION.$RC"
@@ -74,6 +75,7 @@ else
   fi
 fi
 echo "$SERIES $RC (milestone $MILESTONE) is version $VERSION"
+echo "Final $SERIES version will be $FINALVERSION"
 
 title "Cloning repository for $PROJECT"
 MYTMPDIR=`mktemp -d`
@@ -104,16 +106,16 @@ fi
 if [[ "$SKIPUPLOAD" != "1" ]]; then
   title "Uploading tarball to Launchpad"
   if [[ "$RC" == "final" ]]; then
-    $TOOLSDIR/upload_release.py $PROJECT $VERSION
+    $TOOLSDIR/upload_release.py $PROJECT $FINALVERSION
   else
-    $TOOLSDIR/upload_release.py $PROJECT $VERSION --milestone=$MILESTONE
+    $TOOLSDIR/upload_release.py $PROJECT $FINALVERSION --milestone=$MILESTONE
   fi
 else
   title "Marking milestone as released in Launchpad"
   if [[ "$RC" == "final" ]]; then
-    $TOOLSDIR/upload_release.py $PROJECT $VERSION --nop
+    $TOOLSDIR/upload_release.py $PROJECT $FINALVERSION --nop
   else
-    $TOOLSDIR/upload_release.py $PROJECT $VERSION --milestone=$MILESTONE --nop
+    $TOOLSDIR/upload_release.py $PROJECT $FINALVERSION --milestone=$MILESTONE --nop
   fi
 fi
 
