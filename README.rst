@@ -351,3 +351,35 @@ Examples:
 
   On Launchpad test servers, try setting the warp-speed blueprint fields as
   above (with priority set to High and milestone set to kilo-1).
+
+stable_freeze.py
+----------------
+
+A script that can be used to quickly "freeze" all open reviews to a stable
+branch.  It may also be used to "thaw" frozen reviews upon re-opening of
+the branch for merges.  Reviews are frozen by adding a -2 and thawed by
+reverting that and adding a 0.
+
+Examples:
+
+To view open reviews for stable/icehouse 2014.1.4:
+
+./stable_freeze.py -r 2014.1.4 query
+
+  View open reviews for stable/icehouse 2014.1.4.
+
+./stable_freeze.py -r 2014.1.4 -o ~/openstack/2014.1.4-freeze.txt
+
+  Freeze all open reviews proposed to stable/icehouse. 2014.1.4-freeze.txt will
+  contain all frozen reviews and this can be used to thaw later on.
+
+./stable_freeze -r 2014.1.4 -i ~/openstack/2014.1.4-freeze.txt thaw
+
+  Thaw all reviews previously frozen and stored in 2014.1.4-freeze.txt.
+
+./stable_freeze -r 2014.1.4 -i ~/openstack/2014.1.4-freeze.txt \
+  -c 123777 -c 123778 freeze
+
+  Freeze individual changes that have been proposed after the stable freeze
+  period started.  References to these reviews will be appended to
+  2014.1.4-freeze.txt to be unfrozen later on.
