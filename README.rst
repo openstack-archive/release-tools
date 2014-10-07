@@ -468,3 +468,21 @@ Examples:
 To generate a cleanup patch for nova:
 
 ./translation-cleanup.sh kilo nova
+
+
+update_feature_branch.sh
+------------------------
+
+A script to safely update feature branches without flooding gerrit with
+hundreds of new reviews at once by mistake.
+
+Note that gerrit is unable to render merge commits in the web UI, so it'll
+appear as an empty change. Reviewers should check out the proposed change and
+inspect it manually.
+
+Examples:
+
+./update_feature_branch.sh feature/crazy-experiment
+
+  This rebases the feature branch, `feature/crazy-experiment` onto the latest
+  `master` branch, and proposes the resulting merge commit to gerrit.
