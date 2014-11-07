@@ -44,6 +44,10 @@ PROJECTS = {
         'nova', 'glance', 'keystone', 'neutron', 'cinder', 'horizon',
         'heat', 'ceilometer', 'trove'
     ],
+    'juno': [
+        'nova', 'glance', 'keystone', 'neutron', 'cinder', 'horizon',
+        'heat', 'ceilometer', 'trove', 'sahara'
+    ],
 }
 
 
