@@ -29,26 +29,23 @@ DRY_RUN = False
 
 DEFAULT_REL = 'icehouse'
 CODENAMES = {
+    '2013.1': 'grizzly',
     '2013.2': 'havana',
     '2014.1': 'icehouse',
     '2014.2': 'juno',
     '2015.1': 'kilo',
 }
 
-PROJECTS = {
-    'havana': [
-        'nova', 'glance', 'keystone', 'neutron', 'cinder', 'horizon',
-        'heat', 'ceilometer'
-    ],
-    'icehouse': [
-        'nova', 'glance', 'keystone', 'neutron', 'cinder', 'horizon',
-        'heat', 'ceilometer', 'trove'
-    ],
-    'juno': [
-        'nova', 'glance', 'keystone', 'neutron', 'cinder', 'horizon',
-        'heat', 'ceilometer', 'trove', 'sahara'
-    ],
-}
+PROJECTS = { }
+PROJECTS['grizzly'] = [
+        'nova', 'glance', 'keystone', 'neutron', 'cinder', 'horizon'
+]
+PROJECTS['havana'] = [ 'heat', 'ceilometer' ]
+PROJECTS['havana'].extend(PROJECTS['grizzly'])
+PROJECTS['icehouse'] = [ 'trove' ]
+PROJECTS['icehouse'].extend(PROJECTS['havana'])
+PROJECTS['juno'] = [ 'sahara' ]
+PROJECTS['juno'].extend(PROJECTS['icehouse'])
 
 
 logging.basicConfig(level=logging.INFO)
