@@ -33,6 +33,9 @@ parser.add_argument("--test", action='store_const', const='staging',
 parser.add_argument("--priority", default='Low',
                     choices=['Essential', 'High', 'Medium', 'Low'],
                     help='which priority to set (default is Low)')
+parser.add_argument("--lp-project", default='',
+                    help=('which Launchpad project to use '
+                          '(default is based on spec repo name)'))
 
 args = parser.parse_args()
 
@@ -41,6 +44,10 @@ m = re.match(r".*/(\w+)-specs/(.+)/(.+).rst", os.path.abspath(args.specfile))
 if m is None:
     parser.error("%s has not a recognized spec pattern" % args.specfile)
 projname = m.group(1)
+if projname == 'oslo':
+    projname = 'oslo-incubator'
+if args.lp_project:
+    projname = args.lp_project
 repoloc = "openstack/%s-specs/plain/%s" % (projname, m.group(2))
 bpname = m.group(3)
 
