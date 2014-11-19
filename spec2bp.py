@@ -44,11 +44,12 @@ m = re.match(r".*/(\w+)-specs/(.+)/(.+).rst", os.path.abspath(args.specfile))
 if m is None:
     parser.error("%s has not a recognized spec pattern" % args.specfile)
 projname = m.group(1)
+specs_repo = '%s-specs' % projname
 if projname == 'oslo':
     projname = 'oslo-incubator'
 if args.lp_project:
     projname = args.lp_project
-repoloc = "openstack/%s-specs/plain/%s" % (projname, m.group(2))
+repoloc = "openstack/%s/plain/%s" % (specs_repo, m.group(2))
 bpname = m.group(3)
 
 # Check that spec was approved (merged in specs repository)
