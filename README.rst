@@ -383,3 +383,16 @@ To view open reviews for stable/icehouse 2014.1.4:
   Freeze individual changes that have been proposed after the stable freeze
   period started.  References to these reviews will be appended to
   2014.1.4-freeze.txt to be unfrozen later on.
+
+autokick.py
+-----------
+
+A script to periodically clean up blueprints (adjusting series goal based on
+target milestone, and optionally kicking unpriotized blueprints from the
+milestone. ttx is running it in a cron so you don't have to.
+
+Examples:
+
+To clean up Nova kilo blueprints:
+
+./autokick.py nova kilo
