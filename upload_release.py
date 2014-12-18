@@ -38,8 +38,8 @@ def abort(code, errmsg):
 parser = argparse.ArgumentParser(description='Grab tarball and release it '
                                              'on LP as milestone or version.')
 parser.add_argument('project', help='Project to publish release for (nova)')
-parser.add_argument('version', help='Version under development (2013.1)')
-parser.add_argument("--milestone", help='Milestone to publish (grizzly-3)')
+parser.add_argument('version', help='Version under development (2015.1.0)')
+parser.add_argument("--milestone", help='Milestone to publish (kilo-2)')
 parser.add_argument("--nop", action='store_true',
                     help='Only create release, do not upload tarball')
 parser.add_argument("--tarball",
@@ -74,9 +74,11 @@ for lp_milestone in lp_proj.all_milestones:
         if args.milestone:
             short_ms = lp_milestone.code_name.lower()
             if not short_ms.startswith("rc"):
-                short_ms = "b" + args.milestone[-1:]
-            if len(short_ms) < 2 or len(short_ms) > 3:
-                abort(2, 'Bad code name for milestone: %s' % short_ms)
+                preversion = "b" + args.milestone[-1:]
+            else:
+                preversion = short_ms
+        else:
+            preversion = ""
         break
 else:
     abort(2, 'Could not find milestone: %s' % milestone)
@@ -86,11 +88,7 @@ if not args.nop:
     print "Downloading tarball..."
     tmpdir = tempfile.mkdtemp()
     if args.tarball is None:
-        if args.milestone is None:
-            base_tgz = "%s-%s.tar.gz" % (args.project, args.version)
-        else:
-            base_tgz = "%s-%s.%s.tar.gz" \
-                % (args.project, args.version, short_ms)
+        base_tgz = "%s-%s%s.tar.gz" % (args.project, args.version, preversion)
     else:
         base_tgz = "%s-%s.tar.gz" % (args.project, args.tarball)
     url_tgz = "http://tarballs.openstack.org/%s/%s" % (args.project, base_tgz)
@@ -143,12 +141,11 @@ lp_milestone.lp_save()
 if not args.nop:
     # Upload file
     print "Uploading release files..."
+    final_tgz = "%s-%s%s.tar.gz" % (args.project, args.version, preversion)
     if args.milestone:
-        final_tgz = "%s-%s.%s.tar.gz" % (args.project, args.version, short_ms)
         description = '%s "%s" milestone' % \
                       (args.project.capitalize(), args.milestone)
     else:
-        final_tgz = "%s-%s.tar.gz" % (args.project, args.version)
         description = '%s %s release' % \
                       (args.project.capitalize(), args.version)
 

@@ -28,7 +28,7 @@ fi
 
 SHA=$1
 VERSION=$2
-RCVERSION="${VERSION}.rc1"
+RCVERSION="${VERSION}rc1"
 
 PROJECT="swift"
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

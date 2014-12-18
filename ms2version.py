@@ -31,8 +31,8 @@ def abort(code, errmsg):
 
 # Argument parsing
 parser = argparse.ArgumentParser(description='Convert milestone code names '
-                                             '(juno-1) to version numbers '
-                                             '(2014.2.b1)')
+                                             '(kilo-1) to version numbers '
+                                             '(2015.1.0b1)')
 parser.add_argument('project', help='Project the milestone is defined in')
 parser.add_argument('milestone', help='Milestone code name')
 parser.add_argument('--onlycheck', action='store_true',
@@ -72,4 +72,4 @@ qualifier = 'b'
 if target_milestone.name[-3:-1].lower() == 'rc':
     qualifier = 'rc'
 
-print "%d.%d.%s%s" % (year, sequence, qualifier, args.milestone[-1:])
+print "%d.%d.0%s%s" % (year, sequence, qualifier, args.milestone[-1:])

@@ -55,7 +55,7 @@ if [[ "$IS_RELEASE" == "1" ]]; then
   RELVERSION=$MILESTONE
 else
   VERSION=`$TOOLSDIR/ms2version.py $PROJECT $MILESTONE`
-  RELVERSION=${VERSION:0:6}
+  RELVERSION=${VERSION:0:8}
 fi
 echo "$MILESTONE is $VERSION (final being $RELVERSION)"
 
