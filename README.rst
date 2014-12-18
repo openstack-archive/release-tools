@@ -33,9 +33,9 @@ oslo-incubator (where no tarball is generated or needs to be uploaded).
 
 Example:
 
-./milestone.sh juno-3 HEAD keystone
+./milestone.sh kilo-3 HEAD keystone
 
-  Apply 2014.2.b3 tag to HEAD of keystone master branch, check resulting
+  Apply 2015.1.0b3 tag to HEAD of keystone master branch, check resulting
   tarball, mark FixCommitted bugs as released, upload tarball to Launchpad
   and mark Launchpad milestone released.
 
@@ -54,7 +54,7 @@ Example:
 
 ./swiftrc.sh 7432f32d838ab346c 2.1.0
 
-  Apply 2.1.0.rc1 tag to Swift's 7432f32d838ab346c commit, check resulting
+  Apply 2.1.0rc1 tag to Swift's 7432f32d838ab346c commit, check resulting
   tarball, mark FixCommitted bugs as released and target them to the 2.1.0
   milestone.
 
@@ -100,21 +100,21 @@ where no tarball is generated or needs to be uploaded.
 
 Examples:
 
-./rcdelivery.sh juno rc1 cinder
+./rcdelivery.sh kilo rc1 cinder
 
-  Push 2014.2.rc1 tag to current cinder proposed/juno branch HEAD, wait for the
-  tarball build, and upload the resulting tarball to Launchpad (while marking
-  it released).
+  Push 2015.1.0rc1 tag to current cinder proposed/kilo branch HEAD, wait for
+  the tarball build, and upload the resulting tarball to Launchpad (while
+  marking it released).
 
 ./rcdelivery juno rc2 swift 2.3.0
 
-  Push 2.3.0.rc2 tag to current swift proposed/juno branch HEAD, wait for the
+  Push 2.3.0rc2 tag to current swift proposed/juno branch HEAD, wait for the
   tarball build, and upload the resulting tarball to Launchpad (while marking
   it released).
 
-./rcdelivery juno final neutron
+./rcdelivery kilo final neutron
 
-  Push 2014.2 final tag to current neutron proposed/juno branch HEAD (which
+  Push 2015.1.0 final tag to current neutron proposed/juno branch HEAD (which
   should be the last RC), wait for the tarball build, and upload the resulting
   tarball to Launchpad (while marking it released).
 
@@ -167,9 +167,9 @@ exists in Launchpad (useful for Swift where the rules are different).
 
 Examples:
 
-./ms2version.py nova juno-3
+./ms2version.py nova kilo-3
 
-  Returns 2014.2.b3 (after checking that the juno-3 milestone exists in Nova)
+  Returns 2015.1.0b3 (after checking that the kilo-3 milestone exists in Nova)
 
 ./ms2version.py swift 2.1.0 --onlycheck
 
@@ -200,10 +200,10 @@ This script compares the content of two tarballs on tarballs.openstack.org.
 
 Example:
 
-./similar_tarballs.sh nova milestone-proposed 2013.1.rc1
+./similar_tarballs.sh nova proposed-kilo 2015.1.0rc1
 
-  Check content differences between nova-milestone-proposed.tar.gz and
-  nova-2013.1.rc1.tar.gz, as found on http://tarballs.openstack.org.
+  Check content differences between nova-proposed-kilo.tar.gz and
+  nova-2015.1.0rc1.tar.gz, as found on http://tarballs.openstack.org.
 
 
 process_bugs.py
@@ -268,15 +268,14 @@ intend to release, and to sign the tarball upload.
 
 Examples:
 
-./upload_release.py nova 2013.1 --milestone=grizzly-3
+./upload_release.py nova 2015.1.0 --milestone=kilo-3
 
-  Uploads Nova's nova-2013.1.g3.tar.gz to the grizzly-3
-  milestone as nova-2013.1.g3.tar.gz
+  Uploads Nova's nova-2015.1.0b3.tar.gz to the kilo-3 milestone page.
 
-./upload_release.py glance 2013.1 --test
+./upload_release.py glance 2015.1.0 --test
 
-  Uploads Glance's glance-2013.1.tar.gz to the final "2013.1" milestone
-  as glance-2013.1.tar.gz, on Launchpad staging server
+  Uploads Glance's glance-2015.1.0.tar.gz to the final "2015.1.0" milestone
+  as glance-2015.1.0.tar.gz, on Launchpad staging server
 
 ./upload_release.py cinder 2012.2.3 --tarball=stable-folsom
 
@@ -299,21 +298,21 @@ fixed in).
 
 Examples:
 
-./consolidate_release_page.py cinder grizzly 2013.1
+./consolidate_release_page.py cinder kilo 2015.1.0
 
-  Moves Cinder blueprints and bugs from intermediary grizzly milestones
-  to the final 2013.1 milestone page.
+  Moves Cinder blueprints and bugs from intermediary kilo milestones
+  to the final 2015.1 milestone page.
 
 ./consolidate_release_page.py --test swift grizzly 1.8.0
 
   Moves Swift 1.8.0-rc* blueprints and bugs to the final 1.8.0 page, on
   Launchpad staging server
 
-./consolidate_release_page.py --copytask glance grizzly 2013.1
+./consolidate_release_page.py --copytask glance kilo 2015.1.0
 
-  Moves Glance blueprints from intermediary grizzly milestones to the final
-  2013.1 milestone page. Creates grizzly series task for all grizzly bugs
-  and sets the milestone for those to 2013.1.
+  Moves Glance blueprints from intermediary kilo milestones to the final
+  2015.1.0 milestone page. Creates kilo series task for all grizzly bugs
+  and sets the milestone for those to 2015.1.0.
 
 
 create_milestones.py
@@ -391,6 +390,7 @@ To view open reviews for stable/icehouse 2014.1.4:
   Freeze individual changes that have been proposed after the stable freeze
   period started.  References to these reviews will be appended to
   2014.1.4-freeze.txt to be unfrozen later on.
+
 
 autokick.py
 -----------

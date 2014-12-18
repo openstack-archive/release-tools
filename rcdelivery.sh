@@ -58,7 +58,7 @@ title "Resolving $PROJECT $SERIES $RC to version"
 if [[ "$RC" == "final" ]]; then
   if [[ "$PROJECT" != "swift" ]]; then
     RC1VERSION=`$TOOLSDIR/ms2version.py $PROJECT $SERIES-rc1`
-    FINALVERSION=${RC1VERSION:0:6}
+    FINALVERSION=${RC1VERSION:0:8}
   fi
   MILESTONE=$FINALVERSION
   VERSION=$FINALVERSION
@@ -67,10 +67,10 @@ else
   if [[ "$PROJECT" != "swift" ]]; then
     MILESTONE="$SERIES-$RC"
     VERSION=`$TOOLSDIR/ms2version.py $PROJECT $MILESTONE`
-    FINALVERSION=${VERSION:0:6}
+    FINALVERSION=${VERSION:0:8}
   else
     MILESTONE="$FINALVERSION-$RC"
-    VERSION="$FINALVERSION.$RC"
+    VERSION="${FINALVERSION}$RC"
     $TOOLSDIR/ms2version.py --onlycheck $PROJECT $MILESTONE
   fi
 fi
