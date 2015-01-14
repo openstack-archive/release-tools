@@ -36,15 +36,15 @@ CODENAMES = {
     '2015.1': 'kilo',
 }
 
-PROJECTS = { }
+PROJECTS = {}
 PROJECTS['grizzly'] = [
-        'nova', 'glance', 'keystone', 'neutron', 'cinder', 'horizon'
+    'nova', 'glance', 'keystone', 'neutron', 'cinder', 'horizon'
 ]
-PROJECTS['havana'] = [ 'heat', 'ceilometer' ]
+PROJECTS['havana'] = ['heat', 'ceilometer']
 PROJECTS['havana'].extend(PROJECTS['grizzly'])
-PROJECTS['icehouse'] = [ 'trove' ]
+PROJECTS['icehouse'] = ['trove']
 PROJECTS['icehouse'].extend(PROJECTS['havana'])
-PROJECTS['juno'] = [ 'sahara' ]
+PROJECTS['juno'] = ['sahara']
 PROJECTS['juno'].extend(PROJECTS['icehouse'])
 
 
