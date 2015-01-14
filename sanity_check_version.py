@@ -91,8 +91,10 @@ def apply_rules(new_version, existing_versions):
         actual = same_minor[2] + 1
         expected = new_version[2]
         if expected != actual:
-            return ['new version %r increments patch version more than one over %r' % 
-                    (format_version(new_version), format_version(same_minor))]
+            return [
+                'new version %r increments patch version more than one over %r'
+                % (format_version(new_version), format_version(same_minor))
+            ]
     if same_major is not None and same_major != same_minor:
         print('last version in major series %r' %
               format_version(same_major))
@@ -100,11 +102,16 @@ def apply_rules(new_version, existing_versions):
             actual = same_major[1] + 1
             expected = new_version[1]
             if actual > expected:
-                return ['new version %r increments minor version more than one over %r' % 
-                        (format_version(new_version), format_version(same_major))]
+                return [
+                    ('new version %r increments minor '
+                     'version more than one over %r') %
+                    (format_version(new_version), format_version(same_major))
+                ]
             if new_version[2] != 0:
-                return ['new version %r increments minor version and patch version' %
-                        format_version(new_version)]
+                return [
+                    'new version %r increments minor version and patch version'
+                    % format_version(new_version)
+                ]
     latest_version = existing_versions[-1]
     if new_version[0] > latest_version[0]:
         return ['%r is a major version increment over %r' %

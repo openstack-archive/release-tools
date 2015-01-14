@@ -89,7 +89,7 @@ for projectname in config['projects']:
             if m.startswith("rc"):
                 code_name = m.upper()
             else:
-                code_name=series.name[0:1] + m
+                code_name = series.name[0:1] + m
             series.newMilestone(name=series.name + "-" + m,
                                 date_targeted=d or None,
                                 code_name=code_name)
