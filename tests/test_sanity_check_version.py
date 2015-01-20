@@ -89,6 +89,11 @@ class RulesTest(base.BaseTestCase):
               ['grizzly-eol'],
               ['havana-eol']],
           'expected': []}),
+
+        ('already released',
+         {'new_version': [1, 0, 0],
+          'existing_versions': [[0, 1, 0], [1, 0, 0]],
+          'expected': ["version '1.0.0' already exists in repository"]}),
     ]
 
     def test(self):
