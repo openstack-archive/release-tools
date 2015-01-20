@@ -74,9 +74,14 @@ if [[ "$ALPHA_RELEASE" != "1" ]]; then
 else
     TAGMSG="$PROJECT $VERSION alpha milestone"
 fi
-echo "Tag message is '$TAGMSG'"
-git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
-git push gerrit $VERSION
+if git show-ref "$VERSION"
+then
+    echo "$PROJECT already has a version $VERSION tag"
+else
+    echo "Tag message is '$TAGMSG'"
+    git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
+    git push gerrit $VERSION
+fi
 
 if [[ "$ALPHA_RELEASE" != "1" ]]; then
   title "Renaming next-$SERIES to $VERSION"
