@@ -68,6 +68,11 @@ class RulesTest(base.BaseTestCase):
           'existing_versions': [[0, 1, 0], [1, 0, 0], [1, 1, 1], [1, 2, 0]],
           'expected': [("new version '1.1.3' increments patch "
                         "version more than one over '1.1.1'")]}),
+        ('existing series, extra minor number',
+         {'new_version': [1, 3, 0],
+          'existing_versions': [[0, 1, 0], [1, 0, 0], [1, 1, 1]],
+          'expected': [("new version '1.3.0' increments minor version "
+                        "more than one over '1.1.1'")]}),
 
         ('next major number',
          {'new_version': [2, 0, 0],
