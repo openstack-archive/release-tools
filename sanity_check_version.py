@@ -65,13 +65,17 @@ def main():
 
 
 def apply_rules(new_version, existing_versions):
+    warnings = []
     if not existing_versions:
         if new_version[0] != 0:
-            return ['first version in repository does not start with 0']
-        return []
+            warnings.append(
+                'first version in repository does not start with 0'
+            )
     if new_version in existing_versions:
-        return ['version %r already exists in repository' %
-                format_version(new_version)]
+        warnings.append(
+            'version %r already exists in repository' %
+            format_version(new_version)
+        )
     same_minor = same_major = None
     for v in existing_versions:
         # Look for other numbers in the series
@@ -90,11 +94,11 @@ def apply_rules(new_version, existing_versions):
               format_version(same_minor))
         expected = same_minor[2] + 1
         actual = new_version[2]
-        if expected != actual:
-            return [
+        if actual > expected:
+            warnings.append(
                 'new version %r increments patch version more than one over %r'
                 % (format_version(new_version), format_version(same_minor))
-            ]
+            )
     if same_major is not None and same_major != same_minor:
         print('last version in major series %r' %
               format_version(same_major))
@@ -102,21 +106,24 @@ def apply_rules(new_version, existing_versions):
             expected = same_major[1] + 1
             actual = new_version[1]
             if actual > expected:
-                return [
+                warnings.append(
                     ('new version %r increments minor '
                      'version more than one over %r') %
                     (format_version(new_version), format_version(same_major))
-                ]
+                )
             if new_version[2] != 0:
-                return [
+                warnings.append(
                     'new version %r increments minor version and patch version'
                     % format_version(new_version)
-                ]
-    latest_version = existing_versions[-1]
-    if new_version[0] > latest_version[0]:
-        return ['%r is a major version increment over %r' %
-                (format_version(new_version), format_version(latest_version))]
-    return []
+                )
+    if existing_versions:
+        latest_version = existing_versions[-1]
+        if new_version[0] > latest_version[0]:
+            warnings.append(
+                '%r is a major version increment over %r' %
+                (format_version(new_version), format_version(latest_version))
+            )
+    return warnings
 
 
 if __name__ == '__main__':
