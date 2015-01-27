@@ -50,3 +50,6 @@ ChangeLog
 # Editors
 *~
 .*.swp
+
+# local temporary directory
+release-tag-*
