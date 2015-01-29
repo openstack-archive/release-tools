@@ -66,6 +66,11 @@ then
     title "Version $VERSION is already tagged in this repository"
     read -s -p "Press Ctrl-C to cancel or Return to continue..."
 else
+    title "Sanity checking $VERSION"
+    if ! $TOOLSDIR/sanity_check_version.py $VERSION $(git tag)
+    then
+        read -s -p "Press Ctrl-C to cancel or Return to continue..."
+    fi
     TARGETSHA=`git log -1 $SHA --format='%H'`
 
     title "Tagging $TARGETSHA as $VERSION"
