@@ -26,7 +26,7 @@ from lazr.restfulclient.errors import BadRequest, ServerError
 parser = argparse.ArgumentParser(description="Consolidate milestone pages"
                                  " at release time")
 parser.add_argument('project', help='project to act on')
-parser.add_argument('series',  help='series to handle')
+parser.add_argument('series', help='series to handle')
 parser.add_argument('release', help='release milestone')
 parser.add_argument('--copytask', action='store_true',
                     help='Enable CopyTask mode')
@@ -76,7 +76,8 @@ for milestone in seriesmilestones:
         release_is_in_series = True
     else:
         if (args.project == "swift" and
-            not milestone.name.startswith(release.name+"-rc")):
+            not milestone.name.startswith(
+                release.name + "-rc")):
             continue
         milestones.insert(0, milestone)
 print "Found",
@@ -141,7 +142,8 @@ for milestone in milestones:
             print
         if failed:
             print
-            print "Some bugs could not be automatically updated due to LP timeouts:"
+            print("Some bugs could not be automatically updated "
+                  "due to LP timeouts:")
             for bugid in failed:
                 print "http://bugs.launchpad.net/bugs/%d" % bugid
     print

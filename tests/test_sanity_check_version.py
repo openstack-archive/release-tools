@@ -61,11 +61,13 @@ class RulesTest(base.BaseTestCase):
         ('existing series, extra patch number',
          {'new_version': [1, 1, 3],
           'existing_versions': [[0, 1, 0], [1, 0, 0], [1, 1, 1]],
-          'expected': ["new version '1.1.3' increments patch version more than one over '1.1.1'"]}),
+          'expected': [("new version '1.1.3' increments patch version "
+                        "more than one over '1.1.1'")]}),
         ('existing series, extra patch number in existing minor release',
          {'new_version': [1, 1, 3],
           'existing_versions': [[0, 1, 0], [1, 0, 0], [1, 1, 1], [1, 2, 0]],
-          'expected': ["new version '1.1.3' increments patch version more than one over '1.1.1'"]}),
+          'expected': [("new version '1.1.3' increments patch "
+                        "version more than one over '1.1.1'")]}),
 
         ('next major number',
          {'new_version': [2, 0, 0],
@@ -85,8 +87,7 @@ class RulesTest(base.BaseTestCase):
               [2013, '1b4'],
               [2013, '1b5'],
               ['grizzly-eol'],
-              ['havana-eol'],
-          ],
+              ['havana-eol']],
           'expected': []}),
     ]
 
