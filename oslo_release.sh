@@ -61,28 +61,22 @@ git clone git://git.openstack.org/openstack/$REPO
 cd $REPO
 git review -s
 
-if git show-ref "$VERSION"
+title "Sanity checking $VERSION"
+if ! $TOOLSDIR/sanity_check_version.py $VERSION $(git tag)
 then
-    title "Version $VERSION is already tagged in this repository"
     read -s -p "Press Ctrl-C to cancel or Return to continue..."
-else
-    title "Sanity checking $VERSION"
-    if ! $TOOLSDIR/sanity_check_version.py $VERSION $(git tag)
-    then
-        read -s -p "Press Ctrl-C to cancel or Return to continue..."
-    fi
-    TARGETSHA=`git log -1 $SHA --format='%H'`
-
-    title "Tagging $TARGETSHA as $VERSION"
-    if [[ "$ALPHA_RELEASE" != "1" ]]; then
-        TAGMSG="$PROJECT $VERSION release"
-    else
-        TAGMSG="$PROJECT $VERSION alpha milestone"
-    fi
-    echo "Tag message is '$TAGMSG'"
-    git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
-    git push gerrit $VERSION
 fi
+TARGETSHA=`git log -1 $SHA --format='%H'`
+
+title "Tagging $TARGETSHA as $VERSION"
+if [[ "$ALPHA_RELEASE" != "1" ]]; then
+    TAGMSG="$PROJECT $VERSION release"
+else
+    TAGMSG="$PROJECT $VERSION alpha milestone"
+fi
+echo "Tag message is '$TAGMSG'"
+git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
+git push gerrit $VERSION
 
 if [[ "$ALPHA_RELEASE" != "1" ]]; then
   title "Renaming next-$SERIES to $VERSION"
