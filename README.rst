@@ -119,8 +119,8 @@ Examples:
   tarball to Launchpad (while marking it released).
 
 
-oslo_release.sh
----------------
+release_library.sh
+------------------
 
 This script is used to publish alphas and final releases for Oslo libraries.
 Such libraries use a floating "next-$SERIES" milestone (for example,
@@ -131,12 +131,12 @@ and the milestone is marked released.
 
 Examples:
 
-./oslo_release.sh juno 1.3.0.0a3 HEAD oslo.rootwrap"
+./release_library.sh juno 1.3.0.0a3 HEAD oslo.rootwrap"
 
   Push a 1.3.0.0a3 tag to oslo.rootwrap current HEAD. Mark all FixCommitted
   bugs in oslo.rootwrap to FixReleased in next-juno.
 
-./oslo_release.sh juno 1.3.0 HEAD oslo.rootwrap"
+./release_library.sh juno 1.3.0 HEAD oslo.rootwrap"
 
   Rename the next-juno milestone to '1.3.0'. Push a 1.3.0 tag to oslo.rootwrap
   current HEAD. Mark all FixCommitted bugs in oslo.rootwrap (if any) to

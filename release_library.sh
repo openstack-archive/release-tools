@@ -1,6 +1,12 @@
 #!/bin/bash
 #
-# Script to release an Oslo library in one shot
+# Script to release a library in one shot, including the git tag and
+# launchpad updates.
+#
+# This script assumes that the library release manager follows pbr's
+# SemVer rules for library versioning and has a launchpad project
+# configured with a "next-$version" milestone (where $version is juno,
+# kilo, etc.).
 #
 # Copyright 2014 Thierry Carrez <thierry@openstack.org>
 # All Rights Reserved.
@@ -20,7 +26,7 @@
 set -e
 
 if [ $# -lt 4 ]; then
-    echo "Usage: $0 series version SHA project"
+    echo "Usage: $0 series version SHA launchpad-project"
     echo
     echo "Example: $0 juno 1.0.0 HEAD oslo.rootwrap"
     exit 2
