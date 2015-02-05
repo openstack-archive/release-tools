@@ -129,9 +129,21 @@ class Revision(object):
         return '%s # %s' % (self.change, self.url)
 
 
+FREEZE_MSG = r"""
+stable/%s freeze for %s
+
+The stable branch is frozen to allow testing before the release. Freeze
+exceptions can be proposed on openstack-dev mailing list with [stable] tag in
+subject. Once exception request is sent, stable-maint-core team will to reach
+consensus.
+
+More details at: https://wiki.openstack.org/wiki/StableBranch
+"""
+
+
 def freeze(reviews, rel):
     logging.info('freezing %s reviews.' % len(reviews))
-    msg = 'stable/%s freeze for %s' % (openstack_release(rel), rel)
+    msg = FREEZE_MSG % (openstack_release(rel), rel)
     frozen = []
     for review in reviews:
 
