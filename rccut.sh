@@ -30,10 +30,17 @@ fi
 SHA=$1
 SERIES=$2
 PROJECT=$3
+LPROJECT="$PROJECT"
 
 if [[ "$PROJECT" == "oslo-incubator" ]]; then
   echo "Oslo-incubator mode: skipping tarball check"
   SKIPTARBALL=1
+fi
+
+if [[ "$PROJECT" == neutron-* ]]; then
+  echo "Neutron advanced services mode: skipping bugs"
+  SKIPBUGS=1
+  LPROJECT="neutron"
 fi
 
 if [[ "$PROJECT" == "swift" ]]; then
@@ -55,7 +62,7 @@ function title {
 }
 
 title "Checking that $RC1MILESTONE exists"
-$TOOLSDIR/ms2version.py --onlycheck $PROJECT $RC1MILESTONE
+$TOOLSDIR/ms2version.py --onlycheck $LPROJECT $RC1MILESTONE
 
 title "Cloning repository for $PROJECT"
 MYTMPDIR=`mktemp -d`
@@ -85,5 +92,7 @@ if [[ "$SKIPTARBALL" != "1" ]]; then
   $TOOLSDIR/wait_for_tarball.py $REALSHA
 fi
 
-title "Setting FixCommitted bugs to FixReleased"
-$TOOLSDIR/process_bugs.py $PROJECT --settarget=$RC1MILESTONE --fixrelease
+if [[ "$SKIPBUGS" != "1" ]]; then
+  title "Setting FixCommitted bugs to FixReleased"
+  $TOOLSDIR/process_bugs.py $LPROJECT --settarget=$RC1MILESTONE --fixrelease
+fi

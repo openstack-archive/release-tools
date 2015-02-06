@@ -37,9 +37,11 @@ def abort(code, errmsg):
 # Argument parsing
 parser = argparse.ArgumentParser(description='Grab tarball and release it '
                                              'on LP as milestone or version.')
-parser.add_argument('project', help='Project to publish release for (nova)')
+parser.add_argument('project', help='LP project to publish release for (nova)')
 parser.add_argument('version', help='Version under development (2015.1.0)')
 parser.add_argument("--milestone", help='Milestone to publish (kilo-2)')
+parser.add_argument("--deliverable", help='Project name in the tarball. '
+                    'Defaults to project')
 parser.add_argument("--nop", action='store_true',
                     help='Only create release, do not upload tarball')
 parser.add_argument("--tarball",
@@ -52,6 +54,9 @@ if args.milestone is None:
     milestone = args.version
 else:
     milestone = args.milestone
+
+if args.deliverable is None:
+    args.deliverable = args.project
 
 # Connect to LP
 print "Connecting to Launchpad..."
@@ -70,7 +75,12 @@ except KeyError:
 for lp_milestone in lp_proj.all_milestones:
     if lp_milestone.name == milestone:
         if lp_milestone.release:
-            abort(2, 'Milestone %s was already released !' % milestone)
+            print 'Milestone %s is already released' % milestone
+            if args.deliverable != args.project:
+                print 'We are probably just trying to add %s to LP %s.' % \
+                    (args.deliverable, args.project)
+            else:
+                abort(2, 'That looks like an error!')
         if args.milestone:
             short_ms = lp_milestone.code_name.lower()
             if not short_ms.startswith("rc"):
@@ -88,10 +98,13 @@ if not args.nop:
     print "Downloading tarball..."
     tmpdir = tempfile.mkdtemp()
     if args.tarball is None:
-        base_tgz = "%s-%s%s.tar.gz" % (args.project, args.version, preversion)
+        base_tgz = "%s-%s%s.tar.gz" % \
+            (args.deliverable, args.version, preversion)
     else:
-        base_tgz = "%s-%s.tar.gz" % (args.project, args.tarball)
-    url_tgz = "http://tarballs.openstack.org/%s/%s" % (args.project, base_tgz)
+        base_tgz = "%s-%s.tar.gz" % \
+            (args.deliverable, args.tarball)
+    url_tgz = "http://tarballs.openstack.org/%s/%s" % \
+        (args.deliverable, base_tgz)
     tgz = os.path.join(tmpdir, base_tgz)
 
     (tgz, message) = urllib.urlretrieve(url_tgz, filename=tgz)
@@ -129,9 +142,12 @@ else:
         rel_notes = "This is %s %s release." \
             % (args.project.capitalize(), args.version)
 
-lp_release = lp_milestone.createProductRelease(
-    date_released=datetime.datetime.utcnow(),
-    release_notes=rel_notes)
+if lp_milestone.release:
+    lp_release = lp_milestone.release
+else:
+    lp_release = lp_milestone.createProductRelease(
+        date_released=datetime.datetime.utcnow(),
+        release_notes=rel_notes)
 
 # Mark milestone inactive
 print "Marking milestone inactive..."
@@ -141,13 +157,14 @@ lp_milestone.lp_save()
 if not args.nop:
     # Upload file
     print "Uploading release files..."
-    final_tgz = "%s-%s%s.tar.gz" % (args.project, args.version, preversion)
+    final_tgz = "%s-%s%s.tar.gz" % \
+        (args.deliverable, args.version, preversion)
     if args.milestone:
         description = '%s "%s" milestone' % \
-                      (args.project.capitalize(), args.milestone)
+                      (args.deliverable.capitalize(), args.milestone)
     else:
         description = '%s %s release' % \
-                      (args.project.capitalize(), args.version)
+                      (args.deliverable.capitalize(), args.version)
 
     lp_file = lp_release.add_file(file_type='Code Release Tarball',
                                   description=description,

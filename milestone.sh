@@ -29,6 +29,7 @@ fi
 MILESTONE=$1
 SHA=$2
 PROJECT=$3
+LPROJECT="$PROJECT"
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -49,12 +50,18 @@ if [[ "$PROJECT" == "oslo-incubator" ]]; then
   SKIPUPLOAD=1
 fi
 
+if [[ "$PROJECT" == neutron-* ]]; then
+  echo "Neutron advanced services mode: skipping bugs and upload to neutron"
+  SKIPBUGS=1
+  LPROJECT="neutron"
+fi
+
 title "Resolving $MILESTONE to version"
 if [[ "$IS_RELEASE" == "1" ]]; then
   VERSION=$MILESTONE
   RELVERSION=$MILESTONE
 else
-  VERSION=`$TOOLSDIR/ms2version.py $PROJECT $MILESTONE`
+  VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $MILESTONE`
   RELVERSION=${VERSION:0:8}
 fi
 echo "$MILESTONE is $VERSION (final being $RELVERSION)"
@@ -100,18 +107,20 @@ fi
 
 if [[ "$SKIPBUGS" != "1" ]]; then
   title "Setting FixCommitted bugs to FixReleased"
-  $TOOLSDIR/process_bugs.py $PROJECT --settarget=$MILESTONE --fixrelease
+  $TOOLSDIR/process_bugs.py $LPROJECT --settarget=$MILESTONE --fixrelease
   read -sn 1 -p "Fix any leftover bugs manually and press key to continue..."
 fi
 
 if [[ "$SKIPUPLOAD" != "1" ]]; then
   title "Uploading tarball to Launchpad"
   if [[ "$IS_RELEASE" == "1" ]]; then
-    $TOOLSDIR/upload_release.py $PROJECT $RELVERSION
+    $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --deliverable=$PROJECT
   else
-    $TOOLSDIR/upload_release.py $PROJECT $RELVERSION --milestone=$MILESTONE
+    $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --deliverable=$PROJECT \
+      --milestone=$MILESTONE
   fi
 else
   title "Marking milestone as released in Launchpad"
-  $TOOLSDIR/upload_release.py $PROJECT $RELVERSION --milestone=$MILESTONE --nop
+  $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --deliverable=$PROJECT \
+    --milestone=$MILESTONE --nop
 fi
