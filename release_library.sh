@@ -41,8 +41,8 @@ PROJECT=$4
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function title {
-  echo
-  echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
+    echo
+    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
 }
 
 if [[ $VERSION == *a* ]]; then
@@ -95,8 +95,8 @@ else
 fi
 
 if [[ "$ALPHA_RELEASE" != "1" ]]; then
-  title "Renaming next-$SERIES to $VERSION"
-  $TOOLSDIR/rename_milestone.py $PROJECT next-$SERIES $VERSION
+    title "Renaming next-$SERIES to $VERSION"
+    $TOOLSDIR/rename_milestone.py $PROJECT next-$SERIES $VERSION
 fi
 
 title "Setting FixCommitted bugs to FixReleased"
@@ -105,6 +105,6 @@ read -sn 1 -p "Fix any leftover bugs manually and press key to continue..."
 echo
 
 if [[ "$ALPHA_RELEASE" != "1" ]]; then
-  title "Marking milestone as released in Launchpad"
-  $TOOLSDIR/upload_release.py $PROJECT $VERSION --milestone=$TARGET --nop
+    title "Marking milestone as released in Launchpad"
+    $TOOLSDIR/upload_release.py $PROJECT $VERSION --milestone=$TARGET --nop
 fi

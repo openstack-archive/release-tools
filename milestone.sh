@@ -34,35 +34,35 @@ LPROJECT="$PROJECT"
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function title {
-  echo
-  echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
+    echo
+    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
 }
 
 if [[ "$PROJECT" == "swift" ]]; then
-  echo "Swift mode: skipping fixreleasing (bugs should be set at RC time)"
-  SKIPBUGS=1
-  IS_RELEASE=1
+    echo "Swift mode: skipping fixreleasing (bugs should be set at RC time)"
+    SKIPBUGS=1
+    IS_RELEASE=1
 fi
 
 if [[ "$PROJECT" == "oslo-incubator" ]]; then
-  echo "Oslo-incubator mode: skipping tarball generation and upload"
-  SKIPTARBALL=1
-  SKIPUPLOAD=1
+    echo "Oslo-incubator mode: skipping tarball generation and upload"
+    SKIPTARBALL=1
+    SKIPUPLOAD=1
 fi
 
 if [[ "$PROJECT" == neutron-* ]]; then
-  echo "Neutron advanced services mode: skipping bugs and upload to neutron"
-  SKIPBUGS=1
-  LPROJECT="neutron"
+    echo "Neutron advanced services mode: skipping bugs and upload to neutron"
+    SKIPBUGS=1
+    LPROJECT="neutron"
 fi
 
 title "Resolving $MILESTONE to version"
 if [[ "$IS_RELEASE" == "1" ]]; then
-  VERSION=$MILESTONE
-  RELVERSION=$MILESTONE
+    VERSION=$MILESTONE
+    RELVERSION=$MILESTONE
 else
-  VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $MILESTONE`
-  RELVERSION=${VERSION:0:8}
+    VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $MILESTONE`
+    RELVERSION=${VERSION:0:8}
 fi
 echo "$MILESTONE is $VERSION (final being $RELVERSION)"
 
@@ -77,13 +77,13 @@ HEADSHA=`git log -1 HEAD --format='%H'`
 
 title "Tagging $TARGETSHA as $VERSION"
 if [[ "$IS_RELEASE" == "1" ]]; then
-  TAGMSG="${PROJECT^} $VERSION release"
+    TAGMSG="${PROJECT^} $VERSION release"
 else
-  TAGMSG="${PROJECT^} $MILESTONE milestone ($VERSION)"
+    TAGMSG="${PROJECT^} $MILESTONE milestone ($VERSION)"
 fi
 echo "Tag message is '$TAGMSG'"
 if [[ "$TARGETSHA" != "$HEADSHA" ]]; then
-  echo "Warning: target SHA does not correspond to HEAD"
+    echo "Warning: target SHA does not correspond to HEAD"
 fi
 git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
 git push gerrit $VERSION
@@ -94,33 +94,34 @@ cd ../..
 rm -rf $MYTMPDIR
 
 if [[ "$SKIPTARBALL" != "1" ]]; then
-  title "Waiting for tarball from $REALSHA"
-  $TOOLSDIR/wait_for_tarball.py $REALSHA
+    title "Waiting for tarball from $REALSHA"
+    $TOOLSDIR/wait_for_tarball.py $REALSHA
 
-  title "Checking tarball is similar to last master.tar.gz"
-  if [[ "$TARGETSHA" != "$HEADSHA" ]]; then
-    echo "It will probably be a bit different since target is not HEAD."
-  fi
-  $TOOLSDIR/similar_tarballs.sh $PROJECT master $VERSION
-  read -sn 1 -p "Press any key to continue..."
+    title "Checking tarball is similar to last master.tar.gz"
+    if [[ "$TARGETSHA" != "$HEADSHA" ]]; then
+        echo "It will probably be a bit different since target is not HEAD."
+    fi
+    $TOOLSDIR/similar_tarballs.sh $PROJECT master $VERSION
+    read -sn 1 -p "Press any key to continue..."
 fi
 
 if [[ "$SKIPBUGS" != "1" ]]; then
-  title "Setting FixCommitted bugs to FixReleased"
-  $TOOLSDIR/process_bugs.py $LPROJECT --settarget=$MILESTONE --fixrelease
-  read -sn 1 -p "Fix any leftover bugs manually and press key to continue..."
+    title "Setting FixCommitted bugs to FixReleased"
+    $TOOLSDIR/process_bugs.py $LPROJECT --settarget=$MILESTONE --fixrelease
+    read -sn 1 -p "Fix any leftover bugs manually and press key to continue..."
 fi
 
 if [[ "$SKIPUPLOAD" != "1" ]]; then
-  title "Uploading tarball to Launchpad"
-  if [[ "$IS_RELEASE" == "1" ]]; then
-    $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --deliverable=$PROJECT
-  else
-    $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --deliverable=$PROJECT \
-      --milestone=$MILESTONE
-  fi
+    title "Uploading tarball to Launchpad"
+    if [[ "$IS_RELEASE" == "1" ]]; then
+        $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION \
+        --deliverable=$PROJECT
+    else
+        $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION \
+        --deliverable=$PROJECT --milestone=$MILESTONE
+    fi
 else
-  title "Marking milestone as released in Launchpad"
-  $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --deliverable=$PROJECT \
+    title "Marking milestone as released in Launchpad"
+    $TOOLSDIR/upload_release.py $LPROJECT $RELVERSION --deliverable=$PROJECT \
     --milestone=$MILESTONE --nop
 fi

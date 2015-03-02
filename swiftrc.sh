@@ -34,8 +34,8 @@ PROJECT="swift"
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function title {
-  echo
-  echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
+    echo
+    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
 }
 
 title "Checking that milestone exists for $VERSION"
@@ -54,7 +54,7 @@ title "Tagging $TARGETSHA as $RCVERSION"
 TAGMSG="${PROJECT^} $RCVERSION"
 echo "Tag message is '$TAGMSG'"
 if [[ "$TARGETSHA" != "$HEADSHA" ]]; then
-  echo "Warning: target SHA does not correspond to HEAD"
+    echo "Warning: target SHA does not correspond to HEAD"
 fi
 git tag -m "$TAGMSG" -s "$RCVERSION" $TARGETSHA
 git push gerrit $RCVERSION
@@ -65,7 +65,7 @@ $TOOLSDIR/wait_for_tarball.py $REALSHA
 
 title "Checking tarball is similar to last master.tar.gz"
 if [[ "$TARGETSHA" != "$HEADSHA" ]]; then
-  echo "It will probably be a bit different since target is not HEAD."
+    echo "It will probably be a bit different since target is not HEAD."
 fi
 $TOOLSDIR/similar_tarballs.sh $PROJECT master $RCVERSION
 read -sn 1 -p "Press any key to continue..."

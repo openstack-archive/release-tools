@@ -33,32 +33,32 @@ PROJECT=$3
 LPROJECT="$PROJECT"
 
 if [[ "$PROJECT" == "oslo-incubator" ]]; then
-  echo "Oslo-incubator mode: skipping tarball check"
-  SKIPTARBALL=1
+    echo "Oslo-incubator mode: skipping tarball check"
+    SKIPTARBALL=1
 fi
 
 if [[ "$PROJECT" == neutron-* ]]; then
-  echo "Neutron advanced services mode: skipping bugs"
-  SKIPBUGS=1
-  LPROJECT="neutron"
+    echo "Neutron advanced services mode: skipping bugs"
+    SKIPBUGS=1
+    LPROJECT="neutron"
 fi
 
 if [[ "$PROJECT" == "swift" ]]; then
-  if [[ $# -eq 4 ]]; then
-    RC1MILESTONE="$4-rc1"
-  else
-    echo "Missing Swift final version number argument !"
-    exit 2
-  fi
+    if [[ $# -eq 4 ]]; then
+        RC1MILESTONE="$4-rc1"
+    else
+        echo "Missing Swift final version number argument !"
+        exit 2
+    fi
 else
-  RC1MILESTONE="$SERIES-rc1"
+    RC1MILESTONE="$SERIES-rc1"
 fi
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function title {
-  echo
-  echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
+    echo
+    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
 }
 
 title "Checking that $RC1MILESTONE exists"
@@ -72,10 +72,10 @@ cd $PROJECT
 LANG=C git review -s
 
 if $(git branch -r | grep proposed > /dev/null); then
-  echo "A *proposed* branch already exists !"
-  cd ../..
-  rm -rf $MYTMPDIR
-  exit 1
+    echo "A *proposed* branch already exists !"
+    cd ../..
+    rm -rf $MYTMPDIR
+    exit 1
 fi
 
 title "Creating proposed/$SERIES at $SHA"
@@ -88,11 +88,11 @@ cd ../..
 rm -rf $MYTMPDIR
 
 if [[ "$SKIPTARBALL" != "1" ]]; then
-  title "Waiting for tarball from $REALSHA"
-  $TOOLSDIR/wait_for_tarball.py $REALSHA
+    title "Waiting for tarball from $REALSHA"
+    $TOOLSDIR/wait_for_tarball.py $REALSHA
 fi
 
 if [[ "$SKIPBUGS" != "1" ]]; then
-  title "Setting FixCommitted bugs to FixReleased"
-  $TOOLSDIR/process_bugs.py $LPROJECT --settarget=$RC1MILESTONE --fixrelease
+    title "Setting FixCommitted bugs to FixReleased"
+    $TOOLSDIR/process_bugs.py $LPROJECT --settarget=$RC1MILESTONE --fixrelease
 fi
