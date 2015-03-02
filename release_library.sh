@@ -59,8 +59,13 @@ function cleanup_tmp {
 trap cleanup_tmp EXIT
 cd $MYTMPDIR
 
-# Some of the repository names don't match the launchpad names.
-REPO=$(echo $PROJECT | sed -e 's|python-||')
+if [[ $PROJECT == python-*client ]]; then
+    REPO=$PROJECT
+else
+    # Some of the repository names don't match the launchpad names, e.g.
+    # python-stevedore and python-cliff.
+    REPO=$(echo $PROJECT | sed -e 's|python-||')
+fi
 
 title "Cloning repository for $PROJECT"
 git clone git://git.openstack.org/openstack/$REPO
