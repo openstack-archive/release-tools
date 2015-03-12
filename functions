@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# Shared functions for shell scripts
+#
+
+function lp_project_to_repo {
+    typeset proj="$1"
+
+    if [[ $proj == python-*client ]]; then
+        echo $proj
+    else
+        # Some of the repository names don't match the launchpad names, e.g.
+        # python-stevedore and python-cliff.
+        echo $proj | sed -e 's|python-||'
+    fi
+}

@@ -32,6 +32,9 @@ if [ $# -lt 4 ]; then
     exit 2
 fi
 
+TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $TOOLSDIR/functions
+
 SERIES=$1
 VERSION=$2
 TARGET=$VERSION
@@ -50,7 +53,7 @@ if [[ $VERSION == *a* ]]; then
     TARGET="next-$SERIES"
 fi
 
-MYTMPDIR=`mktemp -d release-tag-XXX`
+MYTMPDIR=`mktemp -d release-tag-$PROJECT-XXX`
 function cleanup_tmp {
     title "Cleaning up"
     cd /tmp
@@ -59,13 +62,7 @@ function cleanup_tmp {
 trap cleanup_tmp EXIT
 cd $MYTMPDIR
 
-if [[ $PROJECT == python-*client ]]; then
-    REPO=$PROJECT
-else
-    # Some of the repository names don't match the launchpad names, e.g.
-    # python-stevedore and python-cliff.
-    REPO=$(echo $PROJECT | sed -e 's|python-||')
-fi
+REPO=$(lp_project_to_repo $PROJECT)
 
 title "Cloning repository for $PROJECT"
 git clone git://git.openstack.org/openstack/$REPO
