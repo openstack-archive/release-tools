@@ -143,6 +143,14 @@ Examples:
   FixReleased in 1.3.0, and mark 1.3.0 released.
 
 
+make_library_stable_branch.sh
+-----------------------------
+
+Libraries do not use proposed branches, and go directly to creating
+stable branches using a pre-tagged release version. This script
+makes that easy to coordinate and ensures that the desired version also
+exists in launchpad as a released milestone.
+
 Base tools
 ==========
 
