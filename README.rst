@@ -142,6 +142,39 @@ Examples:
   current HEAD. Mark all FixCommitted bugs in oslo.rootwrap (if any) to
   FixReleased in 1.3.0, and mark 1.3.0 released.
 
+release_notes.py
+----------------
+
+This produces a set of release notes intended to be sent as an
+announcement email when a new library or package is produced. It is
+more suitable for libraries than for the major projects, because it
+includes a list of all of the changes and diff-stats output to show
+which files changed.
+
+The script parses the README.rst to find a line matching "``Bugs:``",
+extracts the URL following the colon, and includes that information in
+the output.
+
+The bugs URL is converted to a launchpad project URL and combined with
+the final version number to produce a *milestone* URL.
+
+The script uses ``python setup.py`` to determine the project name and
+the one-line description to include in the output text.
+
+Examples:
+
+./release_notes.py ~/repos/openstack/oslo.config 1.7.0 1.8.0
+
+  Print the release notes between versions 1.7.0 and 1.8.0 for the
+  project in the ``~/repos/openstack/oslo.config`` directory.
+
+./release_notes.py --show-dates --changes-only ~/repos/openstack/oslo.config 1.8.0 HEAD
+
+  Print the list of changes after 1.8.0 for the project in the
+  ``~/repos/openstack/oslo.config`` directory, including the date of
+  the change but leaving out the email message boilerplate. This mode
+  is useful for examining the list of unreleased changes in a project
+  to decide if a release is warranted and to pick a version number.
 
 make_library_stable_branch.sh
 -----------------------------
