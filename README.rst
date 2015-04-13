@@ -453,3 +453,18 @@ highest_semver.py
 Reads a list of version tags from standard input and prints the
 "highest" value as output, ignoring tags that don't look like valid
 versions.
+
+
+translation-cleanup.sh
+----------------------
+
+A script to cleanup translations for a release. It updates all
+translation source files, downloads translation files and removes
+translation files that are not sufficiently translated. It results in
+a change that then needs to get reviewed and send to gerrits.
+
+Examples:
+
+To generate a cleanup patch for nova:
+
+./translation-cleanup.sh kilo nova
