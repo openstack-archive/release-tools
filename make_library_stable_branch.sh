@@ -64,6 +64,17 @@ git branch $NEW_BRANCH $VERSION
 REALSHA=`git show-ref -s $NEW_BRANCH`
 git push gerrit $NEW_BRANCH
 
+title "Updating .gitreview"
+# Remove a trailing newline, if present, to ensure consistent
+# formatting when we add the defaultbranch line next.
+grcontents="$(echo -n "$(cat .gitreview)")
+defaultbranch=$NEW_BRANCH"
+echo "$grcontents" > .gitreview
+git add .gitreview
+git commit -m "Update .gitreview for $NEW_BRANCH"
+git show
+git review
+
 title "Cleaning up repository"
 cd ../..
 rm -rf $MYTMPDIR
