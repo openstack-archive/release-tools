@@ -184,6 +184,14 @@ stable branches using a pre-tagged release version. This script
 makes that easy to coordinate and ensures that the desired version also
 exists in launchpad as a released milestone.
 
+update_git_review.sh
+--------------------
+
+Update the .gitreview file in a specific branch of a checked out
+repositories.
+
+./update_git_review.sh stable/kilo ~/repos/openstack/oslo.*
+
 Base tools
 ==========
 
