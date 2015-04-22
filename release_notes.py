@@ -55,6 +55,10 @@ We are {{ emotion }} to announce the release of:
 
 {{ project }} {{ end_rev }}: {{ description }}
 
+With source available at:
+
+    {{ source_url }}
+
 For more details, please see the git log history below and:
 
     {{ milestone_url }}
@@ -100,6 +104,27 @@ CHANGES_ONLY_TPL = """{{ change_header }}
 {{ change }}
 {% endfor %}
 """
+
+
+def parse_readme(library_path):
+    sections = {
+        'bug_url': None,
+        'source_url': None,
+    }
+    readme_path = os.path.join(library_path, 'README.rst')
+    with open(readme_path, 'r') as fh:
+        for line in fh:
+            for (name, key_name) in [("Bugs:", "bug_url"),
+                                     ("Source:", 'source_url')]:
+                pieces = line.split(name, 1)
+                if len(pieces) == 2:
+                    sections[key_name] = pieces[1].strip()
+    for (k, v) in sections.items():
+        if not v:
+            what = k.replace("_", " ")
+            raise IOError("No non-empty %s found in '%s'" % (what,
+                                                             readme_path))
+    return sections
 
 
 def expand_template(contents, params):
@@ -218,29 +243,21 @@ def main():
             continue
         diff_stats.append(line)
 
-    # Find what the bug url is...
-    bug_url = ''
-    with open(os.path.join(library_path, 'README.rst'), 'r') as fh:
-        for line in fh:
-            pieces = line.split("Bugs:", 1)
-            if len(pieces) == 2:
-                bug_url = pieces[1].strip()
-                break
-    if not bug_url:
-        raise IOError("No bug url found in '%s'"
-                      % os.path.join(library_path, 'README.rst'))
+    # Extract + valdiate needed sections from readme...
+    readme_sections = parse_readme(library_path)
 
     notables = ''
     if args.notable_changes:
         with open(args.notable_changes, 'r') as fh:
             notables = fh.read().rstrip()
 
-    lp_url = bug_url.replace("bugs.", "").rstrip("/")
+    lp_url = readme_sections['bug_url'].replace("bugs.", "").rstrip("/")
     milestone_url = lp_url + "/+milestone/%s" % args.end_revision
     change_header = ["Changes in %s %s" % (library_name, git_range)]
     change_header.append("-" * len(change_header[0]))
 
-    params = {
+    params = dict(readme_sections)
+    params.update({
         'project': os.path.basename(library_path),
         'description': description,
         'end_rev': args.end_revision,
@@ -248,14 +265,13 @@ def main():
         'lib': library_path,
         'milestone_url': milestone_url,
         'skip_requirement_merges': args.skip_requirement_merges,
-        'bug_url': bug_url,
         'changes': changes,
         'requirement_changes': requirement_changes,
         'diff_stats': diff_stats,
         'notables': notables,
         'change_header': "\n".join(change_header),
         'emotion': random.choice(EMOTIONS),
-    }
+    })
     if args.changes_only:
         print(expand_template(CHANGES_ONLY_TPL, params))
     else:
