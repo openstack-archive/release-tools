@@ -55,13 +55,19 @@ We are {{ emotion }} to announce the release of:
 
 {{ project }} {{ end_rev }}: {{ description }}
 
+{% if milestone_url %}
 For more details, please see the git log history below and:
 
     {{ milestone_url }}
+{% else %}
+For more details, please see the git log history below.
+{% endif %}
 
+{% if bug_url %}
 Please report issues through launchpad:
 
     {{ bug_url }}
+{% endif %}
 """
 
 # This will just be replaced with template values (no wrapping applied).
@@ -227,16 +233,20 @@ def main():
                 bug_url = pieces[1].strip()
                 break
     if not bug_url:
-        raise IOError("No bug url found in '%s'"
-                      % os.path.join(library_path, 'README.rst'))
+        sys.stderr.write("WARNING: No bug url found in '%s'\n"
+                         % os.path.join(library_path, 'README.rst'))
 
     notables = ''
     if args.notable_changes:
         with open(args.notable_changes, 'r') as fh:
             notables = fh.read().rstrip()
 
-    lp_url = bug_url.replace("bugs.", "").rstrip("/")
-    milestone_url = lp_url + "/+milestone/%s" % args.end_revision
+    if bug_url:
+        lp_url = bug_url.replace("bugs.", "").rstrip("/")
+        milestone_url = lp_url + "/+milestone/%s" % args.end_revision
+    else:
+        lp_url = ''
+        milestone_url = ''
     change_header = ["Changes in %s %s" % (library_name, git_range)]
     change_header.append("-" * len(change_header[0]))
 
