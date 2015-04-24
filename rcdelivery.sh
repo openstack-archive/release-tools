@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script to publish RCs (and final release) from proposed/foo in one shot
+# Script to publish RCs (and final release) from stable/foo in one shot
 #
 # Copyright 2011-2014 Thierry Carrez <thierry@openstack.org>
 # All Rights Reserved.
@@ -86,7 +86,7 @@ echo "Final $SERIES version will be $FINALVERSION"
 title "Cloning repository for $PROJECT"
 MYTMPDIR=`mktemp -d`
 cd $MYTMPDIR
-git clone git://git.openstack.org/openstack/$PROJECT -b proposed/$SERIES
+git clone git://git.openstack.org/openstack/$PROJECT -b stable/$SERIES
 cd $PROJECT
 LANG=C git review -s
 
@@ -104,9 +104,10 @@ if [[ "$SKIPTARBALL" != "1" ]]; then
     title "Waiting for tarball from $SHA"
     $TOOLSDIR/wait_for_tarball.py $SHA
 
-    title "Checking tarball is similar to last proposed-$SERIES.tar.gz"
-    $TOOLSDIR/similar_tarballs.sh $PROJECT proposed-$SERIES $VERSION
-    read -sn 1 -p "Press any key to continue..."
+# No longer check tarballs since they can lag hours now
+#    title "Checking tarball is similar to last stable-$SERIES.tar.gz"
+#    $TOOLSDIR/similar_tarballs.sh $PROJECT stable-$SERIES $VERSION
+#    read -sn 1 -p "Press any key to continue..."
 fi
 
 if [[ "$SKIPUPLOAD" != "1" ]]; then
