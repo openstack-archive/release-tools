@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script to cut proposed/foo pre-release branch at RC1
+# Script to cut stable/foo pre-release branch at RC1
 #
 # Copyright 2011-2014 Thierry Carrez <thierry@openstack.org>
 # All Rights Reserved.
@@ -78,19 +78,19 @@ if $(git branch -r | grep proposed > /dev/null); then
     exit 1
 fi
 
-title "Creating proposed/$SERIES at $SHA"
-git branch proposed/$SERIES $SHA
-REALSHA=`git show-ref -s proposed/$SERIES`
-git push gerrit proposed/$SERIES
+title "Creating stable/$SERIES at $SHA"
+git branch stable/$SERIES $SHA
+REALSHA=`git show-ref -s stable/$SERIES`
+git push gerrit stable/$SERIES
 
 title "Cleaning up repository"
 cd ../..
 rm -rf $MYTMPDIR
 
-if [[ "$SKIPTARBALL" != "1" ]]; then
-    title "Waiting for tarball from $REALSHA"
-    $TOOLSDIR/wait_for_tarball.py $REALSHA
-fi
+#if [[ "$SKIPTARBALL" != "1" ]]; then
+#    title "Waiting for tarball from $REALSHA"
+#    $TOOLSDIR/wait_for_tarball.py $REALSHA
+#fi
 
 if [[ "$SKIPBUGS" != "1" ]]; then
     title "Setting FixCommitted bugs to FixReleased"
