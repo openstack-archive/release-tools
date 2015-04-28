@@ -48,8 +48,19 @@ EMOTIONS = [
     'tickled pink',
 ]
 
+# The email headers for generating a message to go right into sendmail
+# or msmtp.
+EMAIL_HEADER_TPL = """
+{%- if email %}
+From: {{email_from}}
+To: {{email_to}}
+Subject: [release]{% if stable_series %}[stable]{% endif %} {{project}} release {{end_rev}} {% if stable_series %}({{stable_series}}){% endif %}
+{% endif %}
+"""
+
 # This will be replaced with template values and then wrapped using parawrap
 # to correctly wrap at paragraph boundaries...
+
 HEADER_RELEASE_TPL = """
 We are {{ emotion }} to announce the release of:
 
@@ -177,6 +188,23 @@ def main():
                         default="",
                         help="stable release series name, such as 'kilo'",
                         )
+
+    email_group = parser.add_argument_group('email settings')
+    email_group.add_argument(
+        "--email", "-e",
+        action='store_true', default=False,
+        help="output a fully formed email message",
+    )
+    email_group.add_argument(
+        "--email-to",
+        default="openstack-dev@lists.openstack.org",
+        help="recipient of the email, defaults to %(default)s",
+    )
+    email_group.add_argument(
+        "--email-from", "--from",
+        default=os.environ.get('EMAIL', ''),
+        help="source of the email, defaults to $EMAIL",
+    )
     args = parser.parse_args()
 
     library_path = os.path.abspath(args.library)
@@ -274,10 +302,16 @@ def main():
         'change_header': "\n".join(change_header),
         'emotion': random.choice(EMOTIONS),
         'stable_series': args.stable_series,
+        'email': args.email,
+        'email_from': args.email_from,
+        'email_to': args.email_to,
     }
     if args.changes_only:
         print(expand_template(CHANGES_ONLY_TPL, params))
     else:
+        if args.email:
+            email_header = expand_template(EMAIL_HEADER_TPL.strip(), params)
+            print(email_header.lstrip())
         header = expand_template(HEADER_RELEASE_TPL.strip(), params)
         print(parawrap.fill(header))
         print(expand_template(CHANGE_RELEASE_TPL, params))
