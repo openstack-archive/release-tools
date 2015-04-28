@@ -55,6 +55,10 @@ We are {{ emotion }} to announce the release of:
 
 {{ project }} {{ end_rev }}: {{ description }}
 
+{% if stable_series -%}
+This release is part of the {{stable_series}} stable release series.
+{%- endif %}
+
 {% if milestone_url %}
 For more details, please see the git log history below and:
 
@@ -169,6 +173,10 @@ def main():
     parser.add_argument("--show-dates",
                         action='store_true', default=False,
                         help="show dates in the change log")
+    parser.add_argument("--stable-series", "--series", "-s",
+                        default="",
+                        help="stable release series name, such as 'kilo'",
+                        )
     args = parser.parse_args()
 
     library_path = os.path.abspath(args.library)
@@ -265,6 +273,7 @@ def main():
         'notables': notables,
         'change_header': "\n".join(change_header),
         'emotion': random.choice(EMOTIONS),
+        'stable_series': args.stable_series,
     }
     if args.changes_only:
         print(expand_template(CHANGES_ONLY_TPL, params))
