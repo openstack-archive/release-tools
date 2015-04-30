@@ -14,3 +14,26 @@ function lp_project_to_repo {
         echo $proj | sed -e 's|python-||'
     fi
 }
+
+function title {
+    echo
+    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
+}
+
+
+function _cleanup_tmp {
+    title "Cleaning up"
+    rm -rf $MYTMPDIR
+}
+
+
+function setup_temp_space {
+    MYTMPDIR=`mktemp -d ${1}-XXX`
+    mkdir -p "$MYTMPDIR"
+    trap _cleanup_tmp EXIT
+    cd "$MYTMPDIR"
+    # NOTE(dhellmann): On some platforms mktemp returns a short name
+    # instead of a full path, so expand the full path by looking at
+    # where we ended up after the cd operation.
+    MYTMPDIR="$(pwd)"
+}
