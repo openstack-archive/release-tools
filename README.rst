@@ -184,6 +184,14 @@ stable branches using a pre-tagged release version. This script
 makes that easy to coordinate and ensures that the desired version also
 exists in launchpad as a released milestone.
 
+list_repos_by_project.py
+------------------------
+
+Read the project list from the governance repository and print a list
+of the repositories owned by the named project.
+
+./list_repos_by_project.py Oslo
+
 Base tools
 ==========
 
