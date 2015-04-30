@@ -18,7 +18,10 @@
 #    under the License.
 
 import argparse
+import concurrent.futures
 import sys
+import threading
+
 from launchpadlib.launchpad import Launchpad
 from lazr.restfulclient.errors import BadRequest, ServerError
 
@@ -102,6 +105,8 @@ for bp in series.valid_specifications:
             print " (not completed!)",
         print
 
+class FailedBug(Exception):pass
+
 # Process bugs
 for milestone in milestones:
     if args.copytask:
@@ -112,9 +117,10 @@ for milestone in milestones:
     while bugsleft:
         failed = set()
         bugsleft = False
-        for bt in proj.searchTasks(status=statuses, milestone=milestone):
+        bts = list(proj.searchTasks(status=statuses, milestone=milestone))
+
+        def update_bug(bt):
             bug = bt.bug
-            print bug.id,
             if not args.dryrun:
                 if args.copytask:
                     try:
@@ -124,22 +130,38 @@ for milestone in milestones:
                         newbt.importance = bt.importance
                         newbt.milestone = release
                         newbt.lp_save()
-                        print " - copytasked",
+                        print "%s - copytasked" % bug.id
                         bugsleft = True
                     except BadRequest:
-                        print " - task already exists, skipping",
+                        print "%s - task already exists, skipping" % bug.id
                 else:
                     bt.milestone = release
                     try:
+                        start = time.time()
                         bt.lp_save()
-                        print " - released",
+                        end = time.time()
+                        print "lpsave %s %s %0.3fs" % (bug.id, start, end-start)
+                        print "%s - released" % bug.id
                     except ServerError as e:
-                        print " - TIMEOUT during save !",
-                        failed.add(bug.id)
+                        end = time.time()
+                        print "timeout lpsave %s %s %0.3fs" % (bug.id, start, end-start)
+                        raise FailedBug(bug.id)
                     bugsleft = True
             if bt.status != 'Fix Released':
-                print " (not in FixReleased status!)",
-            print
+                print "%s (not in FixReleased status!)" % bug.id
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=40) as executor:
+            # Start the load operations and mark each future with its URL
+            future_to_bt = {
+                executor.submit(update_bug, bt): bt for bt in bts}
+            for future in concurrent.futures.as_completed(future_to_bt):
+                bt = future_to_by[future]
+                try:
+                    data = future.result()
+                except FailedBug as exc:
+                    failed.add(exc.args[0])
+                except Exception as exc:
+                    print "unexpected exception" % exc
         if failed:
             print
             print("Some bugs could not be automatically updated "
