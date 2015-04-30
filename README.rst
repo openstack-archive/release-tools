@@ -445,3 +445,10 @@ Examples:
 To clean up Nova kilo blueprints:
 
 ./autokick.py nova kilo
+
+highest_semver.py
+-----------------
+
+Reads a list of version tags from standard input and prints the
+"highest" value as output, ignoring tags that don't look like valid
+versions.
