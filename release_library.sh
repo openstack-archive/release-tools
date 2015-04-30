@@ -43,24 +43,12 @@ PROJECT=$4
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-function title {
-    echo
-    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
-}
-
 if [[ $VERSION == *a* ]]; then
     ALPHA_RELEASE=1
     TARGET="next-$SERIES"
 fi
 
-MYTMPDIR=`mktemp -d release-tag-$PROJECT-XXX`
-function cleanup_tmp {
-    title "Cleaning up"
-    cd /tmp
-    rm -rf $MYTMPDIR
-}
-trap cleanup_tmp EXIT
-cd $MYTMPDIR
+setup_temp_space release-tag-$PROJECT
 
 REPO=$(lp_project_to_repo $PROJECT)
 

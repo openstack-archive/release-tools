@@ -176,6 +176,25 @@ Examples:
   is useful for examining the list of unreleased changes in a project
   to decide if a release is warranted and to pick a version number.
 
+list_unreleased_changes.sh
+--------------------------
+
+Given a branch and one or more repositories, produce a list of the
+changes in those repositories since their last tag on that
+branch. This is useful for deciding if a project needs to prepare a
+release, and for predicting what the next release version should be by
+looking at the commit logs.
+
+./list_unreleased_changes.sh master openstack/oslo.config
+
+  Print the list of changes in ``openstack/oslo.config`` along the
+  master branch.
+
+./list_unreleased_changes.sh stable/kilo $(./list_repos_by_project.py --code-only Oslo)
+
+  Print the list of changes in the ``stable/kilo`` branch of all Oslo
+  libraries.
+
 make_library_stable_branch.sh
 -----------------------------
 
