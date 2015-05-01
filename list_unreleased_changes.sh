@@ -14,36 +14,15 @@
 #
 # Provide a list of the unreleased changes in the given repositories
 
-bindir=$(cd $(dirname $0) && pwd)
 branch="$1"
 shift
 repos="$@"
 
-source $bindir/functions
+TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $TOOLSDIR/functions
 
 # Make sure no pager is configured so the output is not blocked
 export PAGER=
-
-function get_last_tag {
-    # Use git log to show changes on this branch, and add --decorate
-    # to include the tag names. Then use grep and sed to pull the tag
-    # name out so that is all we pass to highest_semver.py.
-    #
-    # This assumes the local copy of the repo is on the branch from
-    # which we would want to release.
-    git log --decorate --oneline \
-        | egrep '^[0-9a-f]+ \((HEAD, )?tag: ' \
-        | sed -r 's/^.+tag: ([^ ]+)[,\)].+$/\1/g' \
-        | ${bindir}/highest_semver.py
-
-    # Look at *all* tags, sorted by the date they were applied. This
-    # sometimes predicts the wrong value, especially when we might be
-    # releasing from a branch other than master.
-    #
-    # git for-each-ref --sort=taggerdate --format '%(refname)' refs/tags \
-    #     | sed -e 's|refs/tags/||' \
-    #     | ${bindir}/highest_semver.py
-}
 
 setup_temp_space 'list-unreleased'
 
@@ -58,7 +37,7 @@ function list_changes {
         echo "$repo has not yet been released"
     else
         echo
-        $bindir/release_notes.py \
+        $TOOLSDIR/release_notes.py \
             --show-dates \
             --changes-only \
             . $prev_tag HEAD
