@@ -70,11 +70,18 @@ if [[ "$ALPHA_RELEASE" != "1" ]]; then
 else
     TAGMSG="$PROJECT $VERSION alpha milestone"
 fi
+
+if git branch -a | grep -q origin/stable/$SERIES; then
+    STABLE_BRANCH=1
+else
+    STABLE_BRANCH=0
+fi
+
 if git show-ref "$VERSION"
 then
     echo "$PROJECT already has a version $VERSION tag"
 else
-    if git branch -a | grep -q origin/stable/$SERIES; then
+    if $STABLE_BRANCH; then
         prev_series=origin/stable/$SERIES
     else
         prev_series=""
@@ -90,12 +97,18 @@ fi
 if [[ "$ALPHA_RELEASE" != "1" ]]; then
     title "Renaming next-$SERIES to $VERSION"
     $TOOLSDIR/rename_milestone.py $PROJECT next-$SERIES $VERSION
+    echo "Do not forget to create a new next-$SERIES milestone"
 fi
 
 title "Setting FixCommitted bugs to FixReleased"
-$TOOLSDIR/process_bugs.py $PROJECT --settarget=$TARGET --fixrelease
-read -sn 1 -p "Fix any leftover bugs manually and press key to continue..."
-echo
+if [[ "$STABLE_BRANCH" != "1" ]]; then
+    $TOOLSDIR/process_bugs.py $PROJECT --settarget=$TARGET --fixrelease
+    read -sn 1 -p "Fix any leftover bugs manually and press key to continue..."
+    echo
+else
+    read -sn 1 -p "Make sure all closed bugs are properly targeted, then press key to continue..."
+    echo
+fi
 
 if [[ "$ALPHA_RELEASE" != "1" ]]; then
     title "Marking milestone as released in Launchpad"
