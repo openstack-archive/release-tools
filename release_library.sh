@@ -61,11 +61,18 @@ TARGETSHA=`git log -1 $SHA --format='%H'`
 
 title "Tagging $TARGETSHA as $VERSION"
 TAGMSG="$PROJECT $VERSION release"
+
+if git branch -a | grep -q origin/stable/$SERIES; then
+    STABLE_BRANCH=1
+else
+    STABLE_BRANCH=0
+fi
+
 if git show-ref "$VERSION"
 then
     echo "$PROJECT already has a version $VERSION tag"
 else
-    if git branch -a | grep -q origin/stable/$SERIES; then
+    if [[ "$STABLE_BRANCH" != "0" ]]; then
         prev_series=origin/stable/$SERIES
     else
         prev_series=""
@@ -82,9 +89,14 @@ title "Renaming next-$SERIES to $VERSION"
 $TOOLSDIR/rename_milestone.py $PROJECT next-$SERIES $VERSION
 
 title "Setting FixCommitted bugs to FixReleased"
-$TOOLSDIR/process_bugs.py $PROJECT --settarget=$TARGET --fixrelease
-read -sn 1 -p "Fix any leftover bugs manually and press key to continue..."
-echo
+if [[ "$STABLE_BRANCH" != "1" ]]; then
+    $TOOLSDIR/process_bugs.py $PROJECT --settarget=$TARGET --fixrelease
+    read -sn 1 -p "Fix any leftover bugs manually and press key to continue..."
+    echo
+else
+    read -sn 1 -p "Make sure all closed bugs are properly targeted, then press key to continue..."
+    echo
+fi
 
 if [[ "$ALPHA_RELEASE" != "1" ]]; then
     title "Marking milestone as released in Launchpad"
