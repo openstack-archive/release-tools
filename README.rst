@@ -195,6 +195,18 @@ looking at the commit logs.
   Print the list of changes in the ``stable/kilo`` branch of all Oslo
   libraries.
 
+list_oslo_unreleased_changes.sh
+-------------------------------
+
+Runs list_unreleased_changes.sh for all of the Oslo library
+repositories.
+
+./list_oslo_unreleased_changes.sh stable/kilo
+
+is equivalent to:
+
+./list_unreleased_changes.sh stable/kilo $(./list_repos_by_project.py --code-only Oslo)
+
 make_library_stable_branch.sh
 -----------------------------
 
