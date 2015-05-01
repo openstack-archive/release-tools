@@ -74,9 +74,17 @@ if git show-ref "$VERSION"
 then
     echo "$PROJECT already has a version $VERSION tag"
 else
+    if git branch -a | grep -q origin/stable/$SERIES; then
+        prev_series=origin/stable/$SERIES
+    else
+        prev_series=""
+    fi
+    previous_rev=$(get_last_tag $prev_series)
     echo "Tag message is '$TAGMSG'"
     git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
     git push gerrit $VERSION
+    title "Release notes"
+    ${TOOLSDIR}/release_notes.py . $previous_rev $VERSION
 fi
 
 if [[ "$ALPHA_RELEASE" != "1" ]]; then
