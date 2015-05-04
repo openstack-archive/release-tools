@@ -63,7 +63,7 @@ rccut.sh
 --------
 
 Final release follows a slightly different process. Just before RC1 we need
-to create a proposed/* release branch. rccut.sh creates a proposed/$SERIES
+to create a stable/* release branch. rccut.sh creates a stable/$SERIES
 branch from the specified SHA, and turns all Launchpad bugs for the RC1
 milestone to FixReleased (which means "present in the release branch").
 
@@ -73,23 +73,23 @@ where it doesn't wait for a tarball to be built.
 
 Examples:
 
-./rccut.sh 7432f32d838ab346c juno nova
+./rccut.sh 7432f32d838ab346c liberty nova
 
-  Create a proposed/juno branch for Nova at commit 7432f32d838ab346c, and
+  Create a series/liberty branch for Nova at commit 7432f32d838ab346c, and
   mark FixCommitted bugs FixReleased, while targeting them to the juno-rc1
   milestone.
 
-./rccut.sh HEAD juno swift 2.2.0
+./rccut.sh HEAD liberty swift 2.5.0
 
-  Create a proposed/juno branch for Swift from master's HEAD commit, and
-  mark FixCommitted bugs FixReleased, while targeting them to the 2.2.0-rc1
+  Create a stable/liberty branch for Swift from master's HEAD commit, and
+  mark FixCommitted bugs FixReleased, while targeting them to the 2.5.0-rc1
   milestone.
 
 
 rcdelivery.sh
 -------------
 
-This script is used to publish RCs and final release from the proposed/$SERIES
+This script is used to publish RCs and final release from the stable/$SERIES
 branch. It applies the RC or final tag, pushes it, waits for the tarball
 build, lets you doublecheck tarball similarities, and upload the resulting
 tarball to Launchpad (while marking it released).
@@ -102,19 +102,19 @@ Examples:
 
 ./rcdelivery.sh kilo rc1 cinder
 
-  Push 2015.1.0rc1 tag to current cinder proposed/kilo branch HEAD, wait for
+  Push 2015.1.0rc1 tag to current cinder stable/kilo branch HEAD, wait for
   the tarball build, and upload the resulting tarball to Launchpad (while
   marking it released).
 
-./rcdelivery juno rc2 swift 2.3.0
+./rcdelivery liberty rc2 swift 2.5.0
 
-  Push 2.3.0rc2 tag to current swift proposed/juno branch HEAD, wait for the
+  Push 2.3.0rc2 tag to current swift stable/liberty branch HEAD, wait for the
   tarball build, and upload the resulting tarball to Launchpad (while marking
   it released).
 
 ./rcdelivery kilo final neutron
 
-  Push 2015.1.0 final tag to current neutron proposed/juno branch HEAD (which
+  Push 2015.1.0 final tag to current neutron stable/kilo branch HEAD (which
   should be the last RC), wait for the tarball build, and upload the resulting
   tarball to Launchpad (while marking it released).
 
@@ -179,10 +179,10 @@ Examples:
 make_library_stable_branch.sh
 -----------------------------
 
-Libraries do not use proposed branches, and go directly to creating
-stable branches using a pre-tagged release version. This script
-makes that easy to coordinate and ensures that the desired version also
-exists in launchpad as a released milestone.
+Libraries go directly to creating stable branches using a pre-tagged
+release version. This script makes that easy to coordinate and ensures
+that the desired version also exists in launchpad as a released milestone.
+
 
 Base tools
 ==========
@@ -241,9 +241,9 @@ This script compares the content of two tarballs on tarballs.openstack.org.
 
 Example:
 
-./similar_tarballs.sh nova proposed-kilo 2015.1.0rc1
+./similar_tarballs.sh nova stable-kilo 2015.1.0rc1
 
-  Check content differences between nova-proposed-kilo.tar.gz and
+  Check content differences between nova-stable-kilo.tar.gz and
   nova-2015.1.0rc1.tar.gz, as found on http://tarballs.openstack.org.
 
 
