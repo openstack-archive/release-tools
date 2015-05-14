@@ -65,6 +65,7 @@ REALSHA=`git show-ref -s $NEW_BRANCH`
 git push gerrit $NEW_BRANCH
 
 title "Updating .gitreview"
+git checkout $NEW_BRANCH
 # Remove a trailing newline, if present, to ensure consistent
 # formatting when we add the defaultbranch line next.
 grcontents="$(echo -n "$(cat .gitreview)")
