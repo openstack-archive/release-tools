@@ -185,6 +185,14 @@ that easy to coordinate and ensures that the desired version also
 exists in launchpad as a released milestone and by updating the
 .gitreview file in the new branch for future submissions.
 
+list_repos_by_project.py
+------------------------
+
+Read the project list from the governance repository and print a list
+of the repositories owned by the named project.
+
+./list_repos_by_project.py Oslo
+
 Base tools
 ==========
 
