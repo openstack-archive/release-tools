@@ -224,6 +224,14 @@ of the repositories owned by the named project.
 
 ./list_repos_by_project.py Oslo
 
+update_git_review.sh
+--------------------
+
+Update the .gitreview file in a specific branch of a checked out
+repositories.
+
+./update_git_review.sh stable/kilo ~/repos/openstack/oslo.*
+
 Base tools
 ==========
 
