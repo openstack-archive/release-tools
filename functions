@@ -45,6 +45,12 @@ function get_last_tag {
     # specified, the currently checked out branch is examined.
     typeset branch="$1"
 
+    typeset sed_regex="-r"
+    typeset uname=$(uname)
+    if [[ $uname == "Darwin" ]]; then
+        sed_regex="-E"
+    fi
+
     # Use git log to show changes on this branch, and add --decorate
     # to include the tag names. Then use grep and sed to pull the tag
     # name out so that is all we pass to highest_semver.py.
@@ -53,7 +59,7 @@ function get_last_tag {
     # which we would want to release.
     git log --decorate --oneline $branch \
         | egrep '^[0-9a-f]+ \((HEAD, )?tag: ' \
-        | sed -r 's/^.+tag: ([^ ]+)[,\)].+$/\1/g' \
+        | sed $sed_regex 's/^.+tag: ([^ ]+)[,\)].+$/\1/g' \
         | ${TOOLSDIR}/highest_semver.py
 
     # Look at *all* tags, sorted by the date they were applied. This
