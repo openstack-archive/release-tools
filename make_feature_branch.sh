@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script to cut stable/foo release branch of a library
+# Script to create feature/foo branch of a repository
 #
 # All Rights Reserved.
 #
@@ -19,34 +19,26 @@
 set -e
 
 if [[ $# -lt 3 ]]; then
-    echo "Usage: $0 series projectname version"
+    echo "Usage: $0 branch-name projectname SHA"
     echo
-    echo "Example: $0 kilo oslo.config 1.9.2"
+    echo "Example: $0 keystoneauth_integration python-keystoneclient 4776495adfadbf5240a9e0f169990ce139af9549"
     exit 2
 fi
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
 
-SERIES=$1
+FEATURE=$1
 PROJECT=$2
 VERSION=$3
 LPROJECT="$PROJECT"
 
 REPO=$(lp_project_to_repo $PROJECT)
 
-NEW_BRANCH="stable/$SERIES"
-
-function title {
-    echo
-    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
-}
-
-title "Checking that $VERSION exists in Launchpad"
-$TOOLSDIR/ms2version.py --onlycheck $LPROJECT $VERSION
+NEW_BRANCH="feature/$(echo $FEATURE | sed -e 's|^feature/||')"
 
 title "Cloning repository for $PROJECT"
-MYTMPDIR=`mktemp -d release-tag-$PROJECT-XXX`
+MYTMPDIR=`mktemp -d feature-branch-$PROJECT-XXX`
 cd $MYTMPDIR
 git clone git://git.openstack.org/openstack/$REPO
 cd $REPO
