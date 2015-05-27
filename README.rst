@@ -216,6 +216,13 @@ that easy to coordinate and ensures that the desired version also
 exists in launchpad as a released milestone and by updating the
 .gitreview file in the new branch for future submissions.
 
+make_feature_branch.sh
+----------------------
+
+Feature branches need to have "feature/" at the beginning of the name
+and should have their ``.gitreview`` updated when the branch is
+created.
+
 list_repos_by_project.py
 ------------------------
 
