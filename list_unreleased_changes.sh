@@ -14,6 +14,11 @@
 #
 # Provide a list of the unreleased changes in the given repositories
 
+if [[ $# -lt 2 ]]; then
+    echo "Usage: $(basename $0) <branch> <repo> [<repo>...]"
+    exit 1
+fi
+
 branch="$1"
 shift
 repos="$@"
