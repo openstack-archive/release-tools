@@ -43,11 +43,6 @@ PROJECT=$4
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-if [[ $VERSION == *a* ]]; then
-    ALPHA_RELEASE=1
-    TARGET="next-$SERIES"
-fi
-
 setup_temp_space release-tag-$PROJECT
 
 REPO=$(lp_project_to_repo $PROJECT)
@@ -65,11 +60,7 @@ fi
 TARGETSHA=`git log -1 $SHA --format='%H'`
 
 title "Tagging $TARGETSHA as $VERSION"
-if [[ "$ALPHA_RELEASE" != "1" ]]; then
-    TAGMSG="$PROJECT $VERSION release"
-else
-    TAGMSG="$PROJECT $VERSION alpha milestone"
-fi
+TAGMSG="$PROJECT $VERSION release"
 if git show-ref "$VERSION"
 then
     echo "$PROJECT already has a version $VERSION tag"
@@ -87,10 +78,8 @@ else
     ${TOOLSDIR}/release_notes.py . $previous_rev $VERSION
 fi
 
-if [[ "$ALPHA_RELEASE" != "1" ]]; then
-    title "Renaming next-$SERIES to $VERSION"
-    $TOOLSDIR/rename_milestone.py $PROJECT next-$SERIES $VERSION
-fi
+title "Renaming next-$SERIES to $VERSION"
+$TOOLSDIR/rename_milestone.py $PROJECT next-$SERIES $VERSION
 
 title "Setting FixCommitted bugs to FixReleased"
 $TOOLSDIR/process_bugs.py $PROJECT --settarget=$TARGET --fixrelease
