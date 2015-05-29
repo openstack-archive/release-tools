@@ -81,6 +81,17 @@ fi
 title "Renaming next-$SERIES to $VERSION"
 $TOOLSDIR/rename_milestone.py $PROJECT next-$SERIES $VERSION
 
+# Figure out if we have to rename a next-$SERIES milestone or if we
+# should just create a new milestone.
+MILESTONE_URL="https://launchpad.net/$PROJECT/+milestone/next-$SERIES"
+if curl --silent --output /dev/null --fail "$MILESTONE_URL"; then
+    title "Renaming next-$SERIES to $VERSION"
+    $TOOLSDIR/rename_milestone.py $PROJECT next-$SERIES $VERSION
+else
+    title "Ensuring that milestone $VERSION exists"
+    $TOOLSDIR/ensure_milestone.py $PROJECT $SERIES $VERSION
+fi
+
 title "Setting FixCommitted bugs to FixReleased"
 $TOOLSDIR/process_bugs.py $PROJECT --settarget=$TARGET --fixrelease
 read -sn 1 -p "Fix any leftover bugs manually and press key to continue..."
