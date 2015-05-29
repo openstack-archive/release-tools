@@ -42,10 +42,11 @@ function list_changes {
         echo "$repo has not yet been released"
     else
         echo
+        local end_sha=$(git log -n 1 --pretty=tformat:%h)
         $TOOLSDIR/release_notes.py \
             --show-dates \
             --changes-only \
-            . $prev_tag HEAD
+            . $prev_tag $end_sha
     fi
 }
 
