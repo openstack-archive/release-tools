@@ -40,6 +40,7 @@ VERSION=$2
 TARGET=$VERSION
 SHA=$3
 PROJECT=$4
+EMAIL_TAGS="$5"
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -49,6 +50,12 @@ mkdir -p $RELNOTESDIR
 setup_temp_space release-tag-$PROJECT
 
 REPO=$(lp_project_to_repo $PROJECT)
+
+# Extend the email tags or set a default tag for the project owner.
+PROJECT_OWNER=$($TOOLSDIR/get_project_for_repo.py --email-tag openstack/$REPO)
+if [[ "$PROJECT_OWNER" != "" ]]; then
+    EMAIL_TAGS="${PROJECT_OWNER}${EMAIL_TAGS}"
+fi
 
 title "Cloning repository for $PROJECT"
 git clone git://git.openstack.org/openstack/$REPO
@@ -81,8 +88,12 @@ else
     git push gerrit $VERSION
     title "Release notes"
     relnotes_file="$RELNOTESDIR/$PROJECT-$VERSION"
+    if [[ "$EMAIL_TAGS" != "" ]]; then
+        email_tags="--email-tags $EMAIL_TAGS"
+    fi
     ${TOOLSDIR}/release_notes.py \
             --email \
+            $email_tags \
             --series $SERIES \
             $stable \
             . $previous_rev $VERSION \
