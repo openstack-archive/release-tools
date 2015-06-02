@@ -54,7 +54,7 @@ EMAIL_HEADER_TPL = """
 {%- if email %}
 From: {{email_from}}
 To: {{email_to}}
-Subject: [release]{% if stable_series %}[stable]{% endif %} {{project}} release {{end_rev}} {% if stable_series %}({{stable_series}}){% endif %}
+Subject: [release]{% if stable_series %}[stable]{% endif %}{{email_tags}} {{project}} release {{end_rev}} {% if series %}({{series}}){% endif %}
 {% endif %}
 """
 
@@ -66,8 +66,8 @@ We are {{ emotion }} to announce the release of:
 
 {{ project }} {{ end_rev }}: {{ description }}
 
-{% if stable_series -%}
-This release is part of the {{stable_series}} stable release series.
+{% if series -%}
+This release is part of the {{series}} {% if stable_series %}stable {% endif %}release series.
 {%- endif %}
 {% if source_url %}
 
@@ -210,9 +210,13 @@ def main():
     parser.add_argument("--show-dates",
                         action='store_true', default=False,
                         help="show dates in the change log")
-    parser.add_argument("--stable-series", "--series", "-s",
+    parser.add_argument("--series", "-s",
                         default="",
-                        help="stable release series name, such as 'kilo'",
+                        help="release series name, such as 'kilo'",
+                        )
+    parser.add_argument("--stable",
+                        default=False,
+                        help="this is a stable release",
                         )
 
     email_group = parser.add_argument_group('email settings')
@@ -230,6 +234,11 @@ def main():
         "--email-from", "--from",
         default=os.environ.get('EMAIL', ''),
         help="source of the email, defaults to $EMAIL",
+    )
+    email_group.add_argument(
+        "--email-tags",
+        default="",
+        help="extra topic tags for email subject, e.g. '[oslo]'",
     )
     args = parser.parse_args()
 
@@ -318,10 +327,12 @@ def main():
         'notables': notables,
         'change_header': "\n".join(change_header),
         'emotion': random.choice(EMOTIONS),
-        'stable_series': args.stable_series,
+        'stable_series': args.stable,
+        'series': args.series,
         'email': args.email,
         'email_from': args.email_from,
         'email_to': args.email_to,
+        'email_tags': args.email_tags,
     })
     if args.changes_only:
         print(expand_template(CHANGES_ONLY_TPL, params))
