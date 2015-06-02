@@ -70,8 +70,10 @@ then
 else
     if git branch -a | grep -q origin/stable/$SERIES; then
         prev_series=origin/stable/$SERIES
+        stable="--stable"
     else
         prev_series=""
+        stable=""
     fi
     previous_rev=$(get_last_tag $prev_series)
     echo "Tag message is '$TAGMSG'"
@@ -79,7 +81,12 @@ else
     git push gerrit $VERSION
     title "Release notes"
     relnotes_file="$RELNOTESDIR/$PROJECT-$VERSION"
-    ${TOOLSDIR}/release_notes.py --email  . $previous_rev $VERSION | tee $relnotes_file
+    ${TOOLSDIR}/release_notes.py \
+            --email \
+            --series $SERIES \
+            $stable \
+            . $previous_rev $VERSION \
+        | tee $relnotes_file
 fi
 
 # Figure out if we have to rename a next-$SERIES milestone or if we
