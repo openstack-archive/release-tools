@@ -43,6 +43,9 @@ PROJECT=$4
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+RELNOTESDIR="$PWD/relnotes"
+mkdir -p $RELNOTESDIR
+
 setup_temp_space release-tag-$PROJECT
 
 REPO=$(lp_project_to_repo $PROJECT)
@@ -82,7 +85,8 @@ else
     git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
     git push gerrit $VERSION
     title "Release notes"
-    ${TOOLSDIR}/release_notes.py . $previous_rev $VERSION
+    relnotes_file="$RELNOTESDIR/$PROJECT-$VERSION"
+    ${TOOLSDIR}/release_notes.py --email  . $previous_rev $VERSION | tee $relnotes_file
 fi
 
 # Figure out if we have to rename a next-$SERIES milestone or if we
