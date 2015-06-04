@@ -97,8 +97,3 @@ else
     read -sn 1 -p "Make sure all closed bugs are properly targeted, then press key to continue..."
     echo
 fi
-
-if [[ "$ALPHA_RELEASE" != "1" ]]; then
-    title "Marking milestone as released in Launchpad"
-    $TOOLSDIR/upload_release.py $PROJECT $VERSION --milestone=$TARGET --nop
-fi
