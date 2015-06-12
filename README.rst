@@ -224,6 +224,14 @@ of the repositories owned by the named project.
 
 ./list_repos_by_project.py Oslo
 
+list_repos_by_tag.py
+--------------------
+
+Read the project list from the governance repository and print a list
+of the repositories with a given tag.
+
+./list_repos_by_project.py 'release:managed'
+
 update_git_review.sh
 --------------------
 
