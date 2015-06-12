@@ -207,6 +207,12 @@ is equivalent to:
 
 ./list_unreleased_changes.sh stable/kilo $(list-repos --code-only --team Oslo)
 
+list_library_unreleased_changes.sh
+----------------------------------
+
+Runs list_unreleased_changes.sh for all libraries managed by any
+project.
+
 make_library_stable_branch.sh
 -----------------------------
 
