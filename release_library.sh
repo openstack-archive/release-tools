@@ -52,7 +52,7 @@ setup_temp_space release-tag-$PROJECT
 REPO=$(lp_project_to_repo $PROJECT)
 
 # Extend the email tags or set a default tag for the project owner.
-PROJECT_OWNER=$($TOOLSDIR/get_project_for_repo.py --email-tag openstack/$REPO)
+PROJECT_OWNER=${PROJECT_OWNER:-$($TOOLSDIR/get_project_for_repo.py --email-tag openstack/$REPO)}
 if [[ "$PROJECT_OWNER" != "" ]]; then
     EMAIL_TAGS="${PROJECT_OWNER}${EMAIL_TAGS}"
 fi
