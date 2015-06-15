@@ -54,6 +54,7 @@ EMAIL_HEADER_TPL = """
 {%- if email %}
 From: {{email_from}}
 To: {{email_to}}
+Reply-To: {{email_reply_to}}
 Subject: [release]{% if stable_series %}[stable]{% endif %}{{email_tags}} {{project}} release {{end_rev}} {% if series %}({{series}}){% endif %}
 {% endif %}
 """
@@ -227,8 +228,13 @@ def main():
     )
     email_group.add_argument(
         "--email-to",
-        default="openstack-dev@lists.openstack.org",
+        default="openstack-announce@lists.openstack.org",
         help="recipient of the email, defaults to %(default)s",
+    )
+    email_group.add_argument(
+        "--email-reply-to",
+        default="openstack-dev@lists.openstack.org",
+        help="follow-up for discussions, defaults to %(default)s",
     )
     email_group.add_argument(
         "--email-from", "--from",
@@ -332,6 +338,7 @@ def main():
         'email': args.email,
         'email_from': args.email_from,
         'email_to': args.email_to,
+        'email_reply_to': args.email_reply_to,
         'email_tags': args.email_tags,
     })
     if args.changes_only:
