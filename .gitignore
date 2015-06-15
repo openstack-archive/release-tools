@@ -55,3 +55,4 @@ ChangeLog
 # local temporary directory
 release-tag-*
 list-unreleased-*
+feature-branch-*

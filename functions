@@ -70,3 +70,20 @@ function get_last_tag {
     #     | sed -e 's|refs/tags/||' \
     #     | ${TOOLSDIR}/highest_semver.py
 }
+
+
+function update_gitreview {
+    typeset branch="$1"
+
+    title "Updating .gitreview"
+    git checkout $branch
+    # Remove a trailing newline, if present, to ensure consistent
+    # formatting when we add the defaultbranch line next.
+    typeset grcontents="$(echo -n "$(cat .gitreview)")
+defaultbranch=$branch"
+    echo "$grcontents" > .gitreview
+    git add .gitreview
+    git commit -m "Update .gitreview for $branch"
+    git show
+    git review
+}
