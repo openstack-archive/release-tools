@@ -533,3 +533,20 @@ Examples:
 To generate a cleanup patch for nova:
 
 ./translation-cleanup.sh kilo nova
+
+
+adjust_blueprints.py
+--------------------
+
+Run around milestone release time, this script retrieves and parses the list
+of blueprints for a given project and:
+
+* sets the milestone target and series goal on recently-implemented blueprints
+
+* removes the milestone target on incomplete milestone-targeted blueprints
+
+Examples:
+
+./adjust_blueprints.py nova liberty-1 --dryrun
+
+  Displays proposed adjustments around Nova liberty-1 blueprints.
