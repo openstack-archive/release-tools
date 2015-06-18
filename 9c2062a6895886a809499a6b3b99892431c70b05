@@ -1,0 +1,9 @@
+Verified+2: Jenkins
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Workflow+1: Thierry Carrez <thierry@openstack.org>
+Code-Review+1: Clint Adams <clint@gcfm.net>
+Submitted-by: Jenkins
+Submitted-at: Thu, 18 Jun 2015 08:17:28 +0000
+Reviewed-on: https://review.openstack.org/191227
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
