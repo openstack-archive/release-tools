@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script to release several projects in one shot using release_library.sh
+# Script to release several projects in one shot using release_postversion.sh
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -40,5 +40,5 @@ for line in "${RELEASES[@]}"; do
     override_series=${release[3]}
     series=${override_series:-$DEFAULT_SERIES}
     title "$project @ $hash == $version ($series)"
-    $TOOLSDIR/release_library.sh $series $version $hash $project
+    $TOOLSDIR/release_postversion.sh $series $version $hash $project
 done
