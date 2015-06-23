@@ -24,7 +24,10 @@ import sys
 parser = ArgumentParser(description="Update BPs on milestone closure")
 parser.add_argument('project', help='The project to act on')
 parser.add_argument('milestone', help='The milestone to set')
-parser.add_argument("--dryrun", action='store_true', help='Do not do anything')
+parser.add_argument("--target", action='store_true',
+                    help='Set target and/or series goal for implemented BPs')
+parser.add_argument("--clear", action='store_true',
+                    help='Clear milestone from incomplete blueprints')
 parser.add_argument("--test", action='store_const', const='staging',
                     default='production', help='Use LP staging server to test')
 args = parser.parse_args()
@@ -39,9 +42,6 @@ milestone = project.getMilestone(name=args.milestone)
 if not milestone:
     parser.error('Target milestone %s does not exist' % args.milestone)
 series = milestone.series_target
-
-if (args.dryrun):
-    print "Dry run mode -- this will actually not do anything"
 
 # Get the blueprints
 print "Retrieving blueprints...",
@@ -79,7 +79,7 @@ if (to_target):
     print "Those are implemented: need milestone target added"
     for bp in to_target:
         print bp.web_link
-        if not args.dryrun:
+        if args.target:
             bp.milestone = milestone
             bp.lp_save()
 
@@ -88,7 +88,7 @@ if (to_series):
     print "Those are implemented: need series goal added/approved"
     for bp in to_series:
         print bp.web_link
-        if not args.dryrun:
+        if args.target:
             bp.proposeGoal(goal=series)
 
 if (to_clear):
@@ -96,6 +96,6 @@ if (to_clear):
     print "Those are incomplete: need their milestone target cleared"
     for bp in to_clear:
         print bp.web_link
-        if not args.dryrun:
+        if args.clear:
             bp.milestone = None
             bp.lp_save()
