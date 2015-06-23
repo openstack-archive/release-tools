@@ -25,6 +25,8 @@ parser = ArgumentParser(description="Update BPs on milestone closure")
 parser.add_argument('project', help='The project to act on')
 parser.add_argument('milestone', help='The milestone to set')
 parser.add_argument("--dryrun", action='store_true', help='Do not do anything')
+parser.add_argument("--no-clear", action='store_true',
+                    help='Do not clear milestone from incomplete blueprints')
 parser.add_argument("--test", action='store_const', const='staging',
                     default='production', help='Use LP staging server to test')
 args = parser.parse_args()
@@ -78,10 +80,12 @@ if (to_target):
             bp.proposeGoal(goal=series)
             bp.lp_save()
 
-if (to_clear):
+if to_clear and not args.no_clear:
     print "Those are incomplete: need their milestone target cleared"
     for bp in to_clear:
         print bp.web_link
         if not args.dryrun:
             bp.milestone = None
             bp.lp_save()
+else:
+    print "Not clearing incomplete blueprints"
