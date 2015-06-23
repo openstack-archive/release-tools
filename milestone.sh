@@ -60,7 +60,7 @@ if [[ "$RELVERSION" == "" ]]; then
     echo "Could not determine pre-version from setup.cfg"
     exit 1
 fi
-VERSION="${RELVERSION}b${MILESTONE: -1}"
+VERSION="${RELVERSION}.0b${MILESTONE: -1}"
 echo "${PROJECT^} $MILESTONE is $VERSION (final being $RELVERSION)"
 
 title "Tagging $TARGETSHA as $VERSION"
