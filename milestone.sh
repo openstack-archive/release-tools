@@ -55,7 +55,7 @@ git review -s
 TARGETSHA=`git log -1 $SHA --format='%H'`
 
 title "Resolving $MILESTONE to version"
-RELVERSION=`grep "version = " setup.cfg | awk -F" " '{ print $3 }'`
+RELVERSION=`grep "^version = " setup.cfg | awk -F" " '{ print $3 }'`
 if [[ "$RELVERSION" == "" ]]; then
     echo "Could not determine pre-version from setup.cfg"
     exit 1
