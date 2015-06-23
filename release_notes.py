@@ -59,6 +59,8 @@ Subject: [release]{% if stable_series %}[stable]{% endif %}{{email_tags}} {{proj
 {% endif %}
 """
 
+PYPI_URL_TPL = 'https://pypi.python.org/pypi/%s'
+
 # This will be replaced with template values and then wrapped using parawrap
 # to correctly wrap at paragraph boundaries...
 
@@ -75,6 +77,12 @@ This release is part of the {{series}} {% if stable_series %}stable {% endif %}r
 With source available at:
 
     {{ source_url }}
+{% endif %}
+{% if pypi_url %}
+
+With package available at:
+
+    {{ pypi_url }}
 {% endif %}
 {% if milestone_url %}
 For more details, please see the git log history below and:
@@ -200,6 +208,11 @@ def main():
                         action='store_true',
                         default=False,
                         help='List only the change summary, without details',
+                        )
+    parser.add_argument('--include-pypi-link',
+                        action='store_true',
+                        default=False,
+                        help='include a pypi hyperlink for the library',
                         )
     parser.add_argument("--notable-changes", metavar='path',
                         action="store",
@@ -341,6 +354,10 @@ def main():
         'email_reply_to': args.email_reply_to,
         'email_tags': args.email_tags,
     })
+    if args.include_pypi_link:
+        params['pypi_url'] = PYPI_URL_TPL % library_name
+    else:
+        params['pypi_url'] = None
     if args.changes_only:
         print(expand_template(CHANGES_ONLY_TPL, params))
     else:
