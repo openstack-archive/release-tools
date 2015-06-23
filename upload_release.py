@@ -84,9 +84,9 @@ for lp_milestone in lp_proj.all_milestones:
         if args.milestone:
             short_ms = lp_milestone.code_name.lower()
             if not short_ms.startswith("rc"):
-                preversion = "b" + args.milestone[-1:]
+                preversion = ".0b" + args.milestone[-1:]
             else:
-                preversion = short_ms
+                preversion = ".0" + short_ms
         else:
             preversion = ""
         break
