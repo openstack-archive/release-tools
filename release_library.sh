@@ -104,6 +104,7 @@ else
             --series $SERIES \
             $stable \
             . $previous_rev $VERSION \
+            --include-pypi-link \
         | tee $relnotes_file
 fi
 
