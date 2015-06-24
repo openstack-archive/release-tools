@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# Script to release a library in one shot, including the git tag and
+# Script to release a project in one shot, including the git tag and
 # launchpad updates.
 #
-# This script assumes that the library release manager follows pbr's
-# SemVer rules for library versioning and has a launchpad project
+# This script assumes that the project release manager follows pbr's
+# SemVer rules for versioning and supports a launchpad project
 # configured with a "next-$version" milestone (where $version is juno,
 # kilo, etc.).
 #

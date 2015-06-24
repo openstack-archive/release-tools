@@ -119,24 +119,24 @@ Examples:
   tarball to Launchpad (while marking it released).
 
 
-release_library.sh
-------------------
+release_postversion.sh
+----------------------
 
-This script is used to publish alphas and final releases for Oslo libraries.
-Such libraries use a floating "next-$SERIES" milestone (for example,
-'next-kilo'). While under development, when an alpha release is tagged,
-FixCommitted bugs are turned to FixReleased (but remain targeted to
-next-$SERIES). At final release, next-$SERIES is renamed to the final version
-and the milestone is marked released.
+This script is used to publish alphas and final releases for Oslo
+libraries, other libraries, and projects that use post-versioning
+(Ironic) instead of pre-versioning (Nova, etc.).  FixCommitted bugs
+are turned to FixReleased, the next-$SERIES milestone is renamed or a
+version-based milestone is created, and the milestone is marked
+released.
 
 Examples:
 
-./release_library.sh juno 1.3.0.0a3 HEAD oslo.rootwrap"
+./release_postversion.sh juno 1.3.0.0a3 HEAD oslo.rootwrap"
 
   Push a 1.3.0.0a3 tag to oslo.rootwrap current HEAD. Mark all FixCommitted
   bugs in oslo.rootwrap to FixReleased in next-juno.
 
-./release_library.sh juno 1.3.0 HEAD oslo.rootwrap"
+./release_postversion.sh juno 1.3.0 HEAD oslo.rootwrap"
 
   Rename the next-juno milestone to '1.3.0'. Push a 1.3.0 tag to oslo.rootwrap
   current HEAD. Mark all FixCommitted bugs in oslo.rootwrap (if any) to
@@ -145,7 +145,7 @@ Examples:
 release_many.sh
 ---------------
 
-Run release_library.sh for many libraries one after the
+Run release_postversion.sh for many projects one after the
 other. Requires an input file with one line per library, containing::
 
   version hash project
