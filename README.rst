@@ -263,6 +263,16 @@ repositories.
 Base tools
 ==========
 
+close_milestone.py
+------------------
+
+Marks a Launchpad milestone as released and sets it inactive so no
+more bugs or blueprints can be targeted to it.
+
+Example::
+
+  ./close_milestone.py oslotest 1.8.0
+
 rename_milestone.py
 -------------------
 
