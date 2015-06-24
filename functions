@@ -17,7 +17,11 @@ function lp_project_to_repo {
 
 function title {
     echo
-    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
+    if [ -t 1 ]; then
+        echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
+    else
+        echo "[ $1 ]"
+    fi
 }
 
 
