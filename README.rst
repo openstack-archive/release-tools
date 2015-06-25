@@ -568,6 +568,11 @@ of blueprints for a given project and:
 
 Examples:
 
-./adjust_blueprints.py nova liberty-1 --dryrun
+./adjust_blueprints.py nova liberty-1
 
   Displays proposed adjustments around Nova liberty-1 blueprints.
+
+./adjust_blueprints.py nova liberty-1 --target --clean
+
+  Targets missing implemented blueprints and cleans incomplete ones for Nova
+  in liberty-1.
