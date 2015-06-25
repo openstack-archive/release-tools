@@ -70,12 +70,12 @@ for bp in bps:
 print
 
 if (to_target):
-    print "Those are implemented: need milestone and/or series target added"
+    print "Those are implemented: may need milestone or series target added"
     for bp in to_target:
         print bp.web_link
         if not args.dryrun:
-            bp.milestone = milestone
             bp.proposeGoal(goal=series)
+            bp.milestone = milestone
             bp.lp_save()
 
 if (to_clear):
