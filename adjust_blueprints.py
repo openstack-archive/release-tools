@@ -52,6 +52,8 @@ to_target = []
 count = 0
 bps = project.all_specifications
 numbps = len(bps)
+# Also get the series-targeted approved blueprints
+seriesbps = series.valid_specifications
 print "retrieved %d blueprints" % numbps
 
 # Parse the blueprints
@@ -64,21 +66,33 @@ for bp in bps:
         ((now - bp.date_completed) < timedelta(days=92)) and
         (not bp.milestone or not bp.milestone.date_targeted or
          bp.milestone.date_targeted >= milestone.date_targeted)):
-        to_target.append(bp)
+        if bp not in seriesbps:
+            to_series.append(bp)
+        if bp.milestone != milestone:
+            to_target.append(bp)
     elif not bp.is_complete and bp.milestone == milestone:
         to_clear.append(bp)
 print
 
 if (to_target):
-    print "Those are implemented: may need milestone or series target added"
+    print
+    print "Those are implemented: need milestone target added"
     for bp in to_target:
         print bp.web_link
         if not args.dryrun:
-            bp.proposeGoal(goal=series)
             bp.milestone = milestone
             bp.lp_save()
 
+if (to_series):
+    print
+    print "Those are implemented: need series goal added/approved"
+    for bp in to_series:
+        print bp.web_link
+        if not args.dryrun:
+            bp.proposeGoal(goal=series)
+
 if (to_clear):
+    print
     print "Those are incomplete: need their milestone target cleared"
     for bp in to_clear:
         print bp.web_link
