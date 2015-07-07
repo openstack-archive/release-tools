@@ -39,7 +39,13 @@ def find_job_url(sha=None, retries=30, wait=30):
                'a=commitdiff;h=(.*)$')
 
     while retry < retries:
-        statusjson = requests.get('http://zuul.openstack.org/status.json')
+        try:
+            statusjson = requests.get('http://zuul.openstack.org/status.json')
+        except Exception as e:
+            print "Error fetching status: %s" % e
+            print "  waiting before trying again"
+            time.sleep(wait)
+            continue
         status = statusjson.json()
         for pipeline in status['pipelines']:
             for queue in pipeline['change_queues']:
