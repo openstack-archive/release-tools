@@ -128,3 +128,6 @@ else
     read -sn 1 -p "Make sure all closed bugs are properly targeted, then press key to continue..."
     echo
 fi
+
+title "Marking milestone as released in Launchpad"
+$TOOLSDIR/close_milestone.py $PROJECT $TARGET
