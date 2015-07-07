@@ -230,6 +230,7 @@ def main():
                         )
     parser.add_argument("--stable",
                         default=False,
+                        action='store_true',
                         help="this is a stable release",
                         )
 
