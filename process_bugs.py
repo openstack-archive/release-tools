@@ -97,6 +97,9 @@ while changes:
         except ServerError as e:
             print " - TIMEOUT during save !",
             failed.add(bug.id)
+        except Exception as e:
+            print " - ERROR during save ! (%s)" % e,
+            failed.add(bug.id)
         print
 
 if failed:
