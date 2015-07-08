@@ -25,6 +25,18 @@
 
 set -e
 
+function clone_repo {
+  title "Cloning repository for $PROJECT"
+  git clone git://git.openstack.org/openstack/$REPO
+  cd $REPO
+  REPODIR="$(pwd)"
+  git review -s
+}
+
+function pull_repo {
+  git --git-dir "$REPODIR"/.git fetch
+}
+
 if [ $# -lt 4 ]; then
     echo "Usage: $0 series version SHA launchpad-project"
     echo
@@ -41,6 +53,10 @@ TARGET=$VERSION
 SHA=$3
 PROJECT=$4
 EMAIL_TAGS="$5"
+REPODIR=$6
+if [ -n "REPODIR" ]; then
+  REPODIR="$(realpath $REPODIR)"
+fi
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -57,10 +73,13 @@ if [[ "$PROJECT_OWNER" != "" ]]; then
     EMAIL_TAGS="${PROJECT_OWNER}${EMAIL_TAGS}"
 fi
 
-title "Cloning repository for $PROJECT"
-git clone git://git.openstack.org/openstack/$REPO
-cd $REPO
-git review -s
+if [ -z "$REPODIR" ]; then
+  clone_repo
+else
+  pull_repo
+fi
+
+cd $REPODIR
 
 title "Sanity checking $VERSION"
 if ! $TOOLSDIR/sanity_check_version.py $VERSION $(git tag)
