@@ -34,13 +34,15 @@ function clone_repo {
 }
 
 function pull_repo {
-    git --git-dir "$REPODIR"/.git fetch
+    git --git-dir "$REPODIR"/.git fetch gerrit
+    git checkout master
+    git merge --ff-only gerrit/master
 }
 
 if [ $# -lt 4 ]; then
     echo "Usage: $0 series version SHA launchpad-project"
     echo
-    echo "Example: $0 juno 1.0.0 HEAD oslo.rootwrap"
+    echo "Example: $0 juno 1.0.0 gerrit/master oslo.rootwrap"
     exit 2
 fi
 
