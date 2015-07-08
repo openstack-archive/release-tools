@@ -16,6 +16,7 @@
 
 if [[ $# -lt 2 ]]; then
     echo "Usage: $(basename $0) <branch> <repo> [<repo>...]"
+    echo "repo should be e.g. openstack/glance"
     exit 1
 fi
 
