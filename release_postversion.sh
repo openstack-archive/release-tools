@@ -26,8 +26,8 @@
 set -e
 
 function clone_repo {
-    title "Cloning repository for $PROJECT"
-    git clone git://git.openstack.org/openstack/$REPO
+    title "Cloning $LONG_REPO for $PROJECT"
+    git clone git://git.openstack.org/$LONG_REPO $REPO
     cd $REPO
     REPODIR="$(pwd)"
     git review -s
@@ -68,8 +68,11 @@ setup_temp_space release-tag-$PROJECT
 
 REPO=$(lp_project_to_repo $PROJECT)
 
+# Find the extended REPO name by assuming the given name is unique.
+LONG_REPO=$(ssh review.openstack.org -p 29418 gerrit ls-projects | grep "/$REPO\$")
+
 # Extend the email tags or set a default tag for the project owner.
-PROJECT_OWNER=${PROJECT_OWNER:-$($TOOLSDIR/get_project_for_repo.py --email-tag openstack/$REPO)}
+PROJECT_OWNER=${PROJECT_OWNER:-$($TOOLSDIR/get_project_for_repo.py --email-tag $LONG_REPO)}
 if [[ "$PROJECT_OWNER" != "" ]]; then
     EMAIL_TAGS="${PROJECT_OWNER}${EMAIL_TAGS}"
 fi
