@@ -38,7 +38,7 @@ function pull_repo {
 }
 
 if [ $# -lt 4 ]; then
-    echo "Usage: $0 series version SHA launchpad-project"
+    echo "Usage: $0 series version SHA launchpad-project [[email-tags] local-repository]"
     echo
     echo "Example: $0 juno 1.0.0 HEAD oslo.rootwrap"
     exit 2
@@ -49,14 +49,15 @@ source $TOOLSDIR/functions
 
 SERIES=$1
 VERSION=$2
-TARGET=$VERSION
 SHA=$3
 PROJECT=$4
 EMAIL_TAGS="$5"
 REPODIR=$6
-if [ -n "REPODIR" ]; then
-    REPODIR="$(realpath $REPODIR)"
+if [ -n "$REPODIR" ]; then
+   REPODIR="$(realpath $REPODIR)"
 fi
+
+TARGET=$VERSION
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
