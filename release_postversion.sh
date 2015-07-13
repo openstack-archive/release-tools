@@ -56,7 +56,7 @@ SHA=$3
 PROJECT=$4
 EMAIL_TAGS="$5"
 REPODIR=$6
-if [ -n "REPODIR" ]; then
+if [ -n "$REPODIR" ]; then
     REPODIR="$(realpath $REPODIR)"
 fi
 
