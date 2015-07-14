@@ -26,21 +26,36 @@
 set -e
 
 function clone_repo {
-    title "Cloning $LONG_REPO for $PROJECT"
-    git clone git://git.openstack.org/$LONG_REPO $REPO
-    cd $REPO
-    REPODIR="$(pwd)"
-    git review -s
+    local long_repo="$1"
+    local repo="$2"
+
+    title "Cloning $long_repo"
+    git clone git://git.openstack.org/$long_repo $repo
+    (cd $repo && git review -s)
 }
 
 function pull_repo {
-    git --git-dir "$REPODIR"/.git fetch gerrit
+    local repodir="$1"
+
+    git --git-dir "$repodir"/.git fetch gerrit
     git checkout master
     git merge --ff-only gerrit/master
 }
 
+function ensure_repo {
+    local long_repo="$1"
+    local repo="$2"
+    local repodir="$3"
+
+    if [ -z "$repodir" ]; then
+        clone_repo $long_repo $repo
+    else
+        pull_repo $repodir
+    fi
+}
+
 if [ $# -lt 4 ]; then
-    echo "Usage: $0 series version SHA launchpad-project [[email-tags] local-repository]"
+    echo "Usage: $0 series version SHA launchpad-project [[[email-tags] [local-repository] local-requirements-repo]"
     echo
     echo "Example: $0 juno 1.0.0 gerrit/master oslo.rootwrap"
     exit 2
@@ -57,6 +72,10 @@ EMAIL_TAGS="$5"
 REPODIR=$6
 if [ -n "$REPODIR" ]; then
     REPODIR="$(realpath $REPODIR)"
+fi
+REQREPODIR=$7
+if [ -n "$REQREPODIR" ]; then
+    REQREPODIR="$(realpath $REQREPODIR)"
 fi
 
 TARGET=$VERSION
@@ -83,13 +102,16 @@ if [[ "$PROJECT_OWNER" != "" ]]; then
     EMAIL_TAGS="${PROJECT_OWNER}${EMAIL_TAGS}"
 fi
 
-if [ -z "$REPODIR" ]; then
-    clone_repo
-else
-    pull_repo
+ensure_repo $LONG_REPO $REPO $REPODIR
+if [[ -z "$REPODIR" ]]; then
+    # Reset the global repodirectory
+    REPODIR="$(realpath $REPO)"
 fi
-
 cd $REPODIR
+
+# Determine the actual name of the dist, which might be different from
+# its repository name.
+DISTNAME=$(python setup.py --name)
 
 title "Sanity checking $VERSION"
 if ! $TOOLSDIR/sanity_check_version.py $VERSION $(git tag)
@@ -160,3 +182,17 @@ fi
 
 title "Marking milestone as released in Launchpad"
 $TOOLSDIR/close_milestone.py $PROJECT $TARGET
+
+if [[ "$STABLE_BRANCH" != "1" ]]; then
+    title "Updating requirements"
+    cd $MYTMPDIR
+    ensure_repo openstack/requirements requirements $REQREPODIR
+    if [[ -z "$REQREPODIR" ]]; then
+        # Reset the global repodirectory
+        REQREPODIR="$(realpath requirements)"
+    fi
+    cd $REQREPODIR
+    tox -e venv -- edit-constraints upper-constraints.txt $DISTNAME "${DISTNAME}==${VERSION}"
+    git commit -a -m "Update $DISTNAME for new release $VERSION"
+    git review
+fi
