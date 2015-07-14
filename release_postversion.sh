@@ -75,6 +75,10 @@ clone_repo $LONG_REPO
 REPODIR="$(cd $LONG_REPO && pwd)"
 cd $REPODIR
 
+# Determine the actual name of the dist, which might be different from
+# its repository name.
+DISTNAME=$(python setup.py --name)
+
 title "Sanity checking $VERSION"
 if ! sanity-check-version $VERSION $(git tag)
 then
@@ -148,3 +152,14 @@ fi
 
 title "Marking milestone as released in Launchpad"
 milestone-close $PROJECT $TARGET
+
+if [[ "$STABLE_BRANCH" != "1" ]]; then
+    title "Updating requirements"
+    cd $MYTMPDIR
+    clone_repo openstack/requirements
+    REQREPODIR="$(cd openstack/requirements && pwd)"
+    cd $REQREPODIR
+    tox -e venv -- edit-constraints upper-constraints.txt $DISTNAME "${DISTNAME}===${VERSION}"
+    git commit -a -m "Update $DISTNAME for new release $VERSION"
+    git review
+fi
