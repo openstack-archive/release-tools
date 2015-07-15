@@ -15,7 +15,7 @@
 from oslotest import base
 import testscenarios
 
-import sanity_check_version as scv
+from releasetools import semver
 
 
 load_tests = testscenarios.load_tests_apply_scenarios
@@ -24,13 +24,13 @@ load_tests = testscenarios.load_tests_apply_scenarios
 class ParseVersionTest(base.BaseTestCase):
 
     def test_all_ints(self):
-        self.assertEqual([1, 0, 1], scv.parse_version('1.0.1'))
+        self.assertEqual([1, 0, 1], semver.parse_version('1.0.1'))
 
     def test_not_int(self):
-        self.assertEqual([1, 'a', 1], scv.parse_version('1.a.1'))
+        self.assertEqual([1, 'a', 1], semver.parse_version('1.a.1'))
 
     def test_short(self):
-        self.assertEqual([1, 1, 0], scv.parse_version('1.1'))
+        self.assertEqual([1, 1, 0], semver.parse_version('1.1'))
 
 
 class RulesTest(base.BaseTestCase):
@@ -102,5 +102,6 @@ class RulesTest(base.BaseTestCase):
     ]
 
     def test(self):
-        msgs = scv.apply_rules(self.new_version, self.existing_versions)
+        msgs = semver.sanity_check_version(self.new_version,
+                                           self.existing_versions)
         self.assertEqual(self.expected, msgs)
