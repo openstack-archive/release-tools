@@ -12,6 +12,35 @@ similar_tarballs.sh also requires that you have tardiff installed.  If it's not
 packaged for your distribution, you can find it at
 http://tardiff.coolprojects.org/.
 
+Tox Targets
+===========
+
+Because some of the scripts have special dependencies, they can be run
+through tox as a convenience for managing those requirements.
+
+release_postversion
+-------------------
+
+This script is used to publish alphas and final releases for Oslo
+libraries, other libraries, and projects that use post-versioning
+(Ironic) instead of pre-versioning (Nova, etc.).  FixCommitted bugs
+are turned to FixReleased, the next-$SERIES milestone is renamed or a
+version-based milestone is created, and the milestone is marked
+released.
+
+Examples:
+
+tox -e release_postversion -- juno 1.3.0.0a3 HEAD oslo.rootwrap
+
+  Push a 1.3.0.0a3 tag to oslo.rootwrap current HEAD. Mark all FixCommitted
+  bugs in oslo.rootwrap to FixReleased in next-juno.
+
+tox -e release_postversion -- juno 1.3.0 HEAD oslo.rootwrap
+
+  Rename the next-juno milestone to '1.3.0'. Push a 1.3.0 tag to oslo.rootwrap
+  current HEAD. Mark all FixCommitted bugs in oslo.rootwrap (if any) to
+  FixReleased in 1.3.0, and mark 1.3.0 released.
+
 
 Top-level scripts
 =================
@@ -122,25 +151,7 @@ Examples:
 release_postversion.sh
 ----------------------
 
-This script is used to publish alphas and final releases for Oslo
-libraries, other libraries, and projects that use post-versioning
-(Ironic) instead of pre-versioning (Nova, etc.).  FixCommitted bugs
-are turned to FixReleased, the next-$SERIES milestone is renamed or a
-version-based milestone is created, and the milestone is marked
-released.
-
-Examples:
-
-./release_postversion.sh juno 1.3.0.0a3 HEAD oslo.rootwrap"
-
-  Push a 1.3.0.0a3 tag to oslo.rootwrap current HEAD. Mark all FixCommitted
-  bugs in oslo.rootwrap to FixReleased in next-juno.
-
-./release_postversion.sh juno 1.3.0 HEAD oslo.rootwrap"
-
-  Rename the next-juno milestone to '1.3.0'. Push a 1.3.0 tag to oslo.rootwrap
-  current HEAD. Mark all FixCommitted bugs in oslo.rootwrap (if any) to
-  FixReleased in 1.3.0, and mark 1.3.0 released.
+See the 'release_postversion' tox environment, above.
 
 release_many.sh
 ---------------
