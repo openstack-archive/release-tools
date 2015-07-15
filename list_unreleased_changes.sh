@@ -27,6 +27,11 @@ repos="$@"
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
 
+if [[ -z "$VIRTUAL_ENV" ]]; then
+    tox -e venv --notest
+    source ./.tox/venv/bin/activate
+fi
+
 # Make sure no pager is configured so the output is not blocked
 export PAGER=
 
@@ -44,7 +49,7 @@ function list_changes {
     else
         echo
         local end_sha=$(git log -n 1 --pretty=tformat:%h)
-        $TOOLSDIR/release_notes.py \
+        release-notes \
             --show-dates \
             --changes-only \
             . $prev_tag $end_sha
