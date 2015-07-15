@@ -418,17 +418,17 @@ Examples:
   and sets the milestone for those to 2015.1.0.
 
 
-create_milestones.py
---------------------
+milestones-create
+-----------------
 
 This script lets you create milestones in Launchpad in bulk. It is given a
 YAML description of the milestone dates and the projects to add milestones
 to. The script is idempotent and can safely be run multiple times. See
 create_milestones.sample.yaml for an example configuration file.
 
-Example:
+Example::
 
-./create_milestones.py havana.yaml
+  milestones-create havana.yaml
 
 
 milestone-ensure
