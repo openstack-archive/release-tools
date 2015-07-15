@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -11,13 +9,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-"""Check a proposed new release version against other existing versions.
-"""
-
-from __future__ import print_function
-
-import argparse
-import sys
 
 
 def try_int(val):
@@ -38,33 +29,7 @@ def format_version(v):
     return '.'.join(str(p) for p in v)
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        'new_version',
-        help='the new version being proposed',
-    )
-    parser.add_argument(
-        'existing_versions',
-        nargs='*',
-        help='the existing versions in the repository',
-    )
-    args = parser.parse_args()
-
-    new_version = parse_version(args.new_version)
-    if len(new_version) < 3:
-        new_version = new_version + [0]
-    existing_versions = sorted([
-        parse_version(v)
-        for v in args.existing_versions
-    ])
-    msgs = apply_rules(new_version, existing_versions)
-    for msg in msgs:
-        print(msg)
-    return 1 if msgs else 0
-
-
-def apply_rules(new_version, existing_versions):
+def sanity_check_version(new_version, existing_versions):
     warnings = []
     if not existing_versions:
         if new_version[0] != 0:
@@ -124,7 +89,3 @@ def apply_rules(new_version, existing_versions):
                 (format_version(new_version), format_version(latest_version))
             )
     return warnings
-
-
-if __name__ == '__main__':
-    sys.exit(main())

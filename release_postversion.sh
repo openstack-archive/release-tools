@@ -97,7 +97,7 @@ fi
 cd $REPODIR
 
 title "Sanity checking $VERSION"
-if ! $TOOLSDIR/sanity_check_version.py $VERSION $(git tag)
+if ! sanity-check-version $VERSION $(git tag)
 then
     read -s -p "Press Ctrl-C to cancel or Return to continue..."
 fi
