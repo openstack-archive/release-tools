@@ -127,7 +127,7 @@ else
     if [[ "$EMAIL_TAGS" != "" ]]; then
         email_tags="--email-tags $EMAIL_TAGS"
     fi
-    ${TOOLSDIR}/release_notes.py \
+    release_notes \
             --email \
             $email_tags \
             --series $SERIES \
