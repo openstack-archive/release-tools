@@ -150,7 +150,7 @@ if curl --silent --output /dev/null --fail "$MILESTONE_URL"; then
     milestone-rename $PROJECT next-$SERIES $VERSION
 else
     title "Ensuring that milestone $VERSION exists"
-    $TOOLSDIR/ensure_milestone.py $PROJECT $SERIES $VERSION
+    milestone-ensure $PROJECT $SERIES $VERSION
 fi
 
 title "Setting FixCommitted bugs to FixReleased"
