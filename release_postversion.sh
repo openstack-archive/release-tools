@@ -164,4 +164,4 @@ else
 fi
 
 title "Marking milestone as released in Launchpad"
-$TOOLSDIR/close_milestone.py $PROJECT $TARGET
+milestone-close $PROJECT $TARGET
