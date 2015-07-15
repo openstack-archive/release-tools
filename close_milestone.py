@@ -50,10 +50,8 @@ except KeyError:
     abort(2, 'Could not find project: %s' % args.project)
 
 for milestone in args.milestones:
-    for lp_milestone in lp_proj.all_milestones:
-        if lp_milestone.name == milestone:
-            break
-    else:
+    lp_milestone = lp_proj.getMilestone(name=milestone)
+    if lp_milestone is None:
         print >>sys.stderr, 'Could not find milestone: %s' % milestone
         continue
 
