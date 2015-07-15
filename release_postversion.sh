@@ -63,6 +63,11 @@ TARGET=$VERSION
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+if [[ -z "$VIRTUAL_ENV" ]]; then
+    tox -e venv --notest
+    source ./.tox/venv/bin/activate
+fi
+
 RELNOTESDIR="$PWD/relnotes"
 mkdir -p $RELNOTESDIR
 
@@ -78,7 +83,7 @@ if [[ -z "$LONG_REPO" ]]; then
 fi
 
 # Extend the email tags or set a default tag for the project owner.
-PROJECT_OWNER=${PROJECT_OWNER:-$($TOOLSDIR/get_project_for_repo.py --email-tag $LONG_REPO)}
+PROJECT_OWNER=${PROJECT_OWNER:-$(get-repo-owner --email-tag $LONG_REPO)}
 if [[ "$PROJECT_OWNER" != "" ]]; then
     EMAIL_TAGS="${PROJECT_OWNER}${EMAIL_TAGS}"
 fi
