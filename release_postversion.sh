@@ -147,7 +147,7 @@ fi
 MILESTONE_URL="https://launchpad.net/$PROJECT/+milestone/next-$SERIES"
 if curl --silent --output /dev/null --fail "$MILESTONE_URL"; then
     title "Renaming next-$SERIES to $VERSION"
-    $TOOLSDIR/rename_milestone.py $PROJECT next-$SERIES $VERSION
+    milestone-rename $PROJECT next-$SERIES $VERSION
 else
     title "Ensuring that milestone $VERSION exists"
     $TOOLSDIR/ensure_milestone.py $PROJECT $SERIES $VERSION
