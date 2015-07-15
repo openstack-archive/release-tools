@@ -8,6 +8,11 @@ if [[ $# -ne 1 ]]; then
     exit 1
 fi
 
-repos="$(./list_repos_by_project.py --code-only Oslo | grep -v incubator)"
+if [[ -z "$VIRTUAL_ENV" ]]; then
+    tox -e venv --notest
+    source ./.tox/venv/bin/activate
+fi
+
+repos="$(list-repos --code-only --team Oslo | grep -v incubator)"
 
 $(dirname $0)/list_unreleased_changes.sh $1 $repos
