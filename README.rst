@@ -431,15 +431,15 @@ Example:
 ./create_milestones.py havana.yaml
 
 
-ensure_milestone.py
--------------------
+milestone-ensure
+----------------
 
 This script lets you create one series and milestone in Launchpad. The
 script is idempotent and can safely be run multiple times.
 
-Example:
+Example::
 
-./ensure_milestone.py oslo.config liberty next-liberty
+  milestone-ensure oslo.config liberty next-liberty
 
 
 spec2bp.py
