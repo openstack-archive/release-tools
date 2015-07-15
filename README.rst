@@ -277,16 +277,18 @@ Example::
 
   ./close_milestone.py oslotest 1.8.0
 
-rename_milestone.py
--------------------
+milestone-rename
+----------------
 
 Renames a Launchpad milestone.
 
 Example:
 
-./rename_milestone.py oslo.rootwrap next-juno 1.3.0
+::
 
-  Rename oslo.rootwrap next-juno milestone to 1.3.0.
+  milestone-rename oslo.rootwrap next-juno 1.3.0
+
+Rename oslo.rootwrap next-juno milestone to 1.3.0.
 
 
 ms2version.py
