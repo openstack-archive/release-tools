@@ -8,6 +8,8 @@ function lp_project_to_repo {
 
     if [[ $proj == python-*client* ]]; then
         echo $proj
+    elif [[ $proj == glance-store ]]; then
+        echo glance_store
     else
         # Some of the repository names don't match the launchpad names, e.g.
         # python-stevedore and python-cliff.
