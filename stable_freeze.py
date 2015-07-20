@@ -46,6 +46,8 @@ PROJECTS['icehouse'] = ['trove']
 PROJECTS['icehouse'].extend(PROJECTS['havana'])
 PROJECTS['juno'] = ['sahara']
 PROJECTS['juno'].extend(PROJECTS['icehouse'])
+PROJECTS['kilo'] = ['ironic']
+PROJECTS['kilo'].extend(PROJECTS['juno'])
 
 
 logging.basicConfig(level=logging.INFO)
