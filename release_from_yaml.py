@@ -32,9 +32,8 @@ def main():
         help='a path to a YAML file specifying releases',
     )
     parser.add_argument(
-        'versions',
-        nargs='*',
-        help='versions to be released, defaults to ensuring all of them',
+        'version',
+        help='version to be released, defaults to ensuring all of them',
     )
     args = parser.parse_args()
 
@@ -54,22 +53,21 @@ def main():
     all_versions = {
         rel['version']: rel for rel in deliverable_data['releases']
     }
-    versions = args.versions or all_versions.keys()
+    version = args.version
 
-    for version in versions:
-        print('Version %s' % version)
-        this_version = all_versions[version]
-        # NOTE(dhellmann): For now we only support one project, until
-        # we rewrite the release script.
-        this_hash = [p['hash'] for p in this_version['projects']][0]
-        cmd = [
-            os.path.join(tools_dir, 'release_postversion.sh'),
-            series_name,
-            version,
-            this_hash,
-            deliverable_data['launchpad'],
-        ]
-        subprocess.check_call(cmd)
+    print('Version %s' % version)
+    this_version = all_versions[version]
+    # NOTE(dhellmann): For now we only support one project, until
+    # we rewrite the release script.
+    this_hash = [p['hash'] for p in this_version['projects']][0]
+    cmd = [
+        os.path.join(tools_dir, 'release_postversion.sh'),
+        series_name,
+        version,
+        this_hash,
+        deliverable_data['launchpad'],
+    ]
+    subprocess.check_call(cmd)
 
 
 if __name__ == '__main__':
