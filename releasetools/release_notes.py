@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -180,8 +178,8 @@ def run_cmd(cmd, cwd=None):
     return stdout, stderr
 
 
-def is_skippable_commit(args, line):
-    return (args.skip_requirement_merges and
+def is_skippable_commit(skip_requirement_merges, line):
+    return (skip_requirement_merges and
             line.lower().endswith('updated from global requirements'))
 
 
@@ -263,10 +261,74 @@ def main():
     args = parser.parse_args()
 
     library_path = os.path.abspath(args.library)
+
+    notable_changes = ''
+    if args.notable_changes:
+        with open(args.notable_changes, 'r') as fh:
+            notable_changes = fh.read().rstrip()
+
+    notes = generate_release_notes(
+        library=args.library,
+        library_path=library_path,
+        start_revision=args.start_revision,
+        end_revision=args.end_revision,
+        show_dates=args.show_dates,
+        skip_requirement_merges=args.skip_requirement_merges,
+        notable_changes=notable_changes,
+        is_stable=args.stable,
+        series=args.series,
+        email=args.email,
+        email_from=args.email_from,
+        email_to=args.email_to,
+        email_reply_to=args.email_reply_to,
+        email_tags=args.email_tags,
+        include_pypi_link=args.include_pypi_link,
+        changes_only=args.changes_only,
+    )
+    print(notes)
+    return 0
+
+
+def generate_release_notes(library, library_path,
+                           start_revision, end_revision,
+                           show_dates, skip_requirement_merges,
+                           notable_changes,
+                           is_stable, series,
+                           email, email_from,
+                           email_to, email_reply_to, email_tags,
+                           include_pypi_link,
+                           changes_only,
+                           ):
+    """Return the text of the release notes.
+
+    :param library: The name of the library.
+    :param library_path: Path to the library repository on disk.
+    :param start_revision: First reference for finding change log.
+    :param end_revision: Final reference for finding change log.
+    :param show_dates: Boolean indicating whether or not to show dates
+        in the output.
+    :param skip_requirement_merges: Boolean indicating whether to
+        skip merge commits for requirements changes.
+    :param notable_changes: Highlights from the release.
+    :param is_stable: Boolean indicating whether this is a stable
+        series or not.
+    :param series: String holding the name of the series.
+    :param email: Boolean indicating whether the output format should
+        be an email message.
+    :param email_from: String containing the sender email address.
+    :param email_to: String containing the email recipient.
+    :param email_reply_to: String containing the email reply-to address.
+    :param email_tags: String containing the email header topic tags to add.
+    :param include_pypi_link: Boolean indicating whether or not to
+        include an automatically generated link to the PyPI package
+        page.
+    :param changes_only: Boolean indicating whether to limit output to
+        the list of changes, without any extra data.
+
+    """
+
     if not os.path.isfile(os.path.join(library_path, "setup.py")):
-        sys.stderr.write("No 'setup.py' file found in %s\n" % library_path)
-        sys.stderr.write("This will not end well...\n")
-        return 1
+        raise RuntimeError("No 'setup.py' file found in %s\n" % library_path)
 
     # Get the python library/program description...
     cmd = [sys.executable, 'setup.py', '--description']
@@ -279,8 +341,8 @@ def main():
     library_name = stdout.strip()
 
     # Get the commits that are in the desired range...
-    git_range = "%s..%s" % (args.start_revision, args.end_revision)
-    if args.show_dates:
+    git_range = "%s..%s" % (start_revision, end_revision)
+    if show_dates:
         format = "--format=%h %ci %s"
     else:
         format = "--oneline"
@@ -289,7 +351,8 @@ def main():
     changes = []
     for commit_line in stdout.splitlines():
         commit_line = commit_line.strip()
-        if not commit_line or is_skippable_commit(args, commit_line):
+        if not commit_line or is_skippable_commit(skip_requirement_merges,
+                                                  commit_line):
             continue
         else:
             changes.append(commit_line)
@@ -315,60 +378,60 @@ def main():
             continue
         diff_stats.append(line)
 
-    notables = ''
-    if args.notable_changes:
-        with open(args.notable_changes, 'r') as fh:
-            notables = fh.read().rstrip()
-
     # Extract + valdiate needed sections from readme...
     readme_sections = parse_readme(library_path)
     bug_url = readme_sections['bug_url']
     if bug_url:
         lp_url = bug_url.replace("bugs.", "").rstrip("/")
-        milestone_url = lp_url + "/+milestone/%s" % args.end_revision
+        milestone_url = lp_url + "/+milestone/%s" % end_revision
     else:
         lp_url = ''
         milestone_url = ''
     change_header = ["Changes in %s %s" % (library_name, git_range)]
     change_header.append("-" * len(change_header[0]))
 
+    if not email_from:
+        raise RuntimeError('No email-from specified')
+
     params = dict(readme_sections)
     params.update({
         'project': os.path.basename(library_path),
         'description': description,
-        'end_rev': args.end_revision,
+        'end_rev': end_revision,
         'range': git_range,
         'lib': library_path,
         'milestone_url': milestone_url,
-        'skip_requirement_merges': args.skip_requirement_merges,
+        'skip_requirement_merges': skip_requirement_merges,
         'changes': changes,
         'requirement_changes': requirement_changes,
         'diff_stats': diff_stats,
-        'notables': notables,
+        'notables': notable_changes,
         'change_header': "\n".join(change_header),
         'emotion': random.choice(EMOTIONS),
-        'stable_series': args.stable,
-        'series': args.series,
-        'email': args.email,
-        'email_from': args.email_from,
-        'email_to': args.email_to,
-        'email_reply_to': args.email_reply_to,
-        'email_tags': args.email_tags,
+        'stable_series': is_stable,
+        'series': series,
+        'email': email,
+        'email_from': email_from,
+        'email_to': email_to,
+        'email_reply_to': email_reply_to,
+        'email_tags': email_tags,
     })
-    if args.include_pypi_link:
+    if include_pypi_link:
         params['pypi_url'] = PYPI_URL_TPL % library_name
     else:
         params['pypi_url'] = None
-    if args.changes_only:
-        print(expand_template(CHANGES_ONLY_TPL, params))
+
+    response = []
+    if changes_only:
+        response.append(expand_template(CHANGES_ONLY_TPL, params))
     else:
-        if args.email:
+        if email:
             email_header = expand_template(EMAIL_HEADER_TPL.strip(), params)
-            print(email_header.lstrip())
+            response.append(email_header.lstrip())
         header = expand_template(HEADER_RELEASE_TPL.strip(), params)
-        print(parawrap.fill(header))
-        print(expand_template(CHANGE_RELEASE_TPL, params))
-    return 0
+        response.append(parawrap.fill(header))
+        response.append(expand_template(CHANGE_RELEASE_TPL, params))
+    return '\n'.join(response)
 
 
 if __name__ == '__main__':
