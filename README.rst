@@ -214,7 +214,7 @@ looking at the commit logs.
   Print the list of changes in ``openstack/oslo.config`` along the
   master branch.
 
-./list_unreleased_changes.sh stable/kilo $(./list_repos_by_project.py --code-only Oslo)
+./list_unreleased_changes.sh stable/kilo $(list-repos --code-only --team Oslo)
 
   Print the list of changes in the ``stable/kilo`` branch of all Oslo
   libraries.
@@ -229,7 +229,7 @@ repositories.
 
 is equivalent to:
 
-./list_unreleased_changes.sh stable/kilo $(./list_repos_by_project.py --code-only Oslo)
+./list_unreleased_changes.sh stable/kilo $(list-repos --code-only --team Oslo)
 
 make_library_stable_branch.sh
 -----------------------------
@@ -247,21 +247,14 @@ Feature branches need to have "feature/" at the beginning of the name
 and should have their ``.gitreview`` updated when the branch is
 created.
 
-list_repos_by_project.py
-------------------------
+list-repos
+----------
 
 Read the project list from the governance repository and print a list
-of the repositories owned by the named project.
+of the repositories, filtered by team and/or tag.
 
-./list_repos_by_project.py Oslo
-
-list_repos_by_tag.py
---------------------
-
-Read the project list from the governance repository and print a list
-of the repositories with a given tag.
-
-./list_repos_by_project.py 'release:managed'
+list-repos --team Oslo
+list-repos --tag release:managed --tag type:library
 
 update_git_review.sh
 --------------------
