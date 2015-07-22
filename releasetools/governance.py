@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -15,9 +13,6 @@
 """Work with the governance repository.
 """
 
-from __future__ import print_function
-
-import argparse
 import itertools
 import requests
 import yaml
@@ -37,7 +32,21 @@ def get_team_data(url=PROJECTS_LIST):
     return yaml.load(r.text)
 
 
-def get_repositories(team, tags, code_only=False, url=PROJECTS_LIST):
+def get_repo_owner(repo_name):
+    """Return the name of the team that owns the repository.
+
+    :param repo_name: Long name of the repository, such as 'openstack/nova'.
+
+    """
+    team_data = get_team_data()
+    for team, info in team_data.items():
+        for project in info.get('projects', []):
+            if project['repo'] == repo_name:
+                return team
+    raise ValueError('Repository %s not found in governance list' % repo_name)
+
+
+def get_repositories(team, tags, code_only=False):
     """Return a sequence of repositories, possibly filtered.
 
     :param team: The name of the team owning the repositories. Can be
@@ -48,7 +57,7 @@ def get_repositories(team, tags, code_only=False, url=PROJECTS_LIST):
       repositories (ignoring specs and cookiecutter templates).
 
     """
-    team_data = get_team_data(url)
+    team_data = get_team_data()
 
     if team is not None:
         if team not in team_data:
@@ -77,33 +86,3 @@ def get_repositories(team, tags, code_only=False, url=PROJECTS_LIST):
         )
 
     return list(projects)
-
-
-def list_repos():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--project-list',
-        default=PROJECTS_LIST,
-        help='a URL pointing to a projects.yaml file, defaults to %(default)s',
-    )
-    parser.add_argument(
-        '--code-only',
-        default=False,
-        action='store_true',
-        help='only show repositories containing code, not docs or templates',
-    )
-    parser.add_argument(
-        '--team',
-        help='the name of the project team, such as "Nova" or "Oslo"',
-    )
-    parser.add_argument(
-        '--tag',
-        action='append',
-        default=[],
-        help='the name of a tag, such as "release:managed"',
-    )
-    args = parser.parse_args()
-
-    repos = get_repositories(args.team, args.tag, code_only=args.code_only)
-    for repo in repos:
-        print(repo['repo'])

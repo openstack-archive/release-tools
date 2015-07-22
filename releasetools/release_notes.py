@@ -12,7 +12,6 @@
 
 """Generates a standard set of release notes for a repository."""
 
-import argparse
 import glob
 import os
 import random
@@ -183,112 +182,6 @@ def is_skippable_commit(skip_requirement_merges, line):
             line.lower().endswith('updated from global requirements'))
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        prog='release_notes',
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("library", metavar='path', action="store",
-                        help="library directory, for example"
-                             " 'openstack/cliff'",
-                        )
-    parser.add_argument("start_revision", metavar='revision',
-                        action="store",
-                        help="start revision, for example '1.8.0'",
-                        )
-    parser.add_argument("end_revision", metavar='revision',
-                        action="store",
-                        nargs='?',
-                        help="end revision, for example '1.9.0'"
-                             " (default: HEAD)",
-                        default="HEAD")
-    parser.add_argument('--changes-only',
-                        action='store_true',
-                        default=False,
-                        help='List only the change summary, without details',
-                        )
-    parser.add_argument('--include-pypi-link',
-                        action='store_true',
-                        default=False,
-                        help='include a pypi hyperlink for the library',
-                        )
-    parser.add_argument("--notable-changes", metavar='path',
-                        action="store",
-                        help="a file containing any notable changes")
-    parser.add_argument("--skip-requirement-merges",
-                        action='store_true', default=False,
-                        help="skip requirement update commit messages"
-                             " (default: False)")
-    parser.add_argument("--show-dates",
-                        action='store_true', default=False,
-                        help="show dates in the change log")
-    parser.add_argument("--series", "-s",
-                        default="",
-                        help="release series name, such as 'kilo'",
-                        )
-    parser.add_argument("--stable",
-                        default=False,
-                        action='store_true',
-                        help="this is a stable release",
-                        )
-
-    email_group = parser.add_argument_group('email settings')
-    email_group.add_argument(
-        "--email", "-e",
-        action='store_true', default=False,
-        help="output a fully formed email message",
-    )
-    email_group.add_argument(
-        "--email-to",
-        default="openstack-announce@lists.openstack.org",
-        help="recipient of the email, defaults to %(default)s",
-    )
-    email_group.add_argument(
-        "--email-reply-to",
-        default="openstack-dev@lists.openstack.org",
-        help="follow-up for discussions, defaults to %(default)s",
-    )
-    email_group.add_argument(
-        "--email-from", "--from",
-        default=os.environ.get('EMAIL', ''),
-        help="source of the email, defaults to $EMAIL",
-    )
-    email_group.add_argument(
-        "--email-tags",
-        default="",
-        help="extra topic tags for email subject, e.g. '[oslo]'",
-    )
-    args = parser.parse_args()
-
-    library_path = os.path.abspath(args.library)
-
-    notable_changes = ''
-    if args.notable_changes:
-        with open(args.notable_changes, 'r') as fh:
-            notable_changes = fh.read().rstrip()
-
-    notes = generate_release_notes(
-        library=args.library,
-        library_path=library_path,
-        start_revision=args.start_revision,
-        end_revision=args.end_revision,
-        show_dates=args.show_dates,
-        skip_requirement_merges=args.skip_requirement_merges,
-        notable_changes=notable_changes,
-        is_stable=args.stable,
-        series=args.series,
-        email=args.email,
-        email_from=args.email_from,
-        email_to=args.email_to,
-        email_reply_to=args.email_reply_to,
-        email_tags=args.email_tags,
-        include_pypi_link=args.include_pypi_link,
-        changes_only=args.changes_only,
-    )
-    print(notes)
-    return 0
-
-
 def generate_release_notes(library, library_path,
                            start_revision, end_revision,
                            show_dates, skip_requirement_merges,
@@ -432,7 +325,3 @@ def generate_release_notes(library, library_path,
         response.append(parawrap.fill(header))
         response.append(expand_template(CHANGE_RELEASE_TPL, params))
     return '\n'.join(response)
-
-
-if __name__ == '__main__':
-    sys.exit(main())
