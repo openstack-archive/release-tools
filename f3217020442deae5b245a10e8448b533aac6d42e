@@ -1,0 +1,8 @@
+Verified+2: Jenkins
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Workflow+1: Thierry Carrez <thierry@openstack.org>
+Submitted-by: Jenkins
+Submitted-at: Thu, 23 Jul 2015 16:27:16 +0000
+Reviewed-on: https://review.openstack.org/202323
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
