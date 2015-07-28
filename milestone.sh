@@ -20,7 +20,7 @@
 set -e
 
 if [ $# -lt 3 ]; then
-    echo "Usage: $0 milestone SHA project"
+    echo "Usage: $0 milestone SHA project [deliverable]"
     echo
     echo "Example: $0 juno-1 HEAD keystone"
     exit 2
@@ -32,6 +32,7 @@ source $TOOLSDIR/functions
 MILESTONE=$1
 SHA=$2
 PROJECT=$3
+DELIVERABLE=$4
 LPROJECT="$PROJECT"
 
 if [[ "$PROJECT" == "oslo-incubator" ]]; then
@@ -40,10 +41,11 @@ if [[ "$PROJECT" == "oslo-incubator" ]]; then
     SKIPUPLOAD=1
 fi
 
-if [[ "$PROJECT" == neutron-* ]]; then
-    echo "Neutron advanced services mode: skipping bugs and upload to neutron"
+if [[ "$DELIVERABLE" != "" ]]; then
+    echo "Extra element in $DELIVERABLE deliverable"
+    echo "Skipping bugs updates and upload to $DELIVERABLE LP page"
     SKIPBUGS=1
-    LPROJECT="neutron"
+    LPROJECT="$DELIVERABLE"
 fi
 
 setup_temp_space milestone-$PROJECT
