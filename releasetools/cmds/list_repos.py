@@ -13,6 +13,7 @@
 from __future__ import print_function
 
 import argparse
+import operator
 
 from releasetools import governance
 
@@ -35,6 +36,10 @@ def main():
         help='the name of the project team, such as "Nova" or "Oslo"',
     )
     parser.add_argument(
+        '--deliverable',
+        help='the name of the deliverable, such as "nova" or "oslo.config"',
+    )
+    parser.add_argument(
         '--tag',
         action='append',
         default=[],
@@ -42,10 +47,13 @@ def main():
     )
     args = parser.parse_args()
 
+    team_data = governance.get_team_data()
     repos = governance.get_repositories(
+        team_data,
         args.team,
+        args.deliverable,
         args.tag,
         code_only=args.code_only,
     )
-    for repo in repos:
-        print(repo['repo'])
+    for repo in sorted(repos, key=operator.attrgetter('name')):
+        print(repo.name)

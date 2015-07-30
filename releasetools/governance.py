@@ -13,7 +13,8 @@
 """Work with the governance repository.
 """
 
-import itertools
+import weakref
+
 import requests
 import yaml
 
@@ -32,57 +33,96 @@ def get_team_data(url=PROJECTS_LIST):
     return yaml.load(r.text)
 
 
-def get_repo_owner(repo_name):
+def get_repo_owner(team_data, repo_name):
     """Return the name of the team that owns the repository.
 
+    :param team_data: The result of calling :func:`get_team_data`
     :param repo_name: Long name of the repository, such as 'openstack/nova'.
 
     """
-    team_data = get_team_data()
     for team, info in team_data.items():
-        for project in info.get('projects', []):
-            if project['repo'] == repo_name:
+        for dname, dinfo in info.get('deliverables', {}).items():
+            if repo_name in dinfo.get('repos', []):
                 return team
     raise ValueError('Repository %s not found in governance list' % repo_name)
 
 
-def get_repositories(team, tags, code_only=False):
+class Team(object):
+    def __init__(self, name, data):
+        self.name = name
+        self.data = data
+        self.deliverables = {
+            dn: Deliverable(dn, di, self)
+            for dn, di in self.data.get('deliverables', {}).items()
+        }
+
+    @property
+    def tags(self):
+        return set(self.data.get('tags', []))
+
+
+class Deliverable(object):
+    def __init__(self, name, data, team):
+        self.name = name
+        self.data = data
+        self.team = weakref.proxy(team)
+        self.repositories = {
+            rn: Repository(rn, self)
+            for rn in self.data.get('repos', [])
+        }
+
+    @property
+    def tags(self):
+        return set(self.data.get('tags', [])).union(self.team.tags)
+
+
+class Repository(object):
+    def __init__(self, name, deliverable):
+        self.name = name
+        self.deliverable = weakref.proxy(deliverable)
+
+    @property
+    def tags(self):
+        return self.deliverable.tags
+
+    @property
+    def code_related(self):
+        return not (self.name.endswith('-specs')
+                    or 'cookiecutter' in self.name)
+
+
+def get_repositories(team_data, team_name=None, deliverable_name=None,
+                     tags=[], code_only=False):
     """Return a sequence of repositories, possibly filtered.
 
-    :param team: The name of the team owning the repositories. Can be
+    :param team_data: The result of calling :func:`get_team_data`
+    :param team_name: The name of the team owning the repositories. Can be
         None.
+    :para deliverable_name: The name of the deliverable to which all
+       repos should belong.
     :param tags: The names of any tags the repositories should
         have. Can be empty.
     :param code_only: Boolean indicating whether to return only code
       repositories (ignoring specs and cookiecutter templates).
 
     """
-    team_data = get_team_data()
-
-    if team is not None:
-        if team not in team_data:
-            raise ValueError('No team %r found in the project list' % team)
-        projects = team_data[team].get('projects', [])
-    else:
-        projects = itertools.chain(
-            *[t.get('projects', []) for t in team_data.values()]
-        )
-
-    if code_only:
-        projects = (
-            p
-            for p in projects
-            if (not p['repo'].endswith('-specs')
-                and 'cookiecutter' not in p['repo'])
-        )
-
     if tags:
         tags = set(tags)
-        projects = (
-            p
-            for p in projects
-            if tags.issubset(set(t['name']
-                                 for t in p.get('tags', [])))
-        )
-
-    return list(projects)
+    if team_name:
+        teams = [Team(team_name, team_data[team_name])]
+    else:
+        teams = [Team(n, i) for n, i in team_data.items()]
+    for team in teams:
+        if deliverable_name and deliverable_name not in team.deliverables:
+            continue
+        if deliverable_name:
+            deliverables = [team.deliverables[deliverable_name]]
+        else:
+            deliverables = team.deliverables.values()
+        for deliverable in deliverables:
+            for repository in deliverable.repositories.values():
+                if tags and not tags.issubset(repository.tags):
+                    continue
+                if code_only and not repository.code_related:
+                    continue
+                yield repository

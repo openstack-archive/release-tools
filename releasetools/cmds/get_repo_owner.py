@@ -34,8 +34,9 @@ def main():
     )
     args = parser.parse_args()
 
+    team_data = governance.get_team_data()
     try:
-        name = governance.get_repo_owner(args.repository)
+        name = governance.get_repo_owner(team_data, args.repository)
     except ValueError as e:
         parser.error(str(e))
     else:
