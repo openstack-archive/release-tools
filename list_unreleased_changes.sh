@@ -38,11 +38,12 @@ export PAGER=
 setup_temp_space 'list-unreleased'
 
 function list_changes {
-    git clone -q git://git.openstack.org/$repo -b $branch
+    clone_repo $repo $branch
     if [[ $? -ne 0 ]]; then
         return 1
     fi
-    cd $(basename $repo)
+    cd $repo
+    title "Unreleased changes in $repo"
     prev_tag=$(get_last_tag)
     if [ -z "$prev_tag" ]; then
         echo "$repo has not yet been released"
@@ -60,6 +61,5 @@ function list_changes {
 for repo in $repos; do
     cd $MYTMPDIR
     echo
-    title "$repo"
     list_changes "$repo"
 done

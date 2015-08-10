@@ -45,10 +45,8 @@ function title {
 title "Checking that $VERSION exists in Launchpad"
 $TOOLSDIR/ms2version.py --onlycheck $LPROJECT $VERSION
 
-title "Cloning repository for $PROJECT"
-MYTMPDIR=`mktemp -d release-tag-$PROJECT-XXX`
-cd $MYTMPDIR
-git clone git://git.openstack.org/openstack/$REPO
+setup_temp_space release-tag-$PROJECT
+clone_repo openstack/$REPO
 cd $REPO
 LANG=C git review -s
 
@@ -65,7 +63,3 @@ REALSHA=`git show-ref -s $NEW_BRANCH`
 git push gerrit $NEW_BRANCH
 
 update_gitreview "$NEW_BRANCH"
-
-title "Cleaning up repository"
-cd ../..
-rm -rf $MYTMPDIR
