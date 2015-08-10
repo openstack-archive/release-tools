@@ -25,22 +25,8 @@
 
 set -e
 
-function clone_repo {
-    title "Cloning $LONG_REPO for $PROJECT"
-    git clone git://git.openstack.org/$LONG_REPO $REPO
-    cd $REPO
-    REPODIR="$(pwd)"
-    git review -s
-}
-
-function pull_repo {
-    git --git-dir "$REPODIR"/.git fetch gerrit
-    git checkout master
-    git merge --ff-only gerrit/master
-}
-
 if [ $# -lt 4 ]; then
-    echo "Usage: $0 series version SHA launchpad-project [[email-tags] local-repository]"
+    echo "Usage: $0 series version SHA launchpad-project [email-tags]"
     echo
     echo "Example: $0 juno 1.0.0 gerrit/master oslo.rootwrap"
     exit 2
@@ -54,10 +40,6 @@ VERSION=$2
 SHA=$3
 PROJECT=$4
 EMAIL_TAGS="$5"
-REPODIR=$6
-if [ -n "$REPODIR" ]; then
-    REPODIR="$(realpath $REPODIR)"
-fi
 
 TARGET=$VERSION
 
@@ -88,12 +70,8 @@ if [[ "$PROJECT_OWNER" != "" ]]; then
     EMAIL_TAGS="${PROJECT_OWNER}${EMAIL_TAGS}"
 fi
 
-if [ -z "$REPODIR" ]; then
-    clone_repo
-else
-    pull_repo
-fi
-
+clone_repo $LONG_REPO
+REPODIR="$(cd $LONG_REPO && pwd)"
 cd $REPODIR
 
 title "Sanity checking $VERSION"

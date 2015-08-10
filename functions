@@ -93,3 +93,11 @@ defaultbranch=$branch"
     git show
     git review
 }
+
+
+function clone_repo {
+    typeset repo="$1"
+    title "Cloning $repo"
+    zuul-cloner --branch master git://git.openstack.org $repo
+    (cd $repo && git review -s)
+}
