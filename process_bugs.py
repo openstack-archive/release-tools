@@ -39,11 +39,11 @@ parser.add_argument('exceptions', type=int, nargs='*', help='Bugs to ignore')
 args = parser.parse_args()
 
 # Connect to Launchpad
-print "Connecting to Launchpad..."
+print("Connecting to Launchpad...")
 launchpad = Launchpad.login_with('openstack-releasing', args.test)
 
 # Retrieve bugs
-print "Retrieving project..."
+print("Retrieving project...")
 proj = launchpad.projects[args.projectname]
 changes = True
 failed = set()
@@ -77,33 +77,33 @@ while changes:
         if (not args.milestone) and (args.settarget and b.milestone):
             if b.milestone.name != args.settarget:
                 continue
-        print bug.id,
+        print(bug.id)
         if bug.id in args.exceptions:
-            print " - excepted"
+            print(" - excepted")
             continue
         if args.settarget:
             if b.milestone != to_milestone:
                 b.milestone = to_milestone
-                print " - milestoned",
+                print(" - milestoned",)
             else:
-                print " - milestone already set",
+                print(" - milestone already set",)
         if args.fixrelease:
-            print " - fixreleased",
+            print(" - fixreleased",)
             b.status = 'Fix Released'
         try:
             b.lp_save()
             if (args.settarget and not b.milestone) or args.fixrelease:
                 changes = True
         except ServerError as e:
-            print " - TIMEOUT during save !",
+            print(" - TIMEOUT during save !",)
             failed.add(bug.id)
         except Exception as e:
-            print " - ERROR during save ! (%s)" % e,
+            print(" - ERROR during save ! (%s)" % e,)
             failed.add(bug.id)
         print
 
 if failed:
     print
-    print "Some bugs could not be automatically updated due to LP timeouts:"
+    print("Some bugs could not be automatically updated due to LP timeouts:")
     for bugid in failed:
-        print "http://bugs.launchpad.net/bugs/%d" % bugid
+        print("http://bugs.launchpad.net/bugs/%d" % bugid)

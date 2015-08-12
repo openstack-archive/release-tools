@@ -42,8 +42,8 @@ def find_job_url(sha=None, retries=30, wait=30):
         try:
             statusjson = requests.get('http://zuul.openstack.org/status.json')
         except Exception as e:
-            print "Error fetching status: %s" % e
-            print "  waiting before trying again"
+            print("Error fetching status: %s" % e)
+            print("  waiting before trying again")
             time.sleep(wait)
             continue
         status = statusjson.json()
@@ -81,9 +81,9 @@ parser = argparse.ArgumentParser(description='Wait for a tarball to be built '
 parser.add_argument('sha', help='commit that will generate the tarball')
 args = parser.parse_args()
 
-print "Looking for matching job..."
+print("Looking for matching job...")
 job_url = find_job_url(sha=args.sha)
-print "Found at %s" % job_url
-print "Waiting for job completion..."
+print("Found at %s" % job_url)
+print("Waiting for job completion...")
 tarball = wait_for_completion(job_url)
-print "Tarball generated at %s" % tarball
+print("Tarball generated at %s" % tarball)

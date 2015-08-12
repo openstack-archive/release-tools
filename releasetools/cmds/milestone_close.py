@@ -37,14 +37,14 @@ def main():
     args = parser.parse_args()
 
     # Connect to LP
-    print "Connecting to Launchpad..."
+    print("Connecting to Launchpad...")
     try:
         launchpad = Launchpad.login_with('openstack-releasing', args.test)
     except Exception as error:
         abort(2, 'Could not connect to Launchpad: ' + str(error))
 
     # Retrieve project
-    print "Checking project..."
+    print("Checking project...")
     try:
         lp_proj = launchpad.projects[args.project]
     except KeyError:
@@ -57,7 +57,7 @@ def main():
             continue
 
         # Mark milestone released
-        print "Marking %s released..." % milestone
+        print("Marking %s released..." % milestone)
         rel_notes = "This is another milestone (%s) on the road to %s %s." \
                     % (milestone, args.project.capitalize(),
                        lp_milestone.series_target.name)
@@ -69,8 +69,8 @@ def main():
             )
 
         # Mark milestone inactive
-        print "Marking %s inactive..." % milestone
+        print("Marking %s inactive..." % milestone)
         lp_milestone.is_active = False
         lp_milestone.lp_save()
 
-    print "Done!"
+    print("Done!")

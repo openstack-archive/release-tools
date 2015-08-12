@@ -43,7 +43,7 @@ args = parser.parse_args()
 try:
     launchpad = Launchpad.login_anonymously('openstack-releasing',
                                             'production')
-except Exception, error:
+except Exception as error:
     abort(2, 'Could not connect to Launchpad: ' + str(error))
 
 # Retrieve milestone
@@ -72,4 +72,4 @@ qualifier = 'b'
 if target_milestone.name[-3:-1].lower() == 'rc':
     qualifier = 'rc'
 
-print "%d.%d.0%s%s" % (year, sequence, qualifier, args.milestone[-1:])
+print("%d.%d.0%s%s" % (year, sequence, qualifier, args.milestone[-1:]))

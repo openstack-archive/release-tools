@@ -40,15 +40,15 @@ with open(args.configfile) as f:
     config = yaml.load(f)
 
 # Connect to LP
-print "Connecting to Launchpad..."
+print("Connecting to Launchpad...")
 try:
     launchpad = Launchpad.login_with('openstack-releasing', 'production')
-except Exception, error:
+except Exception as error:
     abort(2, 'Could not connect to Launchpad: ' + str(error))
 
 # Run through projects and milestones
 for projectname in config['projects']:
-    print "Project:", projectname
+    print("Project:", projectname)
 
     # Retrieve project
     try:
@@ -72,20 +72,20 @@ for projectname in config['projects']:
     # Check each milestone in config file
     for m, d in config['milestones'].iteritems():
         mymilestone = series.name + "-" + m
-        print "  Milestone: ", mymilestone
+        print("  Milestone: ", mymilestone)
 
         for milestone in series.all_milestones:
             if milestone.name == mymilestone:
                 if str(milestone.date_targeted)[0:10] == d:
-                    print "    OK"
+                    print("    OK")
                 else:
-                    print "    Exists but wrong date...",
+                    print("    Exists but wrong date...",)
                     milestone.date_targeted = d
                     milestone.lp_save()
-                    print "fixed"
+                    print("fixed")
                 break
         else:
-            print "    Does not exist yet...",
+            print("    Does not exist yet...",)
             if m.startswith("rc"):
                 code_name = m.upper()
             else:
@@ -93,4 +93,4 @@ for projectname in config['projects']:
             series.newMilestone(name=series.name + "-" + m,
                                 date_targeted=d or None,
                                 code_name=code_name)
-            print "created"
+            print("created")

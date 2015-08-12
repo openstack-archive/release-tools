@@ -46,11 +46,11 @@ except (KeyError, AttributeError):
     try:
         projects = [lp.projects[args.projectname], ]
     except KeyError:
-        print "%s: no such project or projectgroup" % args.projectname
+        print("%s: no such project or projectgroup" % args.projectname)
         sys.exit(1)
 
 for project in projects:
-    print "== %s ==" % project.name
+    print("== %s ==" % project.name)
     series = project.getSeries(name=args.seriesname)
 
     # Get the milestones for the series
@@ -58,8 +58,8 @@ for project in projects:
     try:
         active_milestones = series.active_milestones_collection
     except AttributeError:
-        print "No milestone in series %s for %s, skipping" % \
-            (args.seriesname, project.name)
+        print("No milestone in series %s for %s, skipping" %
+              (args.seriesname, project.name))
         continue
     for ms in series.active_milestones_collection:
         milestones.append(ms)
@@ -73,7 +73,7 @@ for project in projects:
             if bp.priority in ["Undefined", "Not"]:
                 # Blueprint is in milestone but has no priority
                 if not args.nokick:
-                    print "KICK %s (from %s)" % (bp.name, bp.milestone.name)
+                    print("KICK %s (from %s)" % (bp.name, bp.milestone.name))
                     if not args.dryrun:
                         bp.proposeGoal(goal=None)
                         bp.milestone = None
@@ -86,7 +86,7 @@ for project in projects:
             else:
                 if bp not in accepted:
                     # BP has milestone & prio, but not accepted for series yet
-                    print "SETGOAL %s" % bp.name
+                    print("SETGOAL %s" % bp.name)
                     if not args.dryrun:
                         bp.proposeGoal(goal=series)
 
@@ -96,13 +96,13 @@ for project in projects:
         if not bp.is_complete:
             if bp.milestone not in milestones:
                 # Blueprint is in series, no milestone
-                print "CLEARGOAL %s" % bp.name
+                print("CLEARGOAL %s" % bp.name)
                 if not args.dryrun:
                     bp.proposeGoal(goal=None)
             else:
                 if not bp.has_accepted_goal:
                     if bp.priority not in ["Undefined", "Not"]:
                         # BP is proposed/declined in series, has mstone + prio
-                        print "APPROVEGOAL %s" % bp.name
+                        print("APPROVEGOAL %s" % bp.name)
                         if not args.dryrun:
                             bp.acceptGoal()
