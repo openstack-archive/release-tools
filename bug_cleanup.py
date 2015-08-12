@@ -70,7 +70,7 @@ class LaunchpadCleanup(object):
     def _create_launchpad_client(self, server):
         cachedir = os.path.expanduser("~/.launchpadlib/cache/")
         if not os.path.exists(cachedir):
-            os.makedirs(cachedir, 0700)
+            os.makedirs(cachedir, 0o0700)
         return Launchpad.login_with('openstack-cleanup', server, cachedir)
 
     def cleanup_new_bugs_with_assignee(self):

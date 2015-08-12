@@ -59,14 +59,14 @@ if args.deliverable is None:
     args.deliverable = args.project
 
 # Connect to LP
-print "Connecting to Launchpad..."
+print("Connecting to Launchpad...")
 try:
     launchpad = Launchpad.login_with('openstack-releasing', args.test)
 except Exception as error:
     abort(2, 'Could not connect to Launchpad: ' + str(error))
 
 # Retrieve milestone
-print "Checking milestone..."
+print("Checking milestone...")
 try:
     lp_proj = launchpad.projects[args.project]
 except KeyError:
@@ -75,10 +75,10 @@ except KeyError:
 for lp_milestone in lp_proj.all_milestones:
     if lp_milestone.name == milestone:
         if lp_milestone.release:
-            print 'Milestone %s is already released' % milestone
+            print('Milestone %s is already released' % milestone)
             if args.deliverable != args.project:
-                print 'We are probably just trying to add %s to LP %s.' % \
-                    (args.deliverable, args.project)
+                print('We are probably just trying to add %s to LP %s.' %
+                      (args.deliverable, args.project))
             else:
                 abort(2, 'That looks like an error!')
         if args.milestone:
@@ -95,7 +95,7 @@ else:
 
 if not args.nop:
     # Retrieve tgz, check contents and MD5
-    print "Downloading tarball..."
+    print("Downloading tarball...")
     tmpdir = tempfile.mkdtemp()
     if args.tarball is None:
         base_tgz = "%s-%s%s.tar.gz" % \
@@ -111,16 +111,16 @@ if not args.nop:
 
     try:
         subprocess.check_call(['tar', 'ztvf', tgz])
-    except subprocess.CalledProcessError, e:
+    except subprocess.CalledProcessError as e:
         abort(2, '%s is not a tarball. Bad revision specified ?' % base_tgz)
 
     md5 = subprocess.check_output(['md5sum', tgz]).split()[0]
 
     # Sign tgz
-    print "Signing tarball..."
+    print("Signing tarball...")
     sig = tgz + '.asc'
     if not os.path.exists(sig):
-        print 'Calling GPG to create tgz signature...'
+        print('Calling GPG to create tgz signature...')
         subprocess.check_call(
             ['gpg', '--armor', '--sign', '--detach-sig', tgz])
 
@@ -131,7 +131,7 @@ if not args.nop:
         sig_content = sig_file.read()
 
 # Mark milestone released
-print "Marking milestone released..."
+print("Marking milestone released...")
 if args.nop:
     rel_notes = ""
 else:
@@ -150,13 +150,13 @@ else:
         release_notes=rel_notes)
 
 # Mark milestone inactive
-print "Marking milestone inactive..."
+print("Marking milestone inactive...")
 lp_milestone.is_active = False
 lp_milestone.lp_save()
 
 if not args.nop:
     # Upload file
-    print "Uploading release files..."
+    print("Uploading release files...")
     final_tgz = "%s-%s%s.tar.gz" % \
         (args.deliverable, args.version, preversion)
     if args.milestone:
@@ -176,7 +176,7 @@ if not args.nop:
                                                "charset=binary")
 
     # Check LP-reported MD5
-    print "Checking MD5s..."
+    print("Checking MD5s...")
     time.sleep(2)
     result_md5_url = "http://launchpad.net/%s/+download/%s/+md5" % \
                      (lp_release.self_link[30:], final_tgz)
@@ -187,6 +187,6 @@ if not args.nop:
         abort(3, 'MD5sums (%s/%s) do not match !' % (md5, result_md5))
 
     # Finished
-    print md5
+    print(md5)
 
-print "Done!"
+print("Done!")

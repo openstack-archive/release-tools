@@ -157,7 +157,7 @@ def freeze(reviews, rel):
         cmd = ["review",
                "--message '%s' --code-review '-2' %s" % (msg, _revision)]
         if DRY_RUN:
-            print 'Would run: gerrit %s' % ' '.join(cmd)
+            print('Would run: gerrit %s' % ' '.join(cmd))
             frozen.append(change)
             continue
 
@@ -182,7 +182,7 @@ def thaw(revisions, rel):
         cmd = ["review",
                "--message '%s' --code-review '0' %s" % (msg, rev)]
         if DRY_RUN:
-            print 'Would run: gerrit %s' % ' '.join(cmd)
+            print('Would run: gerrit %s' % ' '.join(cmd))
             continue
         try:
             run_command(cmd)
@@ -191,7 +191,7 @@ def thaw(revisions, rel):
         except:
             logging.error('Failed to thaw: %s' % rev)
         logging.info('thawed: %s' % rev)
-        print ' '.join(cmd)
+        print(' '.join(cmd))
 
 
 def parse_rev_file(f):
@@ -222,7 +222,7 @@ def filter_skip(reviews):
         if revision(review) not in skips:
             out.append(review)
         else:
-            print 'skip: %s' % revision(review)
+            print('skip: %s' % revision(review))
     return out
 
 if __name__ == '__main__':
@@ -306,10 +306,10 @@ if __name__ == '__main__':
             to_freeze = reviews
 
         if action == 'query':
-            print '\n\n'
+            print('\n\n')
             logging.info('%s open reviews to be frozen: ' % len(to_freeze))
-            print '\n'
-            print '\n'.join([rev['id'] for rev in to_freeze])
+            print('\n')
+            print('\n'.join([rev['id'] for rev in to_freeze]))
             sys.exit(0)
         elif action == 'freeze':
             to_freeze = filter_skip(to_freeze)
@@ -330,7 +330,7 @@ if __name__ == '__main__':
             else:
                 logging.info('Would write to %s (%s):' % (opts.outfile, mode))
                 for r in frozen:
-                    print r
+                    print(r)
 
     if action in ['thaw']:
         to_thaw = []
