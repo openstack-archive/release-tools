@@ -42,7 +42,7 @@ def main():
     print("connecting to launchpad")
     try:
         launchpad = Launchpad.login_with('openstack-releasing', 'production')
-    except Exception, error:
+    except Exception as error:
         abort(2, 'Could not connect to Launchpad: ' + str(error))
 
     # Retrieve project

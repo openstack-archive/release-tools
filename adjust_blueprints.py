@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
 from argparse import ArgumentParser
 from datetime import datetime, timedelta
 from launchpadlib.launchpad import Launchpad
@@ -33,7 +34,7 @@ parser.add_argument("--test", action='store_const', const='staging',
 args = parser.parse_args()
 
 # Connect to Launchpad
-print "Connecting to Launchpad..."
+print("Connecting to Launchpad...")
 launchpad = Launchpad.login_with('openstack-releasing', args.test,
                                  version='devel')
 
@@ -44,7 +45,7 @@ if not milestone:
 series = milestone.series_target
 
 # Get the blueprints
-print "Retrieving blueprints...",
+print("Retrieving blueprints...")
 now = datetime.now(tz=pytz.utc)
 to_clear = []
 to_series = []
@@ -54,10 +55,10 @@ bps = project.all_specifications
 numbps = len(bps)
 # Also get the series-targeted approved blueprints
 seriesbps = series.valid_specifications
-print "retrieved %d blueprints" % numbps
+print("retrieved %d blueprints" % numbps)
 
 # Parse the blueprints
-print "Parsing blueprints..."
+print("Parsing blueprints...")
 for bp in bps:
     count = count + 1
     sys.stdout.write("\r%d%%" % int(count * 100 / numbps))
@@ -76,26 +77,26 @@ print
 
 if (to_target):
     print
-    print "Those are implemented: need milestone target added"
+    print("Those are implemented: need milestone target added")
     for bp in to_target:
-        print bp.web_link
+        print(bp.web_link)
         if args.target:
             bp.milestone = milestone
             bp.lp_save()
 
 if (to_series):
     print
-    print "Those are implemented: need series goal added/approved"
+    print("Those are implemented: need series goal added/approved")
     for bp in to_series:
-        print bp.web_link
+        print(bp.web_link)
         if args.target:
             bp.proposeGoal(goal=series)
 
 if (to_clear):
     print
-    print "Those are incomplete: need their milestone target cleared"
+    print("Those are incomplete: need their milestone target cleared")
     for bp in to_clear:
-        print bp.web_link
+        print(bp.web_link)
         if args.clear:
             bp.milestone = None
             bp.lp_save()
