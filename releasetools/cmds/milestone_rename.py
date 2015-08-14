@@ -17,6 +17,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
 import argparse
 import sys
 
@@ -39,10 +40,10 @@ def main():
     args = parser.parse_args()
 
     # Connect to Launchpad
-    print "Connecting to Launchpad..."
+    print("Connecting to Launchpad...")
     try:
         launchpad = Launchpad.login_with('openstack-releasing', args.test)
-    except Exception, error:
+    except Exception as error:
         abort(2, 'Could not connect to Launchpad: ' + str(error))
 
     # Retrieve project
@@ -60,4 +61,4 @@ def main():
     milestone.name = args.to_milestone
     milestone.code_name = ''
     milestone.lp_save()
-    print "Renamed"
+    print("Renamed")
