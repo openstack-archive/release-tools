@@ -37,10 +37,8 @@ REPO=$(lp_project_to_repo $PROJECT)
 
 NEW_BRANCH="feature/$(echo $FEATURE | sed -e 's|^feature/||')"
 
-title "Cloning repository for $PROJECT"
-MYTMPDIR=`mktemp -d feature-branch-$PROJECT-XXX`
-cd $MYTMPDIR
-git clone git://git.openstack.org/openstack/$REPO
+setup_temp_space feature-branch-$PROJECT
+clone_repo openstack/$REPO
 cd $REPO
 LANG=C git review -s
 
@@ -57,7 +55,3 @@ REALSHA=`git show-ref -s $NEW_BRANCH`
 git push gerrit $NEW_BRANCH
 
 update_gitreview "$NEW_BRANCH"
-
-title "Cleaning up repository"
-cd ../..
-rm -rf $MYTMPDIR
