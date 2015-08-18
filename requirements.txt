@@ -1,4 +1,4 @@
-pbr>=0.6,!=0.7,<1.0
+pbr>=1.4
 argparse
 launchpadlib
 requests>=1.1
