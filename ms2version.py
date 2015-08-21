@@ -26,7 +26,7 @@ from launchpadlib.launchpad import Launchpad
 
 
 def abort(code, errmsg):
-    print >> sys.stderr, errmsg
+    print(errmsg, file=sys.stderr)
     sys.exit(code)
 
 
