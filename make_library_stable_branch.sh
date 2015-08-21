@@ -47,7 +47,7 @@ $TOOLSDIR/ms2version.py --onlycheck $LPROJECT $VERSION
 
 setup_temp_space release-tag-$PROJECT
 clone_repo openstack/$REPO
-cd $REPO
+cd openstack/$REPO
 LANG=C git review -s
 
 if $(git branch -r | grep $NEW_BRANCH > /dev/null); then
