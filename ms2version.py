@@ -26,7 +26,7 @@ from launchpadlib.launchpad import Launchpad
 
 
 def abort(code, errmsg):
-    print >> sys.stderr, errmsg
+    print(errmsg, file=sys.stderr)
     sys.exit(code)
 
 
@@ -57,7 +57,7 @@ for target_milestone in lp_proj.all_milestones:
     if target_milestone.name == args.milestone:
         break
 else:
-    abort(2, 'Could not find milestone: %s' % args.milestone)
+    print('WARNING: Could not find milestone: %s' % args.milestone)
 
 if args.onlycheck:
     sys.exit(0)
