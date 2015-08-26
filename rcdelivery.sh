@@ -48,26 +48,29 @@ fi
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
 
-title "Resolving $LPROJECT $SERIES $RC to version"
+title "Cloning repository for $PROJECT"
+setup_temp_space rc-delivery-$PROJECT
+clone_repo openstack/$PROJECT stable/$SERIES
+cd openstack/$PROJECT
 
+title "Resolving $LPROJECT $SERIES $RC to version"
+FINALVERSION=`grep "^version = " setup.cfg | awk -F" " '{ print $3 }'`
+if [[ "$FINALVERSION" == "" ]]; then
+    echo "Could not determine pre-version from setup.cfg"
+    exit 1
+fi
 if [[ "$RC" == "final" ]]; then
-    RC1VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $SERIES-rc1`
-    FINALVERSION=${RC1VERSION:0:8}
     MILESTONE=$FINALVERSION
     VERSION=$FINALVERSION
     $TOOLSDIR/ms2version.py --onlycheck $LPROJECT $MILESTONE
 else
     MILESTONE="$SERIES-$RC"
-    VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $MILESTONE`
-    FINALVERSION=${VERSION:0:8}
+    VERSION="${FINALVERSION}.0${RC}"
 fi
-echo "$SERIES $RC (milestone $MILESTONE) is version $VERSION"
-echo "Final $SERIES version will be $FINALVERSION"
-
-title "Cloning repository for $PROJECT"
-setup_temp_space rc-delivery-$PROJECT
-clone_repo openstack/$PROJECT stable/$SERIES
-cd openstack/$PROJECT
+echo "${PROJECT^} $SERIES $RC (milestone $MILESTONE) is version $VERSION"
+if [[ "$VERSION" != "$FINALVERSION" ]]; then
+    echo "Final $SERIES version will be $FINALVERSION"
+fi
 
 if [[ "$RC" == "final" ]]; then
     TAGMSG="${PROJECT^} $VERSION"
