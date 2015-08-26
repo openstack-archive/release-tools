@@ -20,10 +20,10 @@
 set -e
 
 if [[ $# -lt 3 ]]; then
-    echo "Usage: $0 series rcX|final projectname [swift_final_version]"
+    echo "Usage: $0 series rcX|final projectname"
     echo
-    echo "Example: $0 juno final keystone"
-    echo "Example: $0 juno rc2 swift 2.1.0"
+    echo "Example: $0 liberty rc2 keystone"
+    echo "Example: $0 liberty final neutron-fwaas"
     exit 2
 fi
 
@@ -43,15 +43,6 @@ if [[ "$PROJECT" == neutron-* ]]; then
     LPROJECT="neutron"
 fi
 
-if [[ "$PROJECT" == "swift" ]]; then
-    if [[ $# -eq 4 ]]; then
-        FINALVERSION=$4
-    else
-        echo "Missing Swift final version number argument !"
-        exit 2
-    fi
-fi
-
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function title {
@@ -62,23 +53,15 @@ function title {
 title "Resolving $LPROJECT $SERIES $RC to version"
 
 if [[ "$RC" == "final" ]]; then
-    if [[ "$LPROJECT" != "swift" ]]; then
-        RC1VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $SERIES-rc1`
-        FINALVERSION=${RC1VERSION:0:8}
-    fi
+    RC1VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $SERIES-rc1`
+    FINALVERSION=${RC1VERSION:0:8}
     MILESTONE=$FINALVERSION
     VERSION=$FINALVERSION
     $TOOLSDIR/ms2version.py --onlycheck $LPROJECT $MILESTONE
 else
-    if [[ "$LPROJECT" != "swift" ]]; then
-        MILESTONE="$SERIES-$RC"
-        VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $MILESTONE`
-        FINALVERSION=${VERSION:0:8}
-    else
-        MILESTONE="$FINALVERSION-$RC"
-        VERSION="${FINALVERSION}$RC"
-        $TOOLSDIR/ms2version.py --onlycheck $LPROJECT $MILESTONE
-    fi
+    MILESTONE="$SERIES-$RC"
+    VERSION=`$TOOLSDIR/ms2version.py $LPROJECT $MILESTONE`
+    FINALVERSION=${VERSION:0:8}
 fi
 echo "$SERIES $RC (milestone $MILESTONE) is version $VERSION"
 echo "Final $SERIES version will be $FINALVERSION"
@@ -103,11 +86,6 @@ git push gerrit $VERSION
 if [[ "$SKIPTARBALL" != "1" ]]; then
     title "Waiting for tarball from $SHA"
     $TOOLSDIR/wait_for_tarball.py $SHA
-
-# No longer check tarballs since they can lag hours now
-#    title "Checking tarball is similar to last stable-$SERIES.tar.gz"
-#    $TOOLSDIR/similar_tarballs.sh $PROJECT stable-$SERIES $VERSION
-#    read -sn 1 -p "Press any key to continue..."
 fi
 
 if [[ "$SKIPUPLOAD" != "1" ]]; then
