@@ -20,15 +20,17 @@
 set -e
 
 if [[ $# -lt 3 ]]; then
-    echo "Usage: $0 SHA series projectname"
+    echo "Usage: $0 SHA series projectname [deliverable]"
     echo
     echo "Example: $0 HEAD juno keystone"
+    echo "Example: $0 HEAD juno neutron-fwaas neutron"
     exit 2
 fi
 
 SHA=$1
 SERIES=$2
 PROJECT=$3
+DELIVERABLE=$4
 LPROJECT="$PROJECT"
 
 if [[ "$PROJECT" == "oslo-incubator" ]]; then
@@ -36,10 +38,11 @@ if [[ "$PROJECT" == "oslo-incubator" ]]; then
     SKIPTARBALL=1
 fi
 
-if [[ "$PROJECT" == neutron-* ]]; then
-    echo "Neutron advanced services mode: skipping bugs"
+if [[ "$DELIVERABLE" != "" ]]; then
+    echo "Extra element in $DELIVERABLE deliverable"
+    echo "Bugs won't be FixReleased to the RC1 milestone"
     SKIPBUGS=1
-    LPROJECT="neutron"
+    LPROJECT="$DELIVERABLE"
 fi
 
 RC1MILESTONE="$SERIES-rc1"
@@ -64,12 +67,6 @@ title "Creating stable/$SERIES at $SHA"
 git branch stable/$SERIES $SHA
 REALSHA=`git show-ref -s stable/$SERIES`
 git push gerrit stable/$SERIES
-
-# No longer check tarballs since they can lag hours now
-#if [[ "$SKIPTARBALL" != "1" ]]; then
-#    title "Waiting for tarball from $REALSHA"
-#    $TOOLSDIR/wait_for_tarball.py $REALSHA
-#fi
 
 if [[ "$SKIPBUGS" != "1" ]]; then
     title "Setting FixCommitted bugs to FixReleased"

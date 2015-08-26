@@ -20,16 +20,17 @@
 set -e
 
 if [[ $# -lt 3 ]]; then
-    echo "Usage: $0 series rcX|final projectname"
+    echo "Usage: $0 series rcX|final projectname [deliverable]"
     echo
     echo "Example: $0 liberty rc2 keystone"
-    echo "Example: $0 liberty final neutron-fwaas"
+    echo "Example: $0 liberty final neutron-fwaas neutron"
     exit 2
 fi
 
 SERIES=$1
 RC=$2
 PROJECT=$3
+DELIVERABLE=$4
 LPROJECT="$PROJECT"
 
 if [[ "$PROJECT" == "oslo-incubator" ]]; then
@@ -38,9 +39,10 @@ if [[ "$PROJECT" == "oslo-incubator" ]]; then
     SKIPUPLOAD=1
 fi
 
-if [[ "$PROJECT" == neutron-* ]]; then
-    echo "Neutron advanced services mode: upload to Neutron Launchpad project"
-    LPROJECT="neutron"
+if [[ "$DELIVERABLE" != "" ]]; then
+    echo "Extra element in $DELIVERABLE deliverable"
+    echo "Tarball will be uploaded to $DELIVERABLE LP page"
+    LPROJECT="$DELIVERABLE"
 fi
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
