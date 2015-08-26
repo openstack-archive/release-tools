@@ -44,11 +44,7 @@ if [[ "$PROJECT" == neutron-* ]]; then
 fi
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-function title {
-    echo
-    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
-}
+source $TOOLSDIR/functions
 
 title "Resolving $LPROJECT $SERIES $RC to version"
 
@@ -67,11 +63,9 @@ echo "$SERIES $RC (milestone $MILESTONE) is version $VERSION"
 echo "Final $SERIES version will be $FINALVERSION"
 
 title "Cloning repository for $PROJECT"
-MYTMPDIR=`mktemp -d`
-cd $MYTMPDIR
-git clone git://git.openstack.org/openstack/$PROJECT -b stable/$SERIES
-cd $PROJECT
-LANG=C git review -s
+setup_temp_space rc-delivery-$PROJECT
+clone_repo openstack/$PROJECT stable/$SERIES
+cd openstack/$PROJECT
 
 if [[ "$RC" == "final" ]]; then
     TAGMSG="${PROJECT^} $VERSION"
@@ -107,7 +101,3 @@ else
         --deliverable=$PROJECT --milestone=$MILESTONE --nop
     fi
 fi
-
-title "Cleaning up"
-cd ../..
-rm -rf $MYTMPDIR

@@ -45,26 +45,18 @@ fi
 RC1MILESTONE="$SERIES-rc1"
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-function title {
-    echo
-    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
-}
+source $TOOLSDIR/functions
 
 title "Checking that $RC1MILESTONE exists"
 $TOOLSDIR/ms2version.py --onlycheck $LPROJECT $RC1MILESTONE
 
 title "Cloning repository for $PROJECT"
-MYTMPDIR=`mktemp -d`
-cd $MYTMPDIR
-git clone git://git.openstack.org/openstack/$PROJECT
-cd $PROJECT
-LANG=C git review -s
+setup_temp_space rc-branch-$PROJECT
+clone_repo openstack/$PROJECT
+cd openstack/$PROJECT
 
 if $(git branch -r | grep stable/$SERIES > /dev/null); then
     echo "The stable/$SERIES branch already exists !"
-    cd ../..
-    rm -rf $MYTMPDIR
     exit 1
 fi
 
@@ -72,10 +64,6 @@ title "Creating stable/$SERIES at $SHA"
 git branch stable/$SERIES $SHA
 REALSHA=`git show-ref -s stable/$SERIES`
 git push gerrit stable/$SERIES
-
-title "Cleaning up repository"
-cd ../..
-rm -rf $MYTMPDIR
 
 # No longer check tarballs since they can lag hours now
 #if [[ "$SKIPTARBALL" != "1" ]]; then
