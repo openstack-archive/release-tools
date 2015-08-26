@@ -67,8 +67,10 @@ rccut.sh creates a stable/$SERIES branch from the specified SHA, and turns
 all Launchpad bugs for the RC1 milestone to FixReleased (which means
 "present in the release branch").
 
-It special-cases oslo-incubator, where it doesn't wait for a tarball to be
-built.
+It supports deliverables with multiple repositories, using an additional
+parameter to point to the main deliverable (in which case it skips Launchpad
+update). It special-cases oslo-incubator, where it doesn't wait for a tarball
+to be built.
 
 Examples:
 
@@ -77,6 +79,10 @@ Examples:
   Create a series/liberty branch for Nova at commit 7432f32d838ab346c, and
   mark FixCommitted bugs FixReleased, while targeting them to the juno-rc1
   milestone.
+
+./rccut.sh 3472368b3a546d liberty neutron-fwaas neutron
+
+  Create a series/liberty branch for neutron-fwaas at commit 3472368b3a546d.
 
 
 rcdelivery.sh
@@ -87,8 +93,10 @@ release from the stable/$SERIES branch. It applies the RC or final tag,
 pushes it, waits for the tarball build, and uploads the resulting
 tarball to Launchpad (while marking it released).
 
-It special-cases oslo-incubator, where no tarball is generated or needs
-to be uploaded.
+It supports deliverables with multiple repositories, using an additional
+parameter to point to the main deliverable (in which case it uploads to the
+main Launchpad page). It special-cases oslo-incubator, where no tarball is
+generated or needs to be uploaded.
 
 Examples:
 
@@ -98,11 +106,11 @@ Examples:
   the tarball build, and upload the resulting tarball to Launchpad (while
   marking it released).
 
-./rcdelivery kilo final neutron
+./rcdelivery kilo final neutron-fwaas neutron
 
-  Push 2015.1.0 final tag to current neutron stable/kilo branch HEAD (which
-  should be the last RC), wait for the tarball build, and upload the resulting
-  tarball to Launchpad (while marking it released).
+  Push 2015.1.0 final tag to current neutron-fwaas stable/kilo branch HEAD
+  (which should be the last RC), wait for the tarball build, and upload the
+  resulting tarball to the "neutron" Launchpad page.
 
 
 release_postversion.sh
