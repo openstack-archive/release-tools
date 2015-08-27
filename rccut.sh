@@ -20,10 +20,9 @@
 set -e
 
 if [[ $# -lt 3 ]]; then
-    echo "Usage: $0 SHA series projectname [swift_final_version]"
+    echo "Usage: $0 SHA series projectname"
     echo
     echo "Example: $0 HEAD juno keystone"
-    echo "Example: $0 HEAD juno swift 2.1.0"
     exit 2
 fi
 
@@ -43,16 +42,7 @@ if [[ "$PROJECT" == neutron-* ]]; then
     LPROJECT="neutron"
 fi
 
-if [[ "$PROJECT" == "swift" ]]; then
-    if [[ $# -eq 4 ]]; then
-        RC1MILESTONE="$4-rc1"
-    else
-        echo "Missing Swift final version number argument !"
-        exit 2
-    fi
-else
-    RC1MILESTONE="$SERIES-rc1"
-fi
+RC1MILESTONE="$SERIES-rc1"
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 

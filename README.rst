@@ -61,14 +61,14 @@ Example:
 rccut.sh
 --------
 
-Final release follows a slightly different process. Just before RC1 we need
-to create a stable/* release branch. rccut.sh creates a stable/$SERIES
-branch from the specified SHA, and turns all Launchpad bugs for the RC1
-milestone to FixReleased (which means "present in the release branch").
+Final release for pre-versioned components follows a slightly different
+process. Just before RC1 we need to create a stable/* release branch.
+rccut.sh creates a stable/$SERIES branch from the specified SHA, and turns
+all Launchpad bugs for the RC1 milestone to FixReleased (which means
+"present in the release branch").
 
-It special-cases Swift, where an additional parameter is provided to specify
-the version number of the final release. It also special-cases oslo-incubator,
-where it doesn't wait for a tarball to be built.
+It special-cases oslo-incubator, where it doesn't wait for a tarball to be
+built.
 
 Examples:
 
@@ -78,24 +78,17 @@ Examples:
   mark FixCommitted bugs FixReleased, while targeting them to the juno-rc1
   milestone.
 
-./rccut.sh HEAD liberty swift 2.5.0
-
-  Create a stable/liberty branch for Swift from master's HEAD commit, and
-  mark FixCommitted bugs FixReleased, while targeting them to the 2.5.0-rc1
-  milestone.
-
 
 rcdelivery.sh
 -------------
 
-This script is used to publish RCs and final release from the stable/$SERIES
-branch. It applies the RC or final tag, pushes it, waits for the tarball
-build, lets you doublecheck tarball similarities, and upload the resulting
+This script is used for pre-versioned projects to publish RCs and final
+release from the stable/$SERIES branch. It applies the RC or final tag,
+pushes it, waits for the tarball build, and uploads the resulting
 tarball to Launchpad (while marking it released).
 
-It special-cases Swift, where an additional parameter is provided to specify
-the version number of the final release. It also special-cases oslo-incubator,
-where no tarball is generated or needs to be uploaded.
+It special-cases oslo-incubator, where no tarball is generated or needs
+to be uploaded.
 
 Examples:
 
@@ -104,12 +97,6 @@ Examples:
   Push 2015.1.0rc1 tag to current cinder stable/kilo branch HEAD, wait for
   the tarball build, and upload the resulting tarball to Launchpad (while
   marking it released).
-
-./rcdelivery liberty rc2 swift 2.5.0
-
-  Push 2.3.0rc2 tag to current swift stable/liberty branch HEAD, wait for the
-  tarball build, and upload the resulting tarball to Launchpad (while marking
-  it released).
 
 ./rcdelivery kilo final neutron
 
