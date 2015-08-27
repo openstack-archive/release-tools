@@ -65,7 +65,7 @@ if [[ -z "$LONG_REPO" ]]; then
 fi
 
 # Extend the email tags or set a default tag for the project owner.
-PROJECT_OWNER=${PROJECT_OWNER:-$(get-repo-owner --email-tag $LONG_REPO)}
+PROJECT_OWNER=${PROJECT_OWNER:-$(get-repo-owner --email-tag $LONG_REPO || echo "")}
 if [[ "$PROJECT_OWNER" != "" ]]; then
     EMAIL_TAGS="${PROJECT_OWNER}${EMAIL_TAGS}"
 fi
