@@ -78,33 +78,33 @@ while changes:
         if (not args.milestone) and (args.settarget and b.milestone):
             if b.milestone.name != args.settarget:
                 continue
-        print(bug.id)
+        print(bug.id, end='')
         if bug.id in args.exceptions:
             print(" - excepted")
             continue
         if args.settarget:
             if b.milestone != to_milestone:
                 b.milestone = to_milestone
-                print(" - milestoned",)
+                print(" - milestoned", end='')
             else:
-                print(" - milestone already set",)
+                print(" - milestone already set", end='')
         if args.fixrelease:
-            print(" - fixreleased",)
+            print(" - fixreleased", end='')
             b.status = 'Fix Released'
         try:
             b.lp_save()
             if (args.settarget and not b.milestone) or args.fixrelease:
                 changes = True
         except ServerError as e:
-            print(" - TIMEOUT during save !",)
+            print(" - TIMEOUT during save !", end='')
             failed.add(bug.id)
         except Exception as e:
-            print(" - ERROR during save ! (%s)" % e,)
+            print(" - ERROR during save ! (%s)" % e, end='')
             failed.add(bug.id)
-        print
+        print()
 
 if failed:
-    print
+    print()
     print("Some bugs could not be automatically updated due to LP timeouts:")
     for bugid in failed:
         print("http://bugs.launchpad.net/bugs/%d" % bugid)
