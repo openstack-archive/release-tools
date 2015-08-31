@@ -569,3 +569,83 @@ Examples:
 
   Targets missing implemented blueprints and cleans incomplete ones for Nova
   in liberty-1.
+
+How to Release a Library
+========================
+
+Libraries should all be using post-versioning, getting their version
+information from git tags and not having any version specifier in the
+``setup.cfg``.
+
+Library release requests are filed as patches to deliverables files in
+the openstack/releases repository, see the README there for more
+details.
+
+Before beginning this process, you need to set up ``gpg`` with a valid
+key, and authorize launchpad to run the release tools
+commands. Authorizing launchpad can be tricky on a system that only
+provides a terminal-based browser, since the launchpad site does not
+work well with the default configuration of ``lynx`` (cookies and
+referrer headers need to be enabled for the launchpad site). Newer
+versions of launchpadlib also rely on keyring, which may require a
+password for every command being run if you are not in a graphical
+environment with a better interactive key manager. Talk with dhellmann
+if you start a release and run into trouble with launchpad auth.
+
+When a release request is ready to be approved, follow these steps:
+
+1. If the release includes any completed blueprints, go to launchpad
+   and create a ``next-$SERIES`` milestone as part of the ``$SERIES``
+   release. Set the targets for the blueprints to ``next-$SERIES`` and
+   mark them as implemented. If there are no blueprints, this step can
+   be skipped.
+
+2. If this is a stable release and there are bugs to be reported as
+   fixed, create a ``next-$SERIES`` milestone as part of the
+   ``$SERIES`` release and target the bugs to the milestone. Set their
+   status to ``Fix Committed``. If the release is from the ``master``
+   branch, this step can be skipped.
+
+3. The release team member taking responsibility for the release
+   should approve the change in ``openstack/releases``. Release
+   requests should not be approved until we are actually ready to cut
+   the release.
+
+4. After the release request merges, check out or update a local copy
+   of ``openstack/releases`` to get the new version of the deliverable
+   file.
+
+5. In a local copy of this ``openstack-infra/release-tools``
+   repository, run ``release_from_yaml.py``, giving the path to the
+   deliverable file and the version from that file that needs to be
+   released as arguments.
+
+   For example::
+
+      $ ./release_from_yaml.py ~/repos/openstack/releases/deliverables/liberty/openstack-doc-tools.yaml 0.30.1
+
+6. As the release script runs, it reports on the existing tags in the
+   branch being released and offers a last chance to review the new
+   tag in light of the history. Press ``<return>`` when ready to
+   continue, then enter the pass phrase for your GPG key to add the
+   tag.
+
+7. After the tag is created locally and pushed up to the remote
+   server, the script generates a release announcement email with some
+   basic change information. It prints the results to the console, and
+   saves a copy in ``relnotes/$project-$version``. The file is a fully
+   formatted email, ready to be processed with a tool like
+   ``msmtp``.
+
+   If you use another mailer, copy the contents of the subject and
+   body into the mail program, preserving the topic tags in the
+   subject line, then send the message to
+   ``openstack-announce@lists.openstack.org`` with the ``Reply-To``
+   header set to ``openstack-dev@lists.openstack.org``.
+
+8. After the release notes are written out, the script ensures that a
+   launchpad milestone with the version number is created. If there is
+   a ``next-$SERIES`` milestone, it is renamed and used. For releases
+   from ``master``, all closed bugs are targeted to the new
+   milestone. For stable branches, bugs should be targeted explicitly
+   (see step 2).
