@@ -241,6 +241,15 @@ repositories.
 
 ./update_git_review.sh stable/kilo ~/repos/openstack/oslo.*
 
+launchpad-login
+---------------
+
+Test or configure the launchpad credentials. This will set up a
+keyring entry for the launchpad site, prompt for credentials, and
+handle the OAuth handshake. All of the other launchpad-connected
+commands will do these steps, too, but this command takes no other
+action after logging in so it is safe to run it repeatedly.
+
 Base tools
 ==========
 
