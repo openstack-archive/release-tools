@@ -17,6 +17,7 @@ Top-level scripts
 
 The top-level scripts call the various base tools to get their work done.
 
+
 milestone.sh
 ------------
 
@@ -39,23 +40,21 @@ Example:
   and mark Launchpad milestone released.
 
 
-swiftrc.sh
-----------
+intermediary.sh
+---------------
 
-Swift's intermediary releases tag a RC1 candidate on master and let them bake,
-so the all-in-one milestone.sh doesn't work there. swiftrc.sh creates a RC1
-tag, pushes it, waits for the tarball build, lets you doublecheck tarball
-similarities, and turns FixCommitted bugs into FixReleased ones (and targets
-them to the milestone). When the RC1 is deemed ready, you can run milestone.sh
-to tag and upload the final release.
+This script handles cycle-with-intermediary project releases. It creates
+a tag, pushes it, waits for the tarball build, turns FixCommitted bugs into
+FixReleased ones (and targets them to the milestone), and upload the
+resulting tarball to Launchpad (while marking it released).
 
 Example:
 
-./swiftrc.sh 7432f32d838ab346c 2.1.0
+./intermediary.sh 2.4.0 HEAD swift
 
-  Apply 2.1.0rc1 tag to Swift's 7432f32d838ab346c commit, check resulting
-  tarball, mark FixCommitted bugs as released and target them to the 2.1.0
-  milestone.
+  Apply 2.4.0 tag to HEAD of swift master branch, check resulting tarball,
+  mark FixCommitted bugs as released, upload tarball to Launchpad and mark
+  Launchpad milestone released.
 
 
 rccut.sh
