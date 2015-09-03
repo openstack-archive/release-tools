@@ -51,7 +51,7 @@ function get_last_tag {
     # specified, the currently checked out branch is examined.
     typeset branch="$1"
 
-    git describe --abbrev=0 $branch
+    git describe --abbrev=0 $branch || return 0
 }
 
 
