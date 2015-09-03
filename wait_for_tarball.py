@@ -24,6 +24,12 @@ import requests
 import time
 
 
+# Turn off warnings for insecure sites, since we'll be talking to
+# cloud instances anyway.
+from requests.packages import urllib3
+urllib3.disable_warnings()
+
+
 def get_from_jenkins(job_url, tree=None):
     api_job_url = job_url + "api/json"
     if tree:
@@ -67,9 +73,13 @@ def find_job_url(sha=None, retries=30, wait=30):
 def wait_for_completion(job_url, retries=30, wait=30):
     retry = 0
     while retry < retries:
-        job_json = get_from_jenkins(job_url)
-        if not job_json['building']:
-            return job_json['artifacts'][-1]['displayPath']
+        try:
+            job_json = get_from_jenkins(job_url)
+        except Exception as e:
+            print('Failed to get job from jenkins: %s' % e)
+        else:
+            if not job_json['building']:
+                return job_json['artifacts'][-1]['displayPath']
         retry += 1
         time.sleep(wait)
     else:
