@@ -10,6 +10,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import itertools
+
 
 def try_int(val):
     try:
@@ -27,6 +29,21 @@ def parse_version(v):
 
 def format_version(v):
     return '.'.join(str(p) for p in v)
+
+
+def _compute_next(actual):
+    "Given one field of a version, compute the next value."
+    try:
+        expected = actual + 1
+    except TypeError:
+        # The patch level is a string, not an int, meaning it is
+        # likely an alpha or beta release. Pull the prefix digits off
+        # and convert those to an int, defaulting to 0 if there is no
+        # prefix.
+        prefix = ''.join(itertools.takewhile(lambda x: x.isdigit(),
+                                             actual))
+        expected = int(prefix or 0) + 1
+    return expected
 
 
 def sanity_check_version(new_version, existing_versions):
@@ -57,7 +74,7 @@ def sanity_check_version(new_version, existing_versions):
     if same_minor is not None:
         print('last version in minor series %r' %
               format_version(same_minor))
-        expected = same_minor[2] + 1
+        expected = _compute_next(same_minor[2])
         actual = new_version[2]
         if actual > expected:
             warnings.append(
@@ -68,7 +85,7 @@ def sanity_check_version(new_version, existing_versions):
         print('last version in major series %r' %
               format_version(same_major))
         if new_version > same_major:
-            expected = same_major[1] + 1
+            expected = _compute_next(same_major[1])
             actual = new_version[1]
             if actual > expected:
                 warnings.append(

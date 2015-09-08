@@ -99,6 +99,12 @@ class RulesTest(base.BaseTestCase):
          {'new_version': [1, 0, 0],
           'existing_versions': [[0, 1, 0], [1, 0, 0]],
           'expected': ["version '1.0.0' already exists in repository"]}),
+
+        # From a bad tag in python-neutronclient
+        ('improper alpha version tag',
+         {'new_version': [3, 0, 0],
+          'existing_versions': [[3, 0, 'a1']],
+          'expected': []}),
     ]
 
     def test(self):
