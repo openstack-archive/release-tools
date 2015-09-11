@@ -83,6 +83,7 @@ def main():
     if highlights_file:
         cmd.append('')  # empty email tags argument required
         cmd.append(highlights_file.name)
+    print(' '.join(cmd))
     subprocess.check_call(cmd)
 
 
