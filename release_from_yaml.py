@@ -34,6 +34,7 @@ def main():
     )
     parser.add_argument(
         'version',
+        nargs='?',
         help='version to be released, defaults to ensuring all of them',
     )
     args = parser.parse_args()
@@ -55,6 +56,9 @@ def main():
         rel['version']: rel for rel in deliverable_data['releases']
     }
     version = args.version
+    if not version:
+        version = deliverable_data['releases'][-1]['version']
+        print('Defaulting version to last listed')
 
     print('Version %s' % version)
     this_version = all_versions[version]
