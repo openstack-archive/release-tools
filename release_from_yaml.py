@@ -21,6 +21,7 @@ import argparse
 import os.path
 import sys
 import subprocess
+import tempfile
 
 import yaml
 
@@ -57,6 +58,14 @@ def main():
 
     print('Version %s' % version)
     this_version = all_versions[version]
+
+    if this_version.get('highlights'):
+        highlights_file = tempfile.NamedTemporaryFile()
+        highlights_file.write(this_version['highlights'])
+        highlights_file.flush()
+    else:
+        highlights_file = None
+
     # NOTE(dhellmann): For now we only support one project, until
     # we rewrite the release script.
     this_hash = [p['hash'] for p in this_version['projects']][0]
@@ -67,6 +76,9 @@ def main():
         this_hash,
         deliverable_data['launchpad'],
     ]
+    if highlights_file:
+        cmd.append('')  # empty email tags argument required
+        cmd.append(highlights_file.name)
     subprocess.check_call(cmd)
 
 

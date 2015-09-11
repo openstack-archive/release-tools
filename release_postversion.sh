@@ -40,6 +40,7 @@ VERSION=$2
 SHA=$3
 PROJECT=$4
 EMAIL_TAGS="$5"
+HIGHLIGHTS_FILE="$6"
 
 TARGET=$VERSION
 
@@ -110,10 +111,14 @@ else
     if [[ "$EMAIL_TAGS" != "" ]]; then
         email_tags="--email-tags $EMAIL_TAGS"
     fi
+    if [[ "$HIGHLIGHTS_FILE" != "" ]]; then
+        highlights_args="--notable-changes $HIGHLIGHTS_FILE"
+    fi
     release-notes \
             --email \
             $email_tags \
             --series $SERIES \
+            $highlights_args \
             $stable \
             . $previous_rev $VERSION \
             --include-pypi-link \
