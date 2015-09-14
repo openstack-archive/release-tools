@@ -32,6 +32,7 @@ SERIES=$1
 PROJECT=$2
 VERSION=$3
 LPROJECT="$PROJECT"
+REPO_PREFIX=${4:-openstack}
 
 REPO=$(lp_project_to_repo $PROJECT)
 
@@ -42,12 +43,12 @@ function title {
     echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
 }
 
-title "Checking that $VERSION exists in Launchpad"
+title "Checking that $VERSION exists in Launchpad for $LPROJECT"
 $TOOLSDIR/ms2version.py --onlycheck $LPROJECT $VERSION
 
 setup_temp_space release-tag-$PROJECT
-clone_repo openstack/$REPO
-cd openstack/$REPO
+clone_repo $REPO_PREFIX/$REPO
+cd $REPO_PREFIX/$REPO
 LANG=C git review -s
 
 if $(git branch -r | grep $NEW_BRANCH > /dev/null); then
