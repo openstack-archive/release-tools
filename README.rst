@@ -249,6 +249,18 @@ handle the OAuth handshake. All of the other launchpad-connected
 commands will do these steps, too, but this command takes no other
 action after logging in so it is safe to run it repeatedly.
 
+check_library_constraints.sh
+----------------------------
+
+Script to check the current list of constraints against the most
+recent release for all of the library projects. This script can be
+used at any point, but is especially intended to ensure that the
+constraints for things we release are all updated at the end of a
+release cycle. To run the script, check out both the release-tools and
+requirements repositories and then run the script as::
+
+  $ check_library_constraints.sh /path/to/requirements-repository
+
 Base tools
 ==========
 
