@@ -81,6 +81,6 @@ function clone_repo {
         branch="master"
     fi
     title "Cloning $repo"
-    zuul-cloner --branch "$branch" git://git.openstack.org $repo 2>/dev/null \
+    zuul-cloner --branch "$branch" git://git.openstack.org $repo \
         && (cd $repo && git review -s)
 }
