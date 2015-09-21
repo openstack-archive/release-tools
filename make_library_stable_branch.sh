@@ -38,11 +38,6 @@ REPO=$(lp_project_to_repo $PROJECT)
 
 NEW_BRANCH="stable/$SERIES"
 
-function title {
-    echo
-    echo "$(tput bold)$(tput setaf 1)[ $1 ]$(tput sgr0)"
-}
-
 title "Checking that $VERSION exists in Launchpad for $LPROJECT"
 $TOOLSDIR/ms2version.py --onlycheck $LPROJECT $VERSION
 
