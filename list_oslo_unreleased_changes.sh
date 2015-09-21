@@ -13,6 +13,6 @@ if [[ -z "$VIRTUAL_ENV" ]]; then
     source ./.tox/venv/bin/activate
 fi
 
-repos="$(list-repos --code-only --team Oslo | grep -v incubator)"
+repos="$(list-repos --code-only --team oslo | grep -v incubator)"
 
 $(dirname $0)/list_unreleased_changes.sh $1 $repos
