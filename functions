@@ -70,7 +70,8 @@ defaultbranch=$branch"
     git add .gitreview
     git commit -m "Update .gitreview for $branch"
     git show
-    git review
+    local shortbranch=$(basename $branch)
+    git review -t "create-${shortbranch}"
 }
 
 
