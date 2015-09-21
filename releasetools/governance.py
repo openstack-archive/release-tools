@@ -109,7 +109,11 @@ def get_repositories(team_data, team_name=None, deliverable_name=None,
     if tags:
         tags = set(tags)
     if team_name:
-        teams = [Team(team_name, team_data[team_name])]
+        try:
+            teams = [Team(team_name, team_data[team_name])]
+        except KeyError:
+            raise RuntimeError('No team %r found in %r' %
+                               (team_name, list(team_data.keys())))
     else:
         teams = [Team(n, i) for n, i in team_data.items()]
     for team in teams:
