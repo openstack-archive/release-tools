@@ -12,6 +12,8 @@
 
 """Generates a standard set of release notes for a repository."""
 
+from __future__ import unicode_literals
+
 import glob
 import os
 import random
@@ -162,7 +164,7 @@ def expand_template(contents, params):
     return tpl.render(**params)
 
 
-def run_cmd(cmd, cwd=None):
+def run_cmd(cmd, cwd=None, encoding='utf-8'):
     # Created since currently the 'processutils' function doesn't take a
     # working directory, which we need in this example due to the different
     # working directories we run programs in...
@@ -174,7 +176,7 @@ def run_cmd(cmd, cwd=None):
                                                  stderr=stderr,
                                                  exit_code=p.returncode,
                                                  cmd=cmd)
-    return stdout, stderr
+    return stdout.decode(encoding), stderr.decode(encoding)
 
 
 def is_skippable_commit(skip_requirement_merges, line):

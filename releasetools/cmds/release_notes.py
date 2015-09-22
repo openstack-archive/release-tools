@@ -118,5 +118,5 @@ def main():
         include_pypi_link=args.include_pypi_link,
         changes_only=args.changes_only,
     )
-    print(notes)
+    print(notes.encode('utf-8'))
     return 0
