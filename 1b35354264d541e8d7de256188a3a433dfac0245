@@ -1,0 +1,9 @@
+Verified+2: Jenkins
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Code-Review+2: Sergey Lukjanov <slukjanov@mirantis.com>
+Workflow+1: Sergey Lukjanov <slukjanov@mirantis.com>
+Submitted-by: Jenkins
+Submitted-at: Tue, 22 Sep 2015 23:17:05 +0000
+Reviewed-on: https://review.openstack.org/225180
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
