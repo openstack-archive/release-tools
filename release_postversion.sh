@@ -118,6 +118,7 @@ else
     if [[ "$HIGHLIGHTS_FILE" != "" ]]; then
         highlights_args="--notable-changes $HIGHLIGHTS_FILE"
     fi
+    set -x
     release-notes \
             --email \
             $email_tags \
@@ -127,6 +128,7 @@ else
             . $previous_rev $VERSION \
             --include-pypi-link \
         | tee $relnotes_file
+    set +x
 fi
 
 # Figure out if we have to rename a next-$SERIES milestone or if we
