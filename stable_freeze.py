@@ -71,7 +71,7 @@ def run_command(cmd):
     for ln in res.split('\n'):
         try:
             out.append(json.loads(ln))
-        except:
+        except Exception:
             pass
     return out
 
@@ -168,7 +168,7 @@ def freeze(reviews, rel):
                 continue
             run_command(cmd)
             frozen.append(change)
-        except:
+        except Exception:
             logging.error('Failed to -2: %s' % _revision)
             continue
         logging.info('-2: %s' % change)
@@ -189,7 +189,7 @@ def thaw(revisions, rel):
             run_command(cmd)
             logging.info('thawed: %s' % rev)
 
-        except:
+        except Exception:
             logging.error('Failed to thaw: %s' % rev)
         logging.info('thawed: %s' % rev)
         print(' '.join(cmd))

@@ -19,9 +19,10 @@
 
 from __future__ import print_function
 import argparse
-import sys
 from launchpadlib.launchpad import Launchpad
-from lazr.restfulclient.errors import BadRequest, ServerError
+from lazr.restfulclient.errors import BadRequest
+from lazr.restfulclient.errors import ServerError
+import sys
 
 # Parameters
 parser = argparse.ArgumentParser(description="Consolidate milestone pages"
@@ -84,7 +85,7 @@ for milestone in seriesmilestones:
 print("Found")
 for milestone in milestones:
     print(milestone.name)
-print
+print()
 
 if not release_is_in_series:
     print("%s is not a %s milestone!" % (args.release, args.series))
@@ -101,7 +102,7 @@ for bp in series.valid_specifications:
             print(" - released",)
         if not bp.is_complete:
             print(" (not completed!)",)
-        print
+        print()
 
 # Process bugs
 for milestone in milestones:
@@ -140,11 +141,11 @@ for milestone in milestones:
                     bugsleft = True
             if bt.status != 'Fix Released':
                 print(" (not in FixReleased status!)",)
-            print
+            print()
         if failed:
-            print
+            print()
             print("Some bugs could not be automatically updated "
                   "due to LP timeouts:")
             for bugid in failed:
                 print("http://bugs.launchpad.net/bugs/%d" % bugid)
-    print
+    print()

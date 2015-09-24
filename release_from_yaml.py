@@ -19,8 +19,8 @@ from __future__ import print_function
 
 import argparse
 import os.path
-import sys
 import subprocess
+import sys
 import tempfile
 
 import yaml

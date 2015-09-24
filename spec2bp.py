@@ -18,9 +18,9 @@
 #    under the License.
 
 import argparse
+from launchpadlib.launchpad import Launchpad
 import re
 import requests
-from launchpadlib.launchpad import Launchpad
 
 # Parameters
 parser = argparse.ArgumentParser(

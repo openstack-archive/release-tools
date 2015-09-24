@@ -53,9 +53,7 @@ args = parser.parse_args()
 
 
 class LaunchpadCleanup(object):
-    '''
-    Triggers specific cleanups in Launchpad
-    '''
+    """Triggers specific cleanups in Launchpad"""
 
     def __init__(self, project_name, server="staging", dryrun=True,
                  ignoreable_bug_ids=[]):
@@ -74,7 +72,7 @@ class LaunchpadCleanup(object):
         return Launchpad.login_with('openstack-cleanup', server, cachedir)
 
     def cleanup_new_bugs_with_assignee(self):
-        """ A new bug with an assignee is in progress"""
+        """A new bug with an assignee is in progress"""
         logger.info("Cleanup new bugs with an assignee")
 
         message = "@%s:\n\nSince you are set as assignee, I switch the " \
@@ -108,15 +106,17 @@ class LaunchpadCleanup(object):
         logger.info("Switched bugs: '%s'", switched_bugs)
 
     def cleanup_incomplete_bugs_without_response(self):
-        """ There should be a response of the reporter to incomplete bugs
+        """There should be a response of the reporter to incomplete bugs
 
             change status to invalid and make a comment
         """
         raise NotImplementedError("not yet done")
 
     def cleanup_in_progress_bugs_without_patches(self):
-        """ If a bug is in progress but does not provide a patch set
-            it is not in progress
+        """Not yet implemented
+
+           If a bug is in progress but does not provide a patch set
+           it is not in progress
 
             * Remove assignee
             * move back to last state (probably confirmed)

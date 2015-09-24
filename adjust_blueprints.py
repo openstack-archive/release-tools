@@ -15,7 +15,8 @@
 
 from __future__ import print_function
 from argparse import ArgumentParser
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from launchpadlib.launchpad import Launchpad
 import pytz
 import sys
@@ -73,10 +74,9 @@ for bp in bps:
             to_target.append(bp)
     elif not bp.is_complete and bp.milestone == milestone:
         to_clear.append(bp)
-print
-
+print()
 if (to_target):
-    print
+    print()
     print("Those are implemented: need milestone target added")
     for bp in to_target:
         print(bp.web_link)
@@ -85,7 +85,7 @@ if (to_target):
             bp.lp_save()
 
 if (to_series):
-    print
+    print()
     print("Those are implemented: need series goal added/approved")
     for bp in to_series:
         print(bp.web_link)
@@ -93,7 +93,7 @@ if (to_series):
             bp.proposeGoal(goal=series)
 
 if (to_clear):
-    print
+    print()
     print("Those are incomplete: need their milestone target cleared")
     for bp in to_clear:
         print(bp.web_link)

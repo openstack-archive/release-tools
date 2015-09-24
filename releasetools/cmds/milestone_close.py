@@ -23,7 +23,7 @@ from launchpadlib.launchpad import Launchpad
 
 
 def abort(code, errmsg):
-    print >> sys.stderr, errmsg
+    print(errmsg, file=sys.stderr)
     sys.exit(code)
 
 
@@ -54,7 +54,7 @@ def main():
     for milestone in args.milestones:
         lp_milestone = lp_proj.getMilestone(name=milestone)
         if lp_milestone is None:
-            print >>sys.stderr, 'Could not find milestone: %s' % milestone
+            print('Could not find milestone: %s' % milestone, file=sys.stderr)
             continue
 
         # Mark milestone released
