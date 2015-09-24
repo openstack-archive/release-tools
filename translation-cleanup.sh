@@ -27,51 +27,28 @@
 if [[ $# -lt 2 ]]; then
     echo "Usage: $0 series projectname"
     echo
-    echo "Example: $0 kilo keystone"
+    echo "Example: $0 stable/liberty keystone"
     exit 2
 fi
 
-SERIES=$1
+BRANCH=$1
 PROJECT=$2
-BRANCH="stable/$SERIES"
 
-# Initial transifex setup
-function setup_translation {
-    # Track in HAS_CONFIG whether we run "tx init" since calling it
-    # will add the file .tx/config - and "tx set" might update it. If
-    # "tx set" updates .tx/config, we need to handle the file if it
-    # existed before.
-    HAS_CONFIG=1
+PATH_CREATE_ZANATA="/home/aj/Software/vcs/OpenStack/openstack-infra/project-config/jenkins/scripts/"
+QUIET="--quiet"
 
-    # Initialize the transifex client, if there's no .tx directory
-    if [ ! -d .tx ] ; then
-        tx init --host=https://www.transifex.com
-        HAS_CONFIG=0
-    fi
-}
-
-# Setup a project for transifex
+# Setup a project for Zanata
 function setup_project {
     local project=$1
+    local version=${2:-master}
 
-    # Transifex project name does not include "."
-    tx_project=${project/\./}
-    tx set --auto-local -r ${tx_project}.${tx_project}-translations \
-        "${project}/locale/<lang>/LC_MESSAGES/${project}.po" \
-        --source-lang en \
-        --source-file ${project}/locale/${project}.pot -t PO \
-        --execute
+    $PATH_CREATE_ZANATA/create-zanata-xml.py -p $project \
+        -v $version --srcdir ${project}/locale --txdir ${project}/locale \
+        -f zanata.xml --no-verify
 }
-
 
 # Propose patch using COMMIT_MSG
 function send_patch {
-
-    # Revert any changes done to .tx/config
-    if [ $HAS_CONFIG -eq 1 ]; then
-        git reset -q .tx/config
-        git checkout -- .tx/config
-    fi
 
     # Don't send a review if nothing has changed.
     if [ `git diff --cached |wc -l` -gt 0 ]; then
@@ -95,27 +72,6 @@ function setup_loglevel_vars {
     LKEYWORD['critical']='_LC'
 }
 
-# Setup transifex configuration for log level message translation.
-# Needs variables setup via setup_loglevel_vars.
-function setup_loglevel_project {
-    project=$1
-
-    # Transifex project name does not include "."
-    tx_project=${project/\./}
-
-    for level in $LEVELS ; do
-        # Bootstrapping: Create file if it does not exist yet,
-        # otherwise "tx set" will fail.
-        if [ ! -e  ${project}/locale/${project}-log-${level}.pot ]; then
-            touch ${project}/locale/${project}-log-${level}.pot
-        fi
-        tx set --auto-local -r ${tx_project}.${tx_project}-log-${level}-translations \
-            "${project}/locale/<lang>/LC_MESSAGES/${project}-log-${level}.po" \
-            --source-lang en \
-            --source-file ${project}/locale/${project}-log-${level}.pot -t PO \
-            --execute
-    done
-}
 
 # Run extract_messages for user visible messages and log messages.
 # Needs variables setup via setup_loglevel_vars.
@@ -123,9 +79,9 @@ function extract_messages_log {
     project=$1
 
     # Update the .pot files
-    python setup.py extract_messages
+    python setup.py $QUIET extract_messages --keyword "_C:1c,2 _P:1,2"
     for level in $LEVELS ; do
-        python setup.py extract_messages --no-default-keywords \
+        python setup.py $QUIET extract_messages --no-default-keywords \
             --keyword ${LKEYWORD[$level]} \
             --output-file ${project}/locale/${project}-log-${level}.pot
     done
@@ -145,7 +101,7 @@ function filter_commits {
     # Don't send files where the only things which have changed are
     # the creation date, the version number, the revision date,
     # comment lines, or diff file information.
-    for f in `git diff --cached --name-only`; do
+    for f in $(git diff --cached --name-only --diff-filter=AM); do
         # It's ok if the grep fails
         set +e
         changed=$(git diff --cached "$f" \
@@ -164,49 +120,75 @@ function filter_commits {
 function cleanup_po_files {
     local project=$1
 
-    for i in `find $project/locale -name *.po `; do
-        # Output goes to stderr, so redirect to stdout to catch it.
-        trans=`msgfmt --statistics -o /dev/null $i 2>&1`
-        check="^0 translated messages"
-        if [[ $trans =~ $check ]] ; then
-            # Nothing is translated, remove the file.
-            git rm -f $i
+    # Note that the po files do not contain untranslated strings, we need
+    # the pot file to figure out the total number of strings.
+    for s in `find $project/ -name *.pot`; do
+        bs=`basename $s`
+        trans=`msgfmt --statistics -o /dev/null $s 2>&1`
+        if [[ $trans =~ " untranslated message" ]] ; then
+            total_no=`echo $trans|sed -e 's/^.* \([0-9]*\) untranslated message.*/\1/'`
         else
-            if [[ $trans =~ " translated message" ]] ; then
-                trans_no=`echo $trans|sed -e 's/ translated message.*$//'`
-            else
-                trans_no=0
-            fi
-            if [[ $trans =~ " untranslated message" ]] ; then
-                untrans_no=`echo $trans|sed -e 's/^.* \([0-9]*\) untranslated message.*/\1/'`
-            else
-                untrans_no=0
-            fi
-            let total=$trans_no+$untrans_no
-            let ratio=100*$trans_no/$total
-            # Since we only download files that are at least
-            # translated to 66 per cent, let's delete those that have
-            # signficantly less translations.
-            # For the release we delete files that are less than 66
-            # per cent translated.
-            if [[ "$ratio" -lt "66" ]] ; then
-                git rm -f $i
-            fi
+            total_no=0
         fi
+        echo "$bs $total_no"
+        if [ $total_no -eq 0 ] ; then
+            continue
+        fi
+        po=${bs/.pot/.po}
+        for i in `find $project/ -name $po `; do
+            # Output goes to stderr, so redirect to stdout to catch it.
+            trans=`msgfmt --statistics -o /dev/null $i 2>&1`
+            check="^0 translated messages"
+            if [[ $trans =~ $check ]] ; then
+                # Nothing is translated, remove the file.
+                echo "Nothing translated"
+                git rm -f $i
+            else
+                if [[ $trans =~ " translated message" ]] ; then
+                    trans_no=`echo $trans|sed -e 's/ translated message.*$//'`
+                else
+                    trans_no=0
+                fi
+                if [[ $trans =~ " untranslated message" ]] ; then
+                    untrans_no=`echo $trans|sed -e 's/^.* \([0-9]*\) untranslated message.*/\1/'`
+                else
+                    untrans_no=0
+                fi
+                let ratio=100*$trans_no/$total_no
+                # Since we only download files that are at least
+                # translated to 75 per cent, let's delete those that have
+                # signficantly less translations.
+                # For now we delete files that suddenly are less than 66
+                # per cent translated.
+                if [[ "$ratio" -lt "66" ]] ; then
+                    git rm -f $i
+                    echo "Removed $i with $ratio %"
+                fi
+            fi
+        done
     done
 }
 
-if [ $# -ne 1 ] ; then
-    echo "Script needs to called with single argument: Name of current project"
-    exit 1
-fi
+# Reduce size of po files. This reduces the amount of content imported
+# and makes for fewer imports.
+# This does not touch the pot files. This way we can reconstruct the po files
+# using "msgmerge POTFILE POFILE -o COMPLETEPOFILE".
+function compress_po_files {
+    local directory=$1
+
+    for i in $(find $directory -name *.po) ; do
+        msgattrib --translated --no-location --sort-output "$i" \
+            --output="${i}.tmp"
+        mv "${i}.tmp" "$i"
+    done
+}
 
 # Note: Branch need to be exists, you can create it with:
 # git checkout --track origin/$BRANCH
 
 git checkout $BRANCH
 git pull
-git checkout -b translations
+git checkout -B translations
 
 # For partial translations and choosing 75% , see
 # https://bugs.launchpad.net/horizon/+bug/1317794.  The number 66 %
@@ -215,40 +197,30 @@ git checkout -b translations
 
 set +e
 read -d '' COMMIT_MSG <<EOF
-Release Import of Translations from Transifex
+Cleanup of Translations
 
-Manual import of Translations from Transifex. This change also removes
-all po files that are partially translated. The translation team has
-decided to exclude files with less than 66 % of translated content.
+In preparation for the release, do some cleanups for translations.
 
-This updates also recreates all pot (translation source files) to
-reflect the state of the repository.
+Removes all po files that are partially translated. The translation
+team has decided to exclude files with less than 66 % of translated
+content. There is no content lost, all data is in the translation
+server, we just remove it from the repository.
+
+This updates also recreates pot (translation source files) to
+reflect the state of the repository in case there was no recent
+import for them.
 
 This change needs to be done manually since the automatic import does
-not handle the proposed branches and we need to sync with latest
-translations.
+not handle some of these cases.
 
 EOF
     set -e
 
-# Setup basic connection for transifex.
-setup_translation
 # Project specific transifex setup.
 setup_project "$PROJECT"
 
 # Setup some global vars which will be used in the rest of the script.
 setup_loglevel_vars
-# Project specific transifex setup for log translations.
-setup_loglevel_project "$PROJECT"
-
-# Download new files that are at least 75 % translated.
-# Also downloads updates for existing files that are at least 75 %
-# translated.
-tx pull -a -f --minimum-perc=75
-
-# Pull upstream translations of all downloaded files but do not
-# download new files.
-tx pull -f
 
 # Extract all messages from project, including log messages.
 extract_messages_log "$PROJECT"
@@ -282,11 +254,17 @@ done
 # Add all changed files to git.
 git add $PROJECT/locale/*
 
-# Filter out commits we do not want.
-filter_commits
-
 # Remove obsolete files.
 cleanup_po_files "$PROJECT"
+
+compress_po_files "$PROJECT"
+
+# Some files were changed, add changed files again to git, so that we
+# can run git diff properly.
+git add $PROJECT/locale/*
+
+# Filter out commits we do not want.
+filter_commits
 
 # Prepare patch (commit)
 send_patch
