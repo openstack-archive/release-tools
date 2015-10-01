@@ -7,3 +7,4 @@ oslo.concurrency>=1.4.1         # Apache-2.0
 parawrap
 PyYAML>=3.1.0
 zuul
+simplejson>=2.2.0
