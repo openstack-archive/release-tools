@@ -341,6 +341,31 @@ Example:
   Check content differences between nova-stable-kilo.tar.gz and
   nova-2015.1.0rc1.tar.gz, as found on http://tarballs.openstack.org.
 
+pre_expire.by
+-------------
+
+This script fetches opened bugs for a project in order to prepare bugs with no
+activity in the last D days for expiration by:
+- unsetting bug assignee
+- unsetting bug milestone
+- setting bug status to Incomplete
+- adding a comment explaining why we updated the bug
+
+Examples:
+
+./pre_expire_bugs.py nova --days 180
+
+Prepare for expiration neutron bugs with no activity not updated in the last
+180 days.
+
+./pre_expire_bugs.py glance --days 365 --test
+
+Test prepare for expiration on Launchpad Staging servers.
+
+./pre_expire_bugs.py glance --days 365 --dry-run
+
+Prepare for expiration dry-run: print actions without executing them.
+
 
 process_bugs.py
 ---------------
