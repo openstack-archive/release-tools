@@ -154,14 +154,3 @@ fi
 
 title "Marking milestone as released in Launchpad"
 milestone-close $PROJECT $TARGET
-
-if [[ "$STABLE_BRANCH" != "1" ]]; then
-    title "Updating requirements"
-    cd $MYTMPDIR
-    clone_repo openstack/requirements
-    REQREPODIR="$(cd openstack/requirements && pwd)"
-    cd $REQREPODIR
-    tox -e venv -- edit-constraints upper-constraints.txt $DISTNAME "${DISTNAME}===${VERSION}"
-    git commit -a -m "Update $DISTNAME for new release $VERSION"
-    git review
-fi
