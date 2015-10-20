@@ -596,6 +596,16 @@ Examples:
   Targets missing implemented blueprints and cleans incomplete ones for Nova
   in liberty-1.
 
+Configuration
+=============
+
+If ``ZUUL_CACHE_DIR`` is set to a local directory with updated copies
+of the git repositories organized in the same way as gerrit (the
+``openstack/oslo.config`` repository should be in
+``$ZUUL_CACHE_DIR/openstack/oslo.config``) then tools that clone
+copies of repositories to work on them will pull from the cache
+instead of going to the network.
+
 How to Release a Library
 ========================
 

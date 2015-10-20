@@ -81,7 +81,10 @@ function clone_repo {
     if [ -z "$branch" ]; then
         branch="master"
     fi
+    if [[ "$ZUUL_CACHE_DIR" != "" ]]; then
+        cache="--cache-dir=$ZUUL_CACHE_DIR"
+    fi
     title "Cloning $repo"
-    zuul-cloner --branch "$branch" git://git.openstack.org $repo \
+    zuul-cloner $cache --branch "$branch" git://git.openstack.org $repo \
         && (cd $repo && git review -s)
 }
