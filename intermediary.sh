@@ -19,8 +19,8 @@
 
 set -e
 
-if [ $# -lt 3 ]; then
-    echo "Usage: $0 version SHA project [deliverable]"
+if [ $# -lt 4 ]; then
+    echo "Usage: $0 series version SHA project [deliverable]"
     echo
     echo "Example: $0 2.4.0 HEAD swift"
     exit 2
@@ -29,10 +29,11 @@ fi
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
 
-VERSION=$1
-SHA=$2
-PROJECT=$3
-DELIVERABLE=$4
+SERIES=$1
+VERSION=$2
+SHA=$3
+PROJECT=$4
+DELIVERABLE=$5
 LPROJECT="$PROJECT"
 
 if [[ "$DELIVERABLE" != "" ]]; then
@@ -55,6 +56,12 @@ TARGETSHA=`git log -1 $SHA --format='%H'`
 
 title "Tagging $TARGETSHA as $VERSION"
 TAGMSG="${PROJECT^} $VERSION"
+
+if git branch -a | grep -q origin/stable/$SERIES; then
+    # stable branch
+    SKIPBUGS=1
+fi
+
 git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
 git push gerrit $VERSION
 REALSHA=`git show-ref -s --tags "$VERSION"`
