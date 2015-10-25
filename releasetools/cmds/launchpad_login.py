@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 
 import sys
 
-from launchpadlib.launchpad import Launchpad
+import launchpadlib.launchpad
 
 
 def abort(code, errmsg):
@@ -33,6 +33,6 @@ def main():
     # Connect to LP
     print("connecting to launchpad")
     try:
-        Launchpad.login_with('openstack-releasing', 'production')
+        launchpadlib.launchpad.Launchpad.login_with('openstack-releasing', 'production')
     except Exception as error:
         abort(2, 'Could not connect to Launchpad: ' + str(error))

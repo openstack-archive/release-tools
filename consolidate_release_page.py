@@ -19,10 +19,10 @@
 
 from __future__ import print_function
 import argparse
-from launchpadlib.launchpad import Launchpad
-from lazr.restfulclient.errors import BadRequest
-from lazr.restfulclient.errors import ServerError
 import sys
+
+import launchpadlib.launchpad
+import lazr.restfulclient.errors
 
 # Parameters
 parser = argparse.ArgumentParser(description="Consolidate milestone pages"
@@ -47,8 +47,8 @@ statuses = ['New', 'Incomplete', 'Confirmed', 'Triaged', 'In Progress',
 
 # Connect to Launchpad
 print("Connecting to Launchpad...")
-launchpad = Launchpad.login_with('openstack-releasing', args.test,
-                                 version='devel')
+launchpad = launchpadlib.launchpad.Launchpad.login_with('openstack-releasing',
+                                                        args.test, version='devel')
 
 # Retrieve FixCommitted bugs
 print("Retrieving %s project..." % args.project)
@@ -128,14 +128,14 @@ for milestone in milestones:
                         newbt.lp_save()
                         print(" - copytasked")
                         bugsleft = True
-                    except BadRequest:
+                    except lazr.restfulclient.errors.BadRequest:
                         print(" - task already exists, skipping")
                 else:
                     bt.milestone = release
                     try:
                         bt.lp_save()
                         print(" - released")
-                    except ServerError as e:
+                    except lazr.restfulclient.errors.ServerError.ServerError as e:
                         print(" - TIMEOUT during save !",)
                         failed.add(bug.id)
                     bugsleft = True

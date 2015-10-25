@@ -14,16 +14,15 @@
 #    under the License.
 
 from __future__ import print_function
-from argparse import ArgumentParser
-from datetime import datetime
-from datetime import timedelta
-from launchpadlib.launchpad import Launchpad
-import pytz
+import argparse
+import datetime
 import sys
 
+import launchpadlib.launchpad
+import pytz
 
 # Parameters
-parser = ArgumentParser(description="Update BPs on milestone closure")
+parser = argparse.ArgumentParser(description="Update BPs on milestone closure")
 parser.add_argument('project', help='The project to act on')
 parser.add_argument('milestone', help='The milestone to set')
 parser.add_argument("--target", action='store_true',
@@ -36,8 +35,8 @@ args = parser.parse_args()
 
 # Connect to Launchpad
 print("Connecting to Launchpad...")
-launchpad = Launchpad.login_with('openstack-releasing', args.test,
-                                 version='devel')
+launchpad = launchpadlib.launchpad.Launchpad.login_with('openstack-releasing',
+                                                        args.test, version='devel')
 
 project = launchpad.projects[args.project]
 milestone = project.getMilestone(name=args.milestone)
@@ -47,7 +46,7 @@ series = milestone.series_target
 
 # Get the blueprints
 print("Retrieving blueprints...")
-now = datetime.now(tz=pytz.utc)
+now = datetime.datetime.now(tz=pytz.utc)
 to_clear = []
 to_series = []
 to_target = []
@@ -65,7 +64,7 @@ for bp in bps:
     sys.stdout.write("\r%d%%" % int(count * 100 / numbps))
     sys.stdout.flush()
     if ((bp.implementation_status == 'Implemented') and
-        ((now - bp.date_completed) < timedelta(days=92)) and
+        ((now - bp.date_completed) < datetime.timedelta(days=92)) and
         (not bp.milestone or not bp.milestone.date_targeted or
          bp.milestone.date_targeted >= milestone.date_targeted)):
         if bp not in seriesbps:

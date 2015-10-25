@@ -14,7 +14,6 @@
 import textwrap
 
 from oslotest import base
-
 import yaml
 
 from releasetools import governance

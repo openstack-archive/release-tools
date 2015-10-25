@@ -20,9 +20,8 @@ import json
 import logging
 import optparse
 import os
+import subprocess
 import sys
-
-from subprocess import check_output
 
 GERRIT_USER = None
 GERRIT_HOST = None
@@ -63,7 +62,7 @@ def run_command(cmd):
     if 'query' in _cmd:
         _cmd += ['--format', 'json']
 
-    res = check_output(_cmd)
+    res = subprocess.check_output(_cmd)
 
     if 'query' not in cmd:
         return res

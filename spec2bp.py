@@ -18,8 +18,9 @@
 #    under the License.
 
 import argparse
-from launchpadlib.launchpad import Launchpad
 import re
+
+import launchpadlib.launchpad
 import requests
 
 # Parameters
@@ -42,8 +43,8 @@ args = parser.parse_args()
 
 
 # Log into Launchpad
-launchpad = Launchpad.login_with('openstack-releasing', args.test,
-                                 version='devel')
+launchpad = launchpadlib.launchpad.Launchpad.login_with('openstack-releasing',
+                                                        args.test, version='devel')
 
 # Validate project
 project = launchpad.projects[args.project]
