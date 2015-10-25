@@ -22,7 +22,7 @@ import argparse
 import string
 import sys
 
-from launchpadlib.launchpad import Launchpad
+import launchpadlib.launchpad
 
 
 def abort(code, errmsg):
@@ -42,8 +42,8 @@ args = parser.parse_args()
 
 # Connect to LP
 try:
-    launchpad = Launchpad.login_anonymously('openstack-releasing',
-                                            'production')
+    launchpad = launchpadlib.launchpad.Launchpad.login_anonymously('openstack-releasing',
+                                                                   'production')
 except Exception as error:
     abort(2, 'Could not connect to Launchpad: ' + str(error))
 

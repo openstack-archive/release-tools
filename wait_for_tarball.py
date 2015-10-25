@@ -20,9 +20,9 @@
 from __future__ import print_function
 import argparse
 import re
-import requests
 import time
 
+import requests
 
 # Turn off warnings for insecure sites, since we'll be talking to
 # cloud instances anyway.

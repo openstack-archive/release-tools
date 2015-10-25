@@ -87,8 +87,8 @@ class Repository(object):
 
     @property
     def code_related(self):
-        return not (self.name.endswith('-specs')
-                    or 'cookiecutter' in self.name)
+        return not (self.name.endswith('-specs') or
+                    'cookiecutter' in self.name)
 
 
 def get_repositories(team_data, team_name=None, deliverable_name=None,
