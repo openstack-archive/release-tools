@@ -50,7 +50,7 @@ resulting tarball to Launchpad (while marking it released).
 
 Example:
 
-./intermediary.sh 2.4.0 HEAD swift
+./intermediary.sh liberty 2.4.0 HEAD swift
 
   Apply 2.4.0 tag to HEAD of swift master branch, check resulting tarball,
   mark FixCommitted bugs as released, upload tarball to Launchpad and mark
