@@ -21,7 +21,7 @@ from __future__ import print_function
 import argparse
 import sys
 
-from launchpadlib.launchpad import Launchpad
+import launchpadlib.launchpad
 
 
 def abort(code, errmsg):
@@ -42,7 +42,7 @@ def main():
     # Connect to Launchpad
     print("Connecting to Launchpad...")
     try:
-        launchpad = Launchpad.login_with('openstack-releasing', args.test)
+        launchpad = launchpadlib.launchpad.Launchpad.login_with('openstack-releasing', args.test)
     except Exception as error:
         abort(2, 'Could not connect to Launchpad: ' + str(error))
 

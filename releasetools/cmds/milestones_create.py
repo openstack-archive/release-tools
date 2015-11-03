@@ -20,9 +20,9 @@
 from __future__ import print_function
 import argparse
 import sys
-import yaml
 
-from launchpadlib.launchpad import Launchpad
+import launchpadlib.launchpad
+import yaml
 
 
 def abort(code, errmsg):
@@ -43,7 +43,7 @@ with open(args.configfile) as f:
 # Connect to LP
 print("Connecting to Launchpad...")
 try:
-    launchpad = Launchpad.login_with('openstack-releasing', 'production')
+    launchpad = launchpadlib.launchpad.Launchpad.login_with('openstack-releasing', 'production')
 except Exception as error:
     abort(2, 'Could not connect to Launchpad: ' + str(error))
 

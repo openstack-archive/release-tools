@@ -19,13 +19,13 @@
 # under the License.
 
 from __future__ import print_function
-from argparse import ArgumentParser
-from launchpadlib.launchpad import Launchpad
+import argparse
 import sys
 
+import launchpadlib.launchpad
 
 # Parse arguments
-parser = ArgumentParser(description="Adjust blueprint series goal/milestones")
+parser = argparse.ArgumentParser(description="Adjust blueprint series goal/milestones")
 parser.add_argument('projectname', help='Project or projectgroup to act on')
 parser.add_argument('seriesname', help='Series to act on')
 parser.add_argument('--nokick', action='store_true',
@@ -34,11 +34,11 @@ parser.add_argument('--dryrun', action='store_true',
                     help='Just show what would be done')
 args = parser.parse_args()
 
-kickmessage = "You should not set a milestone target unless the blueprint" \
-              " has been properly prioritized by the project drivers."
+kickmessage = ("You should not set a milestone target unless the blueprint"
+               " has been properly prioritized by the project drivers.")
 
 # Log into LP
-lp = Launchpad.login_with('adjust-series-goal', 'production', version='devel')
+lp = launchpadlib.launchpad.Launchpad.login_with('adjust-series-goal', 'production', version='devel')
 
 try:
     projectgroup = lp.project_groups[args.projectname]

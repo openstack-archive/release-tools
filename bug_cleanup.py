@@ -31,14 +31,14 @@
 # One bug_task is specific to one project
 
 
-from argparse import ArgumentParser
-from launchpadlib.launchpad import Launchpad
+import argparse
 import logging
 import os
 
+import launchpadlib.launchpad
 
 # Parameters
-parser = ArgumentParser(description="Cleanup Launchpad (LP) Bugs")
+parser = argparse.ArgumentParser(description="Cleanup Launchpad (LP) Bugs")
 parser.add_argument('projectname', help='The project to act on')
 parser.add_argument("--test", action='store_const', const='staging',
                     default='production', help='Use LP staging server to test')
@@ -53,7 +53,7 @@ args = parser.parse_args()
 
 
 class LaunchpadCleanup(object):
-    """Triggers specific cleanups in Launchpad"""
+    """Triggers specific cleanups in Launchpad."""
 
     def __init__(self, project_name, server="staging", dryrun=True,
                  ignoreable_bug_ids=[]):
@@ -69,14 +69,14 @@ class LaunchpadCleanup(object):
         cachedir = os.path.expanduser("~/.launchpadlib/cache/")
         if not os.path.exists(cachedir):
             os.makedirs(cachedir, 0o0700)
-        return Launchpad.login_with('openstack-cleanup', server, cachedir)
+        return launchpadlib.launchpad.Launchpad.login_with('openstack-cleanup', server, cachedir)
 
     def cleanup_new_bugs_with_assignee(self):
-        """A new bug with an assignee is in progress"""
+        """A new bug with an assignee is in progress."""
         logger.info("Cleanup new bugs with an assignee")
 
-        message = "@%s:\n\nSince you are set as assignee, I switch the " \
-                  "status to 'In Progress'."
+        message = ("@%s:\n\nSince you are set as assignee, I switch the "
+                   "status to 'In Progress'.")
         subject = "Cleanup"
 
         project = self.client.projects[self.project_name]

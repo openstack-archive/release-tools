@@ -27,7 +27,7 @@ import tempfile
 import time
 import urllib
 
-from launchpadlib.launchpad import Launchpad
+import launchpadlib.launchpad
 
 
 def abort(code, errmsg):
@@ -62,7 +62,7 @@ if args.deliverable is None:
 # Connect to LP
 print("Connecting to Launchpad...")
 try:
-    launchpad = Launchpad.login_with('openstack-releasing', args.test)
+    launchpad = launchpadlib.launchpad.Launchpad.login_with('openstack-releasing', args.test)
 except Exception as error:
     abort(2, 'Could not connect to Launchpad: ' + str(error))
 
@@ -99,13 +99,13 @@ if not args.nop:
     print("Downloading tarball...")
     tmpdir = tempfile.mkdtemp()
     if args.tarball is None:
-        base_tgz = "%s-%s%s.tar.gz" % \
-            (args.deliverable, args.version, preversion)
+        base_tgz = ("%s-%s%s.tar.gz" %
+                    (args.deliverable, args.version, preversion))
     else:
-        base_tgz = "%s-%s.tar.gz" % \
-            (args.deliverable, args.tarball)
-    url_tgz = "http://tarballs.openstack.org/%s/%s" % \
-        (args.deliverable, base_tgz)
+        base_tgz = ("%s-%s.tar.gz" %
+                    (args.deliverable, args.tarball))
+    url_tgz = ("http://tarballs.openstack.org/%s/%s" %
+               (args.deliverable, base_tgz))
     tgz = os.path.join(tmpdir, base_tgz)
 
     (tgz, message) = urllib.urlretrieve(url_tgz, filename=tgz)
@@ -137,11 +137,11 @@ if args.nop:
     rel_notes = ""
 else:
     if args.milestone:
-        rel_notes = "This is another milestone (%s) on the road to %s %s." \
-            % (args.milestone, args.project.capitalize(), args.version)
+        rel_notes = ("This is another milestone (%s) on the road to %s %s." %
+                     (args.milestone, args.project.capitalize(), args.version))
     else:
-        rel_notes = "This is %s %s release." \
-            % (args.project.capitalize(), args.version)
+        rel_notes = ("This is %s %s release." %
+                     (args.project.capitalize(), args.version))
 
 if lp_milestone.release:
     lp_release = lp_milestone.release
@@ -158,14 +158,14 @@ lp_milestone.lp_save()
 if not args.nop:
     # Upload file
     print("Uploading release files...")
-    final_tgz = "%s-%s%s.tar.gz" % \
-        (args.deliverable, args.version, preversion)
+    final_tgz = ("%s-%s%s.tar.gz" %
+                 (args.deliverable, args.version, preversion))
     if args.milestone:
-        description = '%s "%s" milestone' % \
-                      (args.deliverable.capitalize(), args.milestone)
+        description = ('%s "%s" milestone' %
+                       (args.deliverable.capitalize(), args.milestone))
     else:
-        description = '%s %s release' % \
-                      (args.deliverable.capitalize(), args.version)
+        description = ('%s %s release' %
+                       (args.deliverable.capitalize(), args.version))
 
     lp_file = lp_release.add_file(file_type='Code Release Tarball',
                                   description=description,
@@ -179,8 +179,8 @@ if not args.nop:
     # Check LP-reported MD5
     print("Checking MD5s...")
     time.sleep(2)
-    result_md5_url = "http://launchpad.net/%s/+download/%s/+md5" % \
-                     (lp_release.self_link[30:], final_tgz)
+    result_md5_url = ("http://launchpad.net/%s/+download/%s/+md5" %
+                      (lp_release.self_link[30:], final_tgz))
     result_md5_file = urllib.urlopen(result_md5_url)
     result_md5 = result_md5_file.read().split()[0]
     result_md5_file.close()

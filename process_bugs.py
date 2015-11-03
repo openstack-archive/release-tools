@@ -18,12 +18,13 @@
 # under the License.
 
 from __future__ import print_function
-from argparse import ArgumentParser
-from launchpadlib.launchpad import Launchpad
-from lazr.restfulclient.errors import ServerError
+import argparse
+
+import launchpadlib.launchpad
+import lazr.restfulclient.errors
 
 # Parameters
-parser = ArgumentParser(description="Change Launchpad bugs in bulk")
+parser = argparse.ArgumentParser(description="Change Launchpad bugs in bulk")
 parser.add_argument('projectname', help='The project to act on')
 bugsfrom = parser.add_mutually_exclusive_group()
 bugsfrom.add_argument('--status', default='Fix Committed',
@@ -41,7 +42,7 @@ args = parser.parse_args()
 
 # Connect to Launchpad
 print("Connecting to Launchpad...")
-launchpad = Launchpad.login_with('openstack-releasing', args.test)
+launchpad = launchpadlib.launchpad.Launchpad.login_with('openstack-releasing', args.test)
 
 # Retrieve bugs
 print("Retrieving project...")
@@ -95,7 +96,7 @@ while changes:
             b.lp_save()
             if (args.settarget and not b.milestone) or args.fixrelease:
                 changes = True
-        except ServerError as e:
+        except lazr.restfulclient.errors.ServerError as e:
             print(" - TIMEOUT during save !", end='')
             failed.add(bug.id)
         except Exception as e:
