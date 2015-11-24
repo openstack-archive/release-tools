@@ -64,7 +64,7 @@ if git branch -a | grep -q origin/stable/$SERIES; then
 fi
 PREVIOUS=$(get_last_tag $PREV_SERIES)
 BUGS=$(git log $PREVIOUS..$VERSION | grep "Closes-Bug:" | egrep -o "[0-9]+")
-$TOOLSDIR/add_comment.py \
+add-comment \
     --subject="Fix included in $REPO $VERSION" \
     --content="This issue was fixed in $REPO $VERSION release." \
     $BUGS
