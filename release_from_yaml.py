@@ -43,8 +43,6 @@ def main():
     with open(args.deliverable_file, 'r') as f:
         deliverable_data = yaml.load(f.read())
 
-    print(deliverable_data)
-
     # The series name is part of the filename, rather than the file
     # body. That causes release.sh to be called with series="_independent"
     # for release:independent projects, and release.sh to use master branch
