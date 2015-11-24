@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""Publish a release as requested in a YAML file in the releases repo.
+"""Tags a release as requested in a YAML file in the releases repo.
 """
 
 from __future__ import print_function
@@ -21,7 +21,6 @@ import argparse
 import os.path
 import subprocess
 import sys
-import tempfile
 
 import yaml
 
@@ -35,7 +34,7 @@ def main():
     parser.add_argument(
         'version',
         nargs='?',
-        help='version to be released, defaults to ensuring all of them',
+        help='version to be released, defaults to last one in file',
     )
     args = parser.parse_args()
 
@@ -47,7 +46,9 @@ def main():
     print(deliverable_data)
 
     # The series name is part of the filename, rather than the file
-    # body.
+    # body. That causes release.sh to be called with series="_independent"
+    # for release:independent projects, and release.sh to use master branch
+    # to evaluate fixed bugs.
     series_name = os.path.basename(
         os.path.dirname(os.path.abspath(args.deliverable_file))
     )
@@ -63,28 +64,15 @@ def main():
     print('Version %s' % version)
     this_version = all_versions[version]
 
-    if this_version.get('highlights'):
-        highlights_file = tempfile.NamedTemporaryFile()
-        highlights_file.write(this_version['highlights'])
-        highlights_file.flush()
-    else:
-        highlights_file = None
-
-    # NOTE(dhellmann): For now we only support one project, until
-    # we rewrite the release script.
-    this_hash = [p['hash'] for p in this_version['projects']][0]
-    cmd = [
-        os.path.join(tools_dir, 'release_postversion.sh'),
-        series_name,
-        version,
-        this_hash,
-        deliverable_data['launchpad'],
-    ]
-    if highlights_file:
-        cmd.append('')  # empty email tags argument required
-        cmd.append(highlights_file.name)
-    print(' '.join(cmd))
-    subprocess.check_call(cmd)
+    for project in this_version['projects']:
+        cmd = [
+            os.path.join(tools_dir, 'release.sh'),
+            project['repo'],
+            series_name,
+            version,
+            project['hash'],
+        ]
+        subprocess.check_call(cmd)
 
 
 if __name__ == '__main__':
