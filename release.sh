@@ -47,6 +47,13 @@ REPODIR="$(cd $REPO && pwd)"
 cd $REPODIR
 TARGETSHA=`git log -1 $SHA --format='%H'`
 
+# Determine the most recent tag before we add the new one.
+PREV_SERIES=""
+if git branch -a | grep -q origin/stable/$SERIES; then
+    PREV_SERIES=origin/stable/$SERIES
+fi
+PREVIOUS=$(get_last_tag $PREV_SERIES)
+
 title "Tagging $TARGETSHA as $VERSION"
 if git show-ref "$VERSION"; then
     echo "$REPO already has a version $VERSION tag"
@@ -57,14 +64,19 @@ else
     git push gerrit $VERSION
 fi
 
+# We don't want to die just because we can't update some bug reports,
+# so ignore failures.
+set +e
+
 title "Adding comments to fixed bugs"
-PREV_SERIES=""
-if git branch -a | grep -q origin/stable/$SERIES; then
-    PREV_SERIES=origin/stable/$SERIES
-fi
-PREVIOUS=$(get_last_tag $PREV_SERIES)
 BUGS=$(git log $PREVIOUS..$VERSION | grep "Closes-Bug:" | egrep -o "[0-9]+")
-add-comment \
-    --subject="Fix included in $REPO $VERSION" \
-    --content="This issue was fixed in $REPO $VERSION release." \
-    $BUGS
+if [[ -z "$BUGS" ]]; then
+    echo "No bugs found $PREVIOUS .. $VERSION"
+else
+    add-comment \
+        --subject="Fix included in $REPO $VERSION" \
+        --content="This issue was fixed in $REPO $VERSION release." \
+        $BUGS
+fi
+
+exit 0

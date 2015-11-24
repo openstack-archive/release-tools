@@ -32,6 +32,7 @@ function title {
 function _cleanup_tmp {
     title "Cleaning up"
     rm -rf $MYTMPDIR
+    return 0
 }
 
 
