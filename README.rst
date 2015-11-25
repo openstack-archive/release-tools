@@ -2,15 +2,62 @@
 openstack-releasing - A set of scripts to handle OpenStack release process
 ==========================================================================
 
+How to Release
+==============
+
+Deliverables should all be using post-versioning, getting their version
+information from git tags and not having any version specifier in the
+``setup.cfg``.
+
+Release requests are filed as patches to deliverables files in
+the openstack/releases repository, see the README there for more
+details.
+
+Before beginning this process, you need to set up ``gpg`` with a valid
+key, and authorize launchpad to run the release tools
+commands. Authorizing launchpad can be tricky on a system that only
+provides a terminal-based browser, since the launchpad site does not
+work well with the default configuration of ``lynx`` (cookies and
+referrer headers need to be enabled for the launchpad site). Newer
+versions of launchpadlib also rely on keyring, which may require a
+password for every command being run if you are not in a graphical
+environment with a better interactive key manager. Talk with dhellmann
+if you start a release and run into trouble with launchpad auth.
+
+When a release request is ready to be approved, follow these steps:
+
+1. The release team member taking responsibility for the
+   release should approve the change in ``openstack/releases``.
+   Release requests should not be approved until we are actually ready
+   to cut the release.
+
+2. After the release request merges, check out or update a local copy of
+   ``openstack/releases`` to get the new version of the deliverable file.
+
+3. In a local copy of this
+   ``openstack-infra/release-tools`` repository, run
+   ``release_from_yaml.py``, giving the path to the
+   ``openstack/releases`` repository.
+
+   For example::
+
+      $ ./release_from_yaml.py -r ~/repos/openstack/releases
+
+4. As the release script runs, it will prompt you for your GPG key
+   passphrase before adding the tag. This gives you a last chance to
+   review the proposed tag before proceeding. After the tag is created
+   locally and pushed up to the remote server, the script will push
+   comments to closed Launchpad bugs since the previous tag.
+
+5. Proceed with the announcement (process tbd).
+
+
 Prerequisites
 =============
 
 You'll need the following Python modules installed:
  - launchpadlib
 
-similar_tarballs.sh also requires that you have tardiff installed.  If it's not
-packaged for your distribution, you can find it at
-http://tardiff.coolprojects.org/.
 
 Top-level scripts
 =================
@@ -18,43 +65,44 @@ Top-level scripts
 The top-level scripts call the various base tools to get their work done.
 
 
-milestone.sh
-------------
+release_from_yaml.py
+--------------------
 
-This script handles all development milestone publication tasks. It creates
-a tag, pushes it, waits for the tarball build, lets you doublecheck tarball
-similarities, turns FixCommitted bugs into FixReleased ones (and targets them
-to the milestone), and upload the resulting tarball to Launchpad (while
-marking it released).
+This script takes YAML files describing deliverables to release (like those
+living in openstack/releases) and calls the release.sh script (see below)
+to apply the corresponding tags. It will create a tag for the last release
+mentioned in the file(s). You can point it to specific YAML files, or to a
+local git repository (in which case it will look at the files modified in the
+most recent commit).
 
-It supports special cases for the release of a swift intermediary release
-(where bugs should have been processed using swiftrc.sh beforehand), and
-oslo-incubator (where no tarball is generated or needs to be uploaded).
+Examples:
+
+./release_from_yaml ../openstack-releases/deliverables/mitaka/nova.yaml
+
+  Call release.sh for all repositories mentioned in the last release added
+  to ../openstack-releases/deliverables/mitaka/nova.yaml
+
+./release_from_yaml.py -r ../openstack-releases
+
+  Look into the git repository at ../openstack-releases for deliverable YAML
+  files modified at the last commit, and call release.sh for all repositories
+  mentioned on the last release in each such file.
+
+
+release.sh
+----------
+
+This script creates a tag on a given repository SHA and pushes it to Gerrit.
+Additionally it will add a message on Launchpad bugs that are mentioned as
+"closed" in git commit messages since the last tag on the same series.
 
 Example:
 
-./milestone.sh kilo-3 HEAD keystone
+./release.sh openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master
 
-  Apply 2015.1.0b3 tag to HEAD of keystone master branch, check resulting
-  tarball, mark FixCommitted bugs as released, upload tarball to Launchpad
-  and mark Launchpad milestone released.
-
-
-intermediary.sh
----------------
-
-This script handles cycle-with-intermediary project releases. It creates
-a tag, pushes it, waits for the tarball build, turns FixCommitted bugs into
-FixReleased ones (and targets them to the milestone), and upload the
-resulting tarball to Launchpad (while marking it released).
-
-Example:
-
-./intermediary.sh liberty 2.4.0 HEAD swift
-
-  Apply 2.4.0 tag to HEAD of swift master branch, check resulting tarball,
-  mark FixCommitted bugs as released, upload tarball to Launchpad and mark
-  Launchpad milestone released.
+  Apply a 3.0.3 tag (associated to the mitaka series) to the gerrit master
+  HEAD of the openstack/oslo.rootwrap reporitory, and add a comment for each
+  closed bug mentioned in commit messages since the previous mitaka tag (3.0.2).
 
 
 rccut.sh
@@ -129,6 +177,7 @@ Examples:
 
 ./release_postversion.sh liberty 1.13.0 85c069e oslo.messaging
 
+
 release_many.sh
 ---------------
 
@@ -141,6 +190,7 @@ Optionally, the line can also include a series name, for example::
 
   1.13.0 85c069e oslo.messaging
   1.8.3 0f24108 oslo.messaging kilo
+
 
 release-notes
 -------------
@@ -176,6 +226,7 @@ release-notes --show-dates --changes-only ~/repos/openstack/oslo.config 1.8.0 HE
   is useful for examining the list of unreleased changes in a project
   to decide if a release is warranted and to pick a version number.
 
+
 list_unreleased_changes.sh
 --------------------------
 
@@ -195,6 +246,7 @@ looking at the commit logs.
   Print the list of changes in the ``stable/kilo`` branch of all Oslo
   libraries.
 
+
 list_oslo_unreleased_changes.sh
 -------------------------------
 
@@ -207,11 +259,13 @@ is equivalent to:
 
 ./list_unreleased_changes.sh stable/kilo $(list-repos --code-only --team Oslo)
 
+
 list_library_unreleased_changes.sh
 ----------------------------------
 
 Runs list_unreleased_changes.sh for all libraries managed by any
 project.
+
 
 make_library_stable_branch.sh
 -----------------------------
@@ -222,12 +276,14 @@ that easy to coordinate and ensures that the desired version also
 exists in launchpad as a released milestone and by updating the
 .gitreview file in the new branch for future submissions.
 
+
 make_feature_branch.sh
 ----------------------
 
 Feature branches need to have "feature/" at the beginning of the name
 and should have their ``.gitreview`` updated when the branch is
 created.
+
 
 list-repos
 ----------
@@ -238,6 +294,7 @@ of the repositories, filtered by team and/or tag.
 list-repos --team Oslo
 list-repos --tag release:managed --tag type:library
 
+
 update_git_review.sh
 --------------------
 
@@ -245,6 +302,7 @@ Update the .gitreview file in a specific branch of a checked out
 repositories.
 
 ./update_git_review.sh stable/kilo ~/repos/openstack/oslo.*
+
 
 launchpad-login
 ---------------
@@ -254,6 +312,7 @@ keyring entry for the launchpad site, prompt for credentials, and
 handle the OAuth handshake. All of the other launchpad-connected
 commands will do these steps, too, but this command takes no other
 action after logging in so it is safe to run it repeatedly.
+
 
 check_library_constraints.sh
 ----------------------------
@@ -267,6 +326,7 @@ requirements repositories and then run the script as::
 
   $ check_library_constraints.sh /path/to/requirements-repository
 
+
 Base tools
 ==========
 
@@ -279,6 +339,7 @@ more bugs or blueprints can be targeted to it.
 Example::
 
   milestone-close oslotest 1.8.0
+
 
 milestone-rename
 ----------------
@@ -329,19 +390,7 @@ Example:
   that would be generated from it.
 
 
-similar_tarballs.sh
--------------------
-
-This script compares the content of two tarballs on tarballs.openstack.org.
-
-Example:
-
-./similar_tarballs.sh nova stable-kilo 2015.1.0rc1
-
-  Check content differences between nova-stable-kilo.tar.gz and
-  nova-2015.1.0rc1.tar.gz, as found on http://tarballs.openstack.org.
-
-pre_expire.by
+pre_expire.py
 -------------
 
 This script fetches opened bugs for a project in order to prepare bugs with no
@@ -577,6 +626,7 @@ To clean up Nova kilo blueprints:
 
 ./autokick.py nova kilo
 
+
 highest_semver.py
 -----------------
 
@@ -621,83 +671,16 @@ Examples:
   Targets missing implemented blueprints and cleans incomplete ones for Nova
   in liberty-1.
 
-How to Release a Library
-========================
 
-Libraries should all be using post-versioning, getting their version
-information from git tags and not having any version specifier in the
-``setup.cfg``.
+add-comment
+-----------
 
-Library release requests are filed as patches to deliverables files in
-the openstack/releases repository, see the README there for more
-details.
+Add a comment to a set of Launchpad bugs. This command requires basic
+Launchpad credentials (see launchpad-login).
 
-Before beginning this process, you need to set up ``gpg`` with a valid
-key, and authorize launchpad to run the release tools
-commands. Authorizing launchpad can be tricky on a system that only
-provides a terminal-based browser, since the launchpad site does not
-work well with the default configuration of ``lynx`` (cookies and
-referrer headers need to be enabled for the launchpad site). Newer
-versions of launchpadlib also rely on keyring, which may require a
-password for every command being run if you are not in a graphical
-environment with a better interactive key manager. Talk with dhellmann
-if you start a release and run into trouble with launchpad auth.
+Example:
 
-When a release request is ready to be approved, follow these steps:
+add-comment --subject='Winner' --content='You won!' 1000000 2000000
 
-1. LIAISON: If the release includes any completed blueprints, go to
-   launchpad and create a ``next-$SERIES`` milestone as part of the
-   ``$SERIES`` release. Set the targets for the blueprints to
-   ``next-$SERIES`` and mark them as implemented. If there are no
-   blueprints, this step can be skipped.
-
-2. LIAISON: If this is a stable release and there are bugs to be
-   reported as fixed, create a ``next-$SERIES`` milestone as part of
-   the ``$SERIES`` release and target the bugs to the milestone. Set
-   their status to ``Fix Committed``. If the release is from the
-   ``master`` branch, this step can be skipped.
-
-3. RELEASE TEAM: The release team member taking responsibility for the
-   release should approve the change in
-   ``openstack/releases``. Release requests should not be approved
-   until we are actually ready to cut the release.
-
-4. RELEASE TEAM: After the release request merges, check out or update
-   a local copy of ``openstack/releases`` to get the new version of
-   the deliverable file.
-
-5. RELEASE TEAM: In a local copy of this
-   ``openstack-infra/release-tools`` repository, run
-   ``release_from_yaml.py``, giving the path to the deliverable file
-   and the version from that file that needs to be released as
-   arguments.
-
-   For example::
-
-      $ ./release_from_yaml.py ~/repos/openstack/releases/deliverables/liberty/openstack-doc-tools.yaml 0.30.1
-
-6. RELEASE TEAM: As the release script runs, it reports on the
-   existing tags in the branch being released and offers a last chance
-   to review the new tag in light of the history. Press ``<return>``
-   when ready to continue, then enter the pass phrase for your GPG key
-   to add the tag.
-
-7. RELEASE TEAM: After the tag is created locally and pushed up to the
-   remote server, the script generates a release announcement email
-   with some basic change information. It prints the results to the
-   console, and saves a copy in ``relnotes/$project-$version``. The
-   file is a fully formatted email, ready to be processed with a tool
-   like ``msmtp``.
-
-   If you use another mailer, copy the contents of the subject and
-   body into the mail program, preserving the topic tags in the
-   subject line, then send the message to
-   ``openstack-announce@lists.openstack.org`` with the ``Reply-To``
-   header set to ``openstack-dev@lists.openstack.org``.
-
-8. RELEASE TEAM: After the release notes are written out, the script
-   ensures that a launchpad milestone with the version number is
-   created. If there is a ``next-$SERIES`` milestone, it is renamed
-   and used. For releases from ``master``, all closed bugs are
-   targeted to the new milestone. For stable branches, bugs should be
-   targeted explicitly (see step 2).
+  Add a 'You won!' comment (with subject line 'Winner') to Launchpad
+  bugs #1000000 and #2000000
