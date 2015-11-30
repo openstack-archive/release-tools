@@ -181,20 +181,6 @@ Examples:
 ./release_postversion.sh liberty 1.13.0 85c069e oslo.messaging
 
 
-release_many.sh
----------------
-
-Run release_postversion.sh for many projects one after the
-other. Requires an input file with one line per library, containing::
-
-  version hash project
-
-Optionally, the line can also include a series name, for example::
-
-  1.13.0 85c069e oslo.messaging
-  1.8.3 0f24108 oslo.messaging kilo
-
-
 release-notes
 -------------
 
