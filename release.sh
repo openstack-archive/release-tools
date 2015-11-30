@@ -36,6 +36,11 @@ VERSION=$3
 SHA=$4
 SHORTNAME=`basename $REPO`
 
+RELEASETYPE="release"
+if [[ $VERSION =~ .*\.0[b,r].+ ]]; then
+    RELEASETYPE="development milestone"
+fi
+
 if [[ -z "$VIRTUAL_ENV" ]]; then
     tox -e venv --notest
     source ./.tox/venv/bin/activate
@@ -58,7 +63,7 @@ title "Tagging $TARGETSHA as $VERSION"
 if git show-ref "$VERSION"; then
     echo "$REPO already has a version $VERSION tag"
 else
-    TAGMSG="$SHORTNAME $VERSION release"
+    TAGMSG="$SHORTNAME $VERSION $RELEASETYPE"
     echo "Tag message is '$TAGMSG'"
     git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
     git push gerrit $VERSION
@@ -75,7 +80,7 @@ if [[ -z "$BUGS" ]]; then
 else
     add-comment \
         --subject="Fix included in $REPO $VERSION" \
-        --content="This issue was fixed in $REPO $VERSION release." \
+        --content="This issue was fixed in $REPO $VERSION $RELEASETYPE." \
         $BUGS
 fi
 
