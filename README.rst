@@ -36,12 +36,12 @@ When a release request is ready to be approved, follow these steps:
 
 3. In a local copy of this
    ``openstack-infra/release-tools`` repository, run
-   ``release_from_yaml.py``, giving the path to the
+   ``release_from_yaml.sh``, giving the path to the
    ``openstack/releases`` repository.
 
    For example::
 
-      $ ./release_from_yaml.py -r ~/repos/openstack/releases
+      $ ./release_from_yaml.sh ~/repos/openstack/releases
 
 4. As the release script runs, it will prompt you for your GPG key
    passphrase before adding the tag. This gives you a last chance to
@@ -68,7 +68,7 @@ Top-level scripts
 The top-level scripts call the various base tools to get their work done.
 
 
-release_from_yaml.py
+release_from_yaml.sh
 --------------------
 
 This script takes YAML files describing deliverables to release (like those
@@ -80,12 +80,12 @@ most recent commit).
 
 Examples:
 
-./release_from_yaml ../openstack-releases/deliverables/mitaka/nova.yaml
+./release_from_yaml.sh ../openstack-releases deliverables/mitaka/nova.yaml
 
   Call release.sh for all repositories mentioned in the last release added
   to ../openstack-releases/deliverables/mitaka/nova.yaml
 
-./release_from_yaml.py -r ../openstack-releases
+./release_from_yaml.sh ../openstack-releases
 
   Look into the git repository at ../openstack-releases for deliverable YAML
   files modified at the last commit, and call release.sh for all repositories
