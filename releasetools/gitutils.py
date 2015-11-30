@@ -12,7 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import os.path
 import subprocess
+
+import yaml
 
 
 def find_modified_deliverable_files(reporoot):
@@ -27,3 +30,42 @@ def find_modified_deliverable_files(reporoot):
         if l.startswith('deliverables/')
     ]
     return filenames
+
+
+def get_modified_deliverable_file_content(reporoot, filenames):
+    """Return a sequence of tuples containing the new versions.
+
+    Return tuples containing (deliverable name, series name, version
+    number, list of repositories).
+    """
+    # Determine which deliverable files to process by taking our
+    # command line arguments or by scanning the git repository
+    # for the most recent change.
+    deliverable_files = filenames
+    if not deliverable_files:
+        deliverable_files = find_modified_deliverable_files(
+            reporoot
+        )
+
+    for basename in deliverable_files:
+        filename = os.path.join(reporoot, basename)
+        with open(filename, 'r') as f:
+            deliverable_data = yaml.load(f.read())
+
+        # The series name is part of the filename, rather than the file
+        # body. That causes release.sh to be called with series="_independent"
+        # for release:independent projects, and release.sh to use master branch
+        # to evaluate fixed bugs.
+        series_name = os.path.basename(
+            os.path.dirname(os.path.abspath(filename))
+        )
+        deliverable_name = os.path.splitext(os.path.basename(filename))[0]
+
+        all_versions = {
+            rel['version']: rel for rel in deliverable_data['releases']
+        }
+        version = deliverable_data['releases'][-1]['version']
+        this_version = all_versions[version]
+        for project in this_version['projects']:
+            yield (deliverable_name, series_name, version,
+                   project['repo'], project['hash'])
