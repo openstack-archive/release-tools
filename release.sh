@@ -63,7 +63,10 @@ title "Tagging $TARGETSHA as $VERSION"
 if git show-ref "$VERSION"; then
     echo "$REPO already has a version $VERSION tag"
 else
-    TAGMSG="$SHORTNAME $VERSION $RELEASETYPE"
+    # WARNING(dhellmann): announce.sh expects to be able to parse this
+    # commit message, so if you change the format you may have to
+    # update announce.sh as well.
+    TAGMSG="$SHORTNAME $SERIES $VERSION $RELEASETYPE"
     echo "Tag message is '$TAGMSG'"
     git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
     git push gerrit $VERSION
