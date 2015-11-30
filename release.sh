@@ -63,7 +63,7 @@ title "Tagging $TARGETSHA as $VERSION"
 if git show-ref "$VERSION"; then
     echo "$REPO already has a version $VERSION tag"
 else
-    TAGMSG="$SHORTNAME $VERSION $RELEASETYPE"
+    TAGMSG="$SHORTNAME $SERIES $VERSION $RELEASETYPE"
     echo "Tag message is '$TAGMSG'"
     git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA
     git push gerrit $VERSION
