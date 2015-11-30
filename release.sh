@@ -42,8 +42,8 @@ if [[ $VERSION =~ .*\.0[b,r].+ ]]; then
 fi
 
 if [[ -z "$VIRTUAL_ENV" ]]; then
-    tox -e venv --notest
-    source ./.tox/venv/bin/activate
+    (cd $TOOLSDIR && tox -e venv --notest)
+    source $TOOLSDIR/.tox/venv/bin/activate
 fi
 
 setup_temp_space release-tag-$SHORTNAME
