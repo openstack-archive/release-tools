@@ -65,12 +65,14 @@ def main():
         series_name = os.path.basename(
             os.path.dirname(os.path.abspath(filename))
         )
+        deliverable_name = os.path.splitext(os.path.basename(filename))[0]
 
         all_versions = {
             rel['version']: rel for rel in deliverable_data['releases']
         }
         version = deliverable_data['releases'][-1]['version']
-        print('Version %s' % version)
+        print('Deliverable %s Series %s Version %s' %
+              (deliverable_name, series_name, version))
         this_version = all_versions[version]
 
         for project in this_version['projects']:
