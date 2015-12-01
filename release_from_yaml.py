@@ -85,7 +85,7 @@ def main():
             ]
             try:
                 subprocess.check_call(cmd)
-            except subprocess.CalledProcessError as err:
+            except (OSError, subprocess.CalledProcessError) as err:
                 print('ERROR: %s' % err)
                 errors.append('Error with %s: %s' % (project['repo'], err))
 
