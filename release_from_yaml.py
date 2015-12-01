@@ -87,12 +87,12 @@ def main():
                 subprocess.check_call(cmd)
             except (OSError, subprocess.CalledProcessError) as err:
                 print('ERROR: %s' % err)
-                errors.append('Error with %s: %s' % (project['repo'], err))
+                errors.append((project['repo'], err, cmd))
 
     if errors:
         print('\nRepeating errors:')
-        for e in errors:
-            print(e)
+        for repo, err, cmd in errors:
+            print('Error running "%s" for %s: %s' % (' '.join(cmd), repo, err))
         return 1
     return 0
 
