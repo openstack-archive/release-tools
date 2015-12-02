@@ -20,8 +20,9 @@
 from __future__ import print_function
 import argparse
 
-import launchpadlib.launchpad
 import lazr.restfulclient.errors
+
+from releasetools import launchpadutils
 
 # Parameters
 parser = argparse.ArgumentParser(description="Change Launchpad bugs in bulk")
@@ -42,7 +43,7 @@ args = parser.parse_args()
 
 # Connect to Launchpad
 print("Connecting to Launchpad...")
-launchpad = launchpadlib.launchpad.Launchpad.login_with('openstack-releasing', args.test)
+launchpad = launchpadutils.login(args.test)
 
 # Retrieve bugs
 print("Retrieving project...")

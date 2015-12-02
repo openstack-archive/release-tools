@@ -19,9 +19,10 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import argparse
 import sys
 
-import launchpadlib.launchpad
+from releasetools import launchpadutils
 
 
 def abort(code, errmsg):
@@ -30,9 +31,15 @@ def abort(code, errmsg):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="login to launchpad")
+    parser.add_argument("--test", action='store_const', const='staging',
+                        default='production',
+                        help='Use LP staging server to test')
+    args = parser.parse_args()
+
     # Connect to LP
     print("connecting to launchpad")
     try:
-        launchpadlib.launchpad.Launchpad.login_with('openstack-releasing', 'production')
+        launchpadutils.login(args.test)
     except Exception as error:
         abort(2, 'Could not connect to Launchpad: ' + str(error))

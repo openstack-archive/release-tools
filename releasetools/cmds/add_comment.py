@@ -20,8 +20,9 @@
 from __future__ import print_function
 import argparse
 
-import launchpadlib.launchpad
 import lazr.restfulclient.errors
+
+from releasetools import launchpadutils
 
 
 def main():
@@ -38,8 +39,7 @@ def main():
 
     # Connect to Launchpad
     print("Connecting to Launchpad...")
-    launchpad = launchpadlib.launchpad.Launchpad.login_with(
-        'openstack-releasing', args.test)
+    launchpad = launchpadutils.login(args.test)
 
     # Add comment
     for bugid in args.bugs:
