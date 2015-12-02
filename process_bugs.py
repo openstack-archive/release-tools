@@ -20,18 +20,18 @@
 from __future__ import print_function
 import argparse
 
-import launchpadlib.launchpad
 import lazr.restfulclient.errors
+
+from releasetools import launchpadutils
 
 # Parameters
 parser = argparse.ArgumentParser(description="Change Launchpad bugs in bulk")
 parser.add_argument('projectname', help='The project to act on')
+launchpadutils.add_cli_arguments(parser)
 bugsfrom = parser.add_mutually_exclusive_group()
 bugsfrom.add_argument('--status', default='Fix Committed',
                       help='All bugs with that status')
 bugsfrom.add_argument('--milestone', help='All open bugs from this milestone')
-parser.add_argument("--test", action='store_const', const='staging',
-                    default='production', help='Use LP staging server to test')
 parser.add_argument('--settarget',
                     help='ACTION: set the milestone to specified target')
 parser.add_argument('--fixrelease', action='store_true',
@@ -42,7 +42,7 @@ args = parser.parse_args()
 
 # Connect to Launchpad
 print("Connecting to Launchpad...")
-launchpad = launchpadlib.launchpad.Launchpad.login_with('openstack-releasing', args.test)
+launchpad = launchpadutils.login(args)
 
 # Retrieve bugs
 print("Retrieving project...")

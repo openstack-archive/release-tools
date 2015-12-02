@@ -20,8 +20,9 @@
 from __future__ import print_function
 import argparse
 
-import launchpadlib.launchpad
 import lazr.restfulclient.errors
+
+from releasetools import launchpadutils
 
 
 def main():
@@ -31,15 +32,14 @@ def main():
                         default='Comment added by add_comment')
     parser.add_argument('--content', help='The comment content',
                         default='Comment added by add_comment')
-    parser.add_argument("--test", action='store_const', const='staging',
-                        default='production', help='Use LP staging server to test')
-    parser.add_argument('bugs', type=int, nargs='+', help='Bugs to add comment to')
+    launchpadutils.add_cli_arguments(parser)
+    parser.add_argument('bugs', type=int, nargs='+',
+                        help='Bugs to add comment to')
     args = parser.parse_args()
 
     # Connect to Launchpad
     print("Connecting to Launchpad...")
-    launchpad = launchpadlib.launchpad.Launchpad.login_with(
-        'openstack-releasing', args.test)
+    launchpad = launchpadutils.login(args)
 
     # Add comment
     for bugid in args.bugs:
