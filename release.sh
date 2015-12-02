@@ -88,7 +88,7 @@ if [[ -z "$BUGS" ]]; then
 else
     add-comment \
         --subject="Fix included in $REPO $VERSION" \
-        --content="This issue was fixed in $REPO $VERSION $RELEASETYPE." \
+        --content="This issue was fixed in the $REPO $VERSION $RELEASETYPE." \
         $BUGS
 fi
 
