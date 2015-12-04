@@ -54,10 +54,17 @@ When a release request is ready to be approved, follow these steps:
    locally and pushed up to the remote server, the script will push
    comments to closed Launchpad bugs since the previous tag.
 
-5. Milestones are manually announced once all projects are done (usually at
-   the closing of the milestone window), using an email recapitulating all
-   projects that did a milestone tag and pointing to milestone tarballs. The
-   process to follow for announcements of releases will be added here soon.
+5. Announce the release.
+
+   1. Milestones are manually announced once all projects are done
+      (usually at the closing of the milestone window), using an email
+      recapitulating all projects that did a milestone tag and
+      pointing to milestone tarballs. The process to follow for
+      announcements of releases will be added here soon.
+
+   2. Library and tool releases are announced via one of the OpenStack
+      mailing lists. See the instructions for running announce.sh
+      below.
 
 
 Prerequisites
@@ -117,6 +124,22 @@ Example:
   HEAD of the openstack/oslo.rootwrap reporitory, and add a comment for each
   closed bug mentioned in commit messages since the previous mitaka tag (3.0.2).
 
+announce.sh
+-----------
+
+This script generates an email message ready to be sent to announce
+the release of a library or other tool.
+
+Example:
+
+::
+
+  ./announce.sh ~/repos/openstack/oslo.rootwrap
+  ./announce.sh ~/repos/openstack/oslo.rootwrap 3.0.3
+
+The output goes to ``relnotes/`` in a file named for the project and
+version. For example, the announcement for the rootwrap release above
+would be written to ``relnotes/oslo.rootwrap-3.0.3``.
 
 rccut.sh
 --------
