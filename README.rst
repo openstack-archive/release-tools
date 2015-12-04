@@ -61,9 +61,13 @@ When a release request is ready to be approved, follow these steps:
 Prerequisites
 =============
 
-You'll need the following Python modules installed:
- - launchpadlib
+The prerequisites for all of the scripts are defined in ``requirements.txt``. 
 
+Each shell script should try to create a Python virtualenv to install
+the packages before running any of the commands written in Python. If
+you start seeing import errors after updating your sandbox, it is
+likely that a new dependency was added. Try removing ``.tox/venv`` and
+running the command again.
 
 Top-level scripts
 =================
