@@ -31,8 +31,13 @@ When a release request is ready to be approved, follow these steps:
    Release requests should not be approved until we are actually ready
    to cut the release.
 
-2. After the release request merges, check out or update a local copy of
-   ``openstack/releases`` to get the new version of the deliverable file.
+2. After the release request merges, check out or update a local copy
+   of ``openstack/releases`` to get the new version of the file under
+   the ``deliverables`` directory. Make sure you check out the
+   releases repository to the commit with the new release request you
+   want to process, in case multiple requests merge around the same
+   time. The release tools only look at the most recent commit to
+   detect which deliverable files have changed.
 
 3. In a local copy of this
    ``openstack-infra/release-tools`` repository, run
