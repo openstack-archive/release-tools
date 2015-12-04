@@ -193,22 +193,11 @@ Examples:
   resulting tarball to the "neutron" Launchpad page.
 
 
-release_postversion.sh
-----------------------
 
-Release a project using post-versioning (without a version specified
-in setup.cfg).
 
-The arguments are:
 
-* the release series
-* the version number
-* the git reference (SHA or "HEAD")
-* the launchpad project name
 
-Examples:
 
-./release_postversion.sh liberty 1.13.0 85c069e oslo.messaging
 
 
 release-notes
