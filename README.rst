@@ -10,7 +10,7 @@ information from git tags and not having any version specifier in the
 ``setup.cfg``.
 
 Release requests are filed as patches to deliverables files in
-the openstack/releases repository, see the README there for more
+the ``openstack/releases`` repository, see the README there for more
 details.
 
 Before beginning this process, you need to set up ``gpg`` with a valid
@@ -89,7 +89,7 @@ release_from_yaml.sh
 --------------------
 
 This script takes YAML files describing deliverables to release (like those
-living in openstack/releases) and calls the release.sh script (see below)
+living in ``openstack/releases``) and calls the release.sh script (see below)
 to apply the corresponding tags. It will create a tag for the last release
 mentioned in the file(s). You can point it to specific YAML files, or to a
 local git repository (in which case it will look at the files modified in the
@@ -97,16 +97,20 @@ most recent commit).
 
 Examples:
 
-./release_from_yaml.sh ../openstack-releases deliverables/mitaka/nova.yaml
+::
 
-  Call release.sh for all repositories mentioned in the last release added
-  to ../openstack-releases/deliverables/mitaka/nova.yaml
+  ./release_from_yaml.sh ../openstack-releases deliverables/mitaka/nova.yaml
 
-./release_from_yaml.sh ../openstack-releases
+Call release.sh for all repositories mentioned in the last release added
+to ../openstack-releases/deliverables/mitaka/nova.yaml
 
-  Look into the git repository at ../openstack-releases for deliverable YAML
-  files modified at the last commit, and call release.sh for all repositories
-  mentioned on the last release in each such file.
+::
+
+  ./release_from_yaml.sh ../openstack-releases
+
+Look into the git repository at ../openstack-releases for deliverable YAML
+files modified at the last commit, and call release.sh for all repositories
+mentioned on the last release in each such file.
 
 
 release.sh
@@ -118,11 +122,13 @@ Additionally it will add a message on Launchpad bugs that are mentioned as
 
 Example:
 
-./release.sh openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master
+::
 
-  Apply a 3.0.3 tag (associated to the mitaka series) to the gerrit master
-  HEAD of the openstack/oslo.rootwrap reporitory, and add a comment for each
-  closed bug mentioned in commit messages since the previous mitaka tag (3.0.2).
+  ./release.sh openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master
+
+Apply a 3.0.3 tag (associated to the mitaka series) to the gerrit master
+HEAD of the openstack/oslo.rootwrap reporitory, and add a comment for each
+closed bug mentioned in commit messages since the previous mitaka tag (3.0.2).
 
 announce.sh
 -----------
@@ -157,15 +163,19 @@ to be built.
 
 Examples:
 
-./rccut.sh 7432f32d838ab346c liberty nova
+::
 
-  Create a series/liberty branch for Nova at commit 7432f32d838ab346c, and
-  mark FixCommitted bugs FixReleased, while targeting them to the juno-rc1
-  milestone.
+  ./rccut.sh 7432f32d838ab346c liberty nova
 
-./rccut.sh 3472368b3a546d liberty neutron-fwaas neutron
+Create a series/liberty branch for Nova at commit 7432f32d838ab346c, and
+mark FixCommitted bugs FixReleased, while targeting them to the juno-rc1
+milestone.
 
-  Create a series/liberty branch for neutron-fwaas at commit 3472368b3a546d.
+::
+
+  ./rccut.sh 3472368b3a546d liberty neutron-fwaas neutron
+
+Create a series/liberty branch for neutron-fwaas at commit 3472368b3a546d.
 
 
 rcdelivery.sh
@@ -183,24 +193,21 @@ generated or needs to be uploaded.
 
 Examples:
 
-./rcdelivery.sh kilo rc1 cinder
+::
 
-  Push 2015.1.0rc1 tag to current cinder stable/kilo branch HEAD, wait for
-  the tarball build, and upload the resulting tarball to Launchpad (while
-  marking it released).
+  ./rcdelivery.sh kilo rc1 cinder
 
-./rcdelivery kilo final neutron-fwaas neutron
+Push 2015.1.0rc1 tag to current cinder stable/kilo branch HEAD, wait for
+the tarball build, and upload the resulting tarball to Launchpad (while
+marking it released).
 
-  Push 2015.1.0 final tag to current neutron-fwaas stable/kilo branch HEAD
-  (which should be the last RC), wait for the tarball build, and upload the
-  resulting tarball to the "neutron" Launchpad page.
+::
 
+  ./rcdelivery kilo final neutron-fwaas neutron
 
-
-
-
-
-
+Push 2015.1.0 final tag to current neutron-fwaas stable/kilo branch HEAD
+(which should be the last RC), wait for the tarball build, and upload the
+resulting tarball to the "neutron" Launchpad page.
 
 
 release-notes
@@ -224,18 +231,22 @@ the one-line description to include in the output text.
 
 Examples:
 
-release-notes ~/repos/openstack/oslo.config 1.7.0 1.8.0
+::
 
-  Print the release notes between versions 1.7.0 and 1.8.0 for the
-  project in the ``~/repos/openstack/oslo.config`` directory.
+  release-notes ~/repos/openstack/oslo.config 1.7.0 1.8.0
 
-release-notes --show-dates --changes-only ~/repos/openstack/oslo.config 1.8.0 HEAD
+Print the release notes between versions 1.7.0 and 1.8.0 for the
+project in the ``~/repos/openstack/oslo.config`` directory.
 
-  Print the list of changes after 1.8.0 for the project in the
-  ``~/repos/openstack/oslo.config`` directory, including the date of
-  the change but leaving out the email message boilerplate. This mode
-  is useful for examining the list of unreleased changes in a project
-  to decide if a release is warranted and to pick a version number.
+::
+
+  release-notes --show-dates --changes-only ~/repos/openstack/oslo.config 1.8.0 HEAD
+
+Print the list of changes after 1.8.0 for the project in the
+``~/repos/openstack/oslo.config`` directory, including the date of
+the change but leaving out the email message boilerplate. This mode
+is useful for examining the list of unreleased changes in a project
+to decide if a release is warranted and to pick a version number.
 
 
 list_unreleased_changes.sh
@@ -247,15 +258,19 @@ branch. This is useful for deciding if a project needs to prepare a
 release, and for predicting what the next release version should be by
 looking at the commit logs.
 
-./list_unreleased_changes.sh master openstack/oslo.config
+::
 
-  Print the list of changes in ``openstack/oslo.config`` along the
-  master branch.
+  ./list_unreleased_changes.sh master openstack/oslo.config
 
-./list_unreleased_changes.sh stable/kilo $(list-repos --code-only --team Oslo)
+Print the list of changes in ``openstack/oslo.config`` along the
+master branch.
 
-  Print the list of changes in the ``stable/kilo`` branch of all Oslo
-  libraries.
+::
+
+  ./list_unreleased_changes.sh stable/kilo $(list-repos --code-only --team Oslo)
+
+Print the list of changes in the ``stable/kilo`` branch of all Oslo
+libraries.
 
 
 list_oslo_unreleased_changes.sh
@@ -264,11 +279,15 @@ list_oslo_unreleased_changes.sh
 Runs list_unreleased_changes.sh for all of the Oslo library
 repositories.
 
-./list_oslo_unreleased_changes.sh stable/kilo
+::
+
+  ./list_oslo_unreleased_changes.sh stable/kilo
 
 is equivalent to:
 
-./list_unreleased_changes.sh stable/kilo $(list-repos --code-only --team Oslo)
+::
+
+  ./list_unreleased_changes.sh stable/kilo $(list-repos --code-only --team Oslo)
 
 
 list_library_unreleased_changes.sh
@@ -287,6 +306,9 @@ that easy to coordinate and ensures that the desired version also
 exists in launchpad as a released milestone and by updating the
 .gitreview file in the new branch for future submissions.
 
+::
+
+  ./make_library_stable_branch.sh kilo oslo.config 1.9.2
 
 make_feature_branch.sh
 ----------------------
@@ -295,6 +317,9 @@ Feature branches need to have "feature/" at the beginning of the name
 and should have their ``.gitreview`` updated when the branch is
 created.
 
+::
+
+  ./make_feature_branch.sh keystoneauth_integration python-keystoneclient 4776495adfadbf5240a9e0f169990ce139af9549
 
 list-repos
 ----------
@@ -302,8 +327,10 @@ list-repos
 Read the project list from the governance repository and print a list
 of the repositories, filtered by team and/or tag.
 
-list-repos --team Oslo
-list-repos --tag release:managed --tag type:library
+::
+
+  list-repos --team oslo
+  list-repos --tag release:managed --tag type:library
 
 
 update_git_review.sh
@@ -312,7 +339,9 @@ update_git_review.sh
 Update the .gitreview file in a specific branch of a checked out
 repositories.
 
-./update_git_review.sh stable/kilo ~/repos/openstack/oslo.*
+::
+
+  ./update_git_review.sh stable/kilo ~/repos/openstack/oslo.*
 
 
 launchpad-login
@@ -375,13 +404,17 @@ exists in Launchpad (useful for Swift where the rules are different).
 
 Examples:
 
-./ms2version.py nova kilo-3
+::
 
-  Returns 2015.1.0b3 (after checking that the kilo-3 milestone exists in Nova)
+  ./ms2version.py nova kilo-3
 
-./ms2version.py swift 2.1.0 --onlycheck
+Returns 2015.1.0b3 (after checking that the kilo-3 milestone exists in Nova)
 
-  Exists successfully if there is a 2.1.0 milestone in Swift.
+::
+
+  ./ms2version.py swift 2.1.0 --onlycheck
+
+Exists successfully if there is a 2.1.0 milestone in Swift.
 
 
 repo_tarball_diff.sh
@@ -395,10 +428,12 @@ files (.gitignore...).
 
 Example:
 
-./repo_tarball_diff.sh nova master
+::
 
-  Check the difference between Nova master branch contant and a tarball
-  that would be generated from it.
+  ./repo_tarball_diff.sh nova master
+
+Check the difference between Nova master branch contant and a tarball
+that would be generated from it.
 
 
 pre_expire.py
@@ -413,16 +448,22 @@ activity in the last D days for expiration by:
 
 Examples:
 
-./pre_expire_bugs.py neutron --days 180
+::
+
+  ./pre_expire_bugs.py neutron --days 180
 
 Prepare for expiration neutron bugs with no activity not updated in the last
 180 days.
 
-./pre_expire_bugs.py glance --days 365 --test
+::
+
+  ./pre_expire_bugs.py glance --days 365 --test
 
 Test prepare for expiration on Launchpad Staging servers.
 
-./pre_expire_bugs.py glance --days 365 --dry-run
+::
+
+  ./pre_expire_bugs.py glance --days 365 --dry-run
 
 Prepare for expiration dry-run: print actions without executing them.
 
@@ -440,19 +481,25 @@ not match the one in --settarget.
 
 Examples:
 
-./process_bugs.py nova --settarget=grizzly-3 --fixrelease
+::
 
-  Sets the target for all Nova FixCommitted bugs to grizzly-3 
-  and mark them 'Fix Released'.
+  ./process_bugs.py nova --settarget=grizzly-3 --fixrelease
 
-./process_bugs.py glance --settarget=grizzly-2 --status='Fix Released' --test
+Sets the target for all Nova FixCommitted bugs to grizzly-3 and mark
+them 'Fix Released'.
 
-  Test setting the target for all untargeted Glance FixReleased bugs to
-  grizzly-2 on Launchpad Staging servers.
+::
 
-./process_bugs.py neutron --milestone juno-3 --settarget juno-rc1
+  ./process_bugs.py glance --settarget=grizzly-2 --status='Fix Released' --test
 
-  Move all juno-3 open bugs from juno-3 to juno-rc1 milestone.
+Test setting the target for all untargeted Glance FixReleased bugs to
+grizzly-2 on Launchpad Staging servers.
+
+::
+
+  ./process_bugs.py neutron --milestone juno-3 --settarget juno-rc1
+
+Move all juno-3 open bugs from juno-3 to juno-rc1 milestone.
 
 
 wait_for_tarball.py
@@ -465,14 +512,18 @@ and reports the built tarball name.
 
 Examples:
 
-./wait_for_tarball.py cinder --mpsha=59089e56f674f5f94f67c5986e9a616bb669d846
+::
 
-  Looks for a cinder-branch-tarball job matching SHA 59089e... which would
-  produce a milestone-proposed.tar.gz tarball, and waits for completion
+  ./wait_for_tarball.py cinder --mpsha=59089e56f674f5f94f67c5986e9a616bb669d846
 
-./wait_for_tarball.py cinder --tag=2013.1.1
+Looks for a cinder-branch-tarball job matching SHA 59089e... which would
+produce a milestone-proposed.tar.gz tarball, and waits for completion
 
-  Looks for a cinder-tarball job for tag "2013.1.1" and waits for completion.
+::
+
+  ./wait_for_tarball.py cinder --tag=2013.1.1
+
+Looks for a cinder-tarball job for tag "2013.1.1" and waits for completion.
 
 
 upload_release.py
@@ -489,19 +540,25 @@ intend to release, and to sign the tarball upload.
 
 Examples:
 
-./upload_release.py nova 2015.1.0 --milestone=kilo-3
+::
 
-  Uploads Nova's nova-2015.1.0b3.tar.gz to the kilo-3 milestone page.
+  ./upload_release.py nova 2015.1.0 --milestone=kilo-3
 
-./upload_release.py glance 2015.1.0 --test
+Uploads Nova's nova-2015.1.0b3.tar.gz to the kilo-3 milestone page.
 
-  Uploads Glance's glance-2015.1.0.tar.gz to the final "2015.1.0" milestone
-  as glance-2015.1.0.tar.gz, on Launchpad staging server
+::
 
-./upload_release.py cinder 2012.2.3 --tarball=stable-folsom
+  ./upload_release.py glance 2015.1.0 --test
 
-  Uploads Cinder's current cinder-stable-folsom.tar.gz to the 2012.2.3
-  milestone as cinder-2012.2.3.tar.gz
+Uploads Glance's glance-2015.1.0.tar.gz to the final "2015.1.0" milestone
+as glance-2015.1.0.tar.gz, on Launchpad staging server
+
+::
+
+  ./upload_release.py cinder 2012.2.3 --tarball=stable-folsom
+
+Uploads Cinder's current cinder-stable-folsom.tar.gz to the 2012.2.3
+milestone as cinder-2012.2.3.tar.gz
 
 
 consolidate_release_page.py
@@ -519,21 +576,27 @@ fixed in).
 
 Examples:
 
-./consolidate_release_page.py cinder kilo 2015.1.0
+::
 
-  Moves Cinder blueprints and bugs from intermediary kilo milestones
-  to the final 2015.1 milestone page.
+  ./consolidate_release_page.py cinder kilo 2015.1.0
 
-./consolidate_release_page.py --test swift grizzly 1.8.0
+Moves Cinder blueprints and bugs from intermediary kilo milestones
+to the final 2015.1 milestone page.
 
-  Moves Swift 1.8.0-rc* blueprints and bugs to the final 1.8.0 page, on
-  Launchpad staging server
+::
 
-./consolidate_release_page.py --copytask glance kilo 2015.1.0
+  ./consolidate_release_page.py --test swift grizzly 1.8.0
 
-  Moves Glance blueprints from intermediary kilo milestones to the final
-  2015.1.0 milestone page. Creates kilo series task for all grizzly bugs
-  and sets the milestone for those to 2015.1.0.
+Moves Swift 1.8.0-rc* blueprints and bugs to the final 1.8.0 page, on
+Launchpad staging server
+
+::
+
+  ./consolidate_release_page.py --copytask glance kilo 2015.1.0
+
+Moves Glance blueprints from intermediary kilo milestones to the final
+2015.1.0 milestone page. Creates kilo series task for all grizzly bugs
+and sets the milestone for those to 2015.1.0.
 
 
 milestones-create
@@ -572,23 +635,29 @@ milestone, approver name and specified priority (by default, 'Low').
 
 Examples:
 
-./spec2bp.py glance super-spec --milestone=juno-2 --priority=Medium
+::
 
-  Glance's super-spec.rst was approved and you want to add it to juno-2,
-  with Medium priority. This will do it all for you.
+  ./spec2bp.py glance super-spec --milestone=juno-2 --priority=Medium
 
-./spec2bp.py nova --specpath=specs/kilo/approved/my-awesome-spec.rst
-  --in-review --milestone=juno-2
+Glance's super-spec.rst was approved and you want to add it to juno-2,
+with Medium priority. This will do it all for you.
 
-  Nova's my-awesome-spec.rst is still under review, but you would like to
-  add the my-awesome-spec blueprint to juno-2 (marked Blocked). Since it's
-  located in a non-standard path, we specify it using --specpath parameter.
+::
 
-./spec2bp.py nova my-awesome-spec --priority=High
+  ./spec2bp.py nova --specpath=specs/kilo/approved/my-awesome-spec.rst
+    --in-review --milestone=juno-2
 
-  my-awesome-spec is now approved. You want to flip all the approval bits,
-  but also change its priority to High. There is no need to pass --specpath
-  again, spec2bp will infer it from the blueprint URL field.
+Nova's my-awesome-spec.rst is still under review, but you would like to
+add the my-awesome-spec blueprint to juno-2 (marked Blocked). Since it's
+located in a non-standard path, we specify it using --specpath parameter.
+
+::
+
+  ./spec2bp.py nova my-awesome-spec --priority=High
+
+my-awesome-spec is now approved. You want to flip all the approval bits,
+but also change its priority to High. There is no need to pass --specpath
+again, spec2bp will infer it from the blueprint URL field.
 
 
 stable_freeze.py
@@ -603,25 +672,33 @@ Examples:
 
 To view open reviews for stable/icehouse 2014.1.4:
 
-./stable_freeze.py -r 2014.1.4 query
+::
 
-  View open reviews for stable/icehouse 2014.1.4.
+  ./stable_freeze.py -r 2014.1.4 query
 
-./stable_freeze.py -r 2014.1.4 -o ~/openstack/2014.1.4-freeze.txt
+View open reviews for stable/icehouse 2014.1.4.
 
-  Freeze all open reviews proposed to stable/icehouse. 2014.1.4-freeze.txt will
-  contain all frozen reviews and this can be used to thaw later on.
+::
 
-./stable_freeze -r 2014.1.4 -i ~/openstack/2014.1.4-freeze.txt thaw
+  ./stable_freeze.py -r 2014.1.4 -o ~/openstack/2014.1.4-freeze.txt
 
-  Thaw all reviews previously frozen and stored in 2014.1.4-freeze.txt.
+Freeze all open reviews proposed to stable/icehouse. 2014.1.4-freeze.txt will
+contain all frozen reviews and this can be used to thaw later on.
 
-./stable_freeze -r 2014.1.4 -i ~/openstack/2014.1.4-freeze.txt \
-  -c 123777 -c 123778 freeze
+::
 
-  Freeze individual changes that have been proposed after the stable freeze
-  period started.  References to these reviews will be appended to
-  2014.1.4-freeze.txt to be unfrozen later on.
+  ./stable_freeze -r 2014.1.4 -i ~/openstack/2014.1.4-freeze.txt thaw
+
+Thaw all reviews previously frozen and stored in 2014.1.4-freeze.txt.
+
+::
+
+  ./stable_freeze -r 2014.1.4 -i ~/openstack/2014.1.4-freeze.txt \
+    -c 123777 -c 123778 freeze
+
+Freeze individual changes that have been proposed after the stable freeze
+period started.  References to these reviews will be appended to
+2014.1.4-freeze.txt to be unfrozen later on.
 
 
 autokick.py
@@ -633,9 +710,9 @@ milestone. ttx is running it in a cron so you don't have to.
 
 Examples:
 
-To clean up Nova kilo blueprints:
+To clean up Nova kilo blueprints::
 
-./autokick.py nova kilo
+  ./autokick.py nova kilo
 
 
 highest_semver.py
@@ -656,9 +733,9 @@ a change that then needs to get reviewed and send to gerrits.
 
 Examples:
 
-To generate a cleanup patch for nova:
+To generate a cleanup patch for nova::
 
-./translation-cleanup.sh kilo nova
+  ./translation-cleanup.sh kilo nova
 
 
 adjust_blueprints.py
@@ -673,14 +750,18 @@ of blueprints for a given project and:
 
 Examples:
 
-./adjust_blueprints.py nova liberty-1
+::
 
-  Displays proposed adjustments around Nova liberty-1 blueprints.
+  ./adjust_blueprints.py nova liberty-1
 
-./adjust_blueprints.py nova liberty-1 --target --clean
+Displays proposed adjustments around Nova liberty-1 blueprints.
 
-  Targets missing implemented blueprints and cleans incomplete ones for Nova
-  in liberty-1.
+::
+
+  ./adjust_blueprints.py nova liberty-1 --target --clean
+
+Targets missing implemented blueprints and cleans incomplete ones for Nova
+in liberty-1.
 
 
 add-comment
@@ -689,9 +770,9 @@ add-comment
 Add a comment to a set of Launchpad bugs. This command requires basic
 Launchpad credentials (see launchpad-login).
 
-Example:
+Example::
 
-add-comment --subject='Winner' --content='You won!' 1000000 2000000
+  add-comment --subject='Winner' --content='You won!' 1000000 2000000
 
-  Add a 'You won!' comment (with subject line 'Winner') to Launchpad
-  bugs #1000000 and #2000000
+Add a 'You won!' comment (with subject line 'Winner') to Launchpad
+bugs #1000000 and #2000000
