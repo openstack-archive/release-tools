@@ -19,15 +19,33 @@
 
 set -e
 
-if [ $# -lt 1 ]; then
-    echo "Usage: $0 releases_repository [deliverable_files]"
-    echo
-    echo "Example: $0 ~/repos/openstack/releases"
-    exit 2
-fi
-
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
+
+function usage {
+    echo "Usage: release_from_yaml.sh [-a] releases_repository [deliverable_files]"
+    echo
+    echo "Example: release_from_yaml.sh ~/repos/openstack/releases"
+    echo "Example: release_from_yaml.sh ~/repos/openstack/releases -a"
+    echo "Example: release_from_yaml.sh ~/repos/openstack/releases deliverables/mitaka/oslo.config.yaml"
+}
+
+while getopts "a" opt "$@"; do
+    case "$opt" in
+        a) announce="-a";;
+        ?) echo "Invalid option: -$OPTARG" >&2;
+            usage;
+            exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ $# -lt 1 ]; then
+    echo "ERROR: No releases_repository specified"
+    echo
+    usage
+    exit 1
+fi
 
 RELEASES_REPO="$1"
 shift
@@ -40,7 +58,7 @@ fi
 
 list-deliverable-changes -r $RELEASES_REPO $DELIVERABLES \
 | while read deliverable series version repo hash; do
-    $TOOLSDIR/release.sh $repo $series $version $hash
+    $TOOLSDIR/release.sh $announce $repo $series $version $hash
 done
 
 exit 0
