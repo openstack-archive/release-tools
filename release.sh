@@ -20,20 +20,37 @@
 
 set -e
 
-if [ $# -lt 4 ]; then
-    echo "Usage: $0 repository series version SHA"
-    echo
-    echo "Example: $0 openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master"
-    exit 2
-fi
-
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
+
+function usage {
+    echo "Usage: release.sh [-a] repository series version SHA"
+    echo
+    echo "Example: release.sh openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master"
+}
+
+announce=false
+while getopts "a" opt "$@"
+do
+    case "$opt" in
+        a) announce=true;;
+        ?) echo "Invalid option: -$OPTARG" >&2;
+            usage;
+            exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ $# -lt 4 ]; then
+    usage
+    exit 2
+fi
 
 REPO=$1
 SERIES=$2
 VERSION=$3
 SHA=$4
+
 SHORTNAME=`basename $REPO`
 
 RELEASETYPE="release"
@@ -90,6 +107,13 @@ else
         --subject="Fix included in $REPO $VERSION" \
         --content="This issue was fixed in the $REPO $VERSION $RELEASETYPE." \
         $BUGS
+fi
+
+# If we're running the script by hand, we might want to generate a
+# release announcement.
+if $announce; then
+    title "Generating release announcement"
+    (cd $TOOLSDIR && ./announce.sh $REPODIR $VERSION)
 fi
 
 exit 0
