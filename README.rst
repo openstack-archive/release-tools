@@ -134,7 +134,8 @@ announce.sh
 -----------
 
 This script generates an email message ready to be sent to announce
-the release of a library or other tool.
+the release of a library or other tool. Note that the EMAIL environment
+variable needs to be set prior to running the tool.
 
 Example:
 

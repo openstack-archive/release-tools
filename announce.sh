@@ -33,6 +33,11 @@ REPODIR=$1
 VERSION=$2
 SHORTNAME=`basename $REPODIR`
 
+if [[ -z "$EMAIL" ]]; then
+    echo "ERROR: The EMAIL environment variable is not set."
+    exit 1
+fi
+
 if [[ -z "$VIRTUAL_ENV" ]]; then
     (cd $TOOLSDIR && tox -e venv --notest)
     source $TOOLSDIR/.tox/venv/bin/activate
