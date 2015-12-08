@@ -19,7 +19,7 @@
 set -e
 
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 path-to-repository [version] SHA"
+    echo "Usage: $0 path-to-repository [version]"
     echo
     echo "Example: $0 ~/repos/openstack/oslo.rootwrap"
     echo "Example: $0 ~/repos/openstack/oslo.rootwrap 3.0.3"
