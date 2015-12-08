@@ -74,7 +74,11 @@ PREVIOUS_VERSION=$(git describe --abbrev=0 ${VERSION}^)
 # iQEcBAABAgAGBQJWXhUIAAoJEDttBqDEKEN62rMH/ihLAGfw5GxPLmdEpt7gsLJu
 # ...
 #
-TAG_META=$(git show --no-patch "$VERSION" | grep '^meta:')
+TAG_META=$(git show --no-patch "$VERSION" | grep '^meta:' || true)
+if [[ -z "$TAG_META" ]]; then
+    echo ERROR: Missing meta lines in $VERSION tag message.
+    exit 1
+fi
 
 function get_tag_meta {
     typeset fieldname="$1"
