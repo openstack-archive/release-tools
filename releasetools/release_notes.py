@@ -27,6 +27,8 @@ from reno import defaults as reno_defaults
 from reno import formatter
 from reno import scanner
 
+from releasetools import rst2txt
+
 
 EMOTIONS = [
     'amped',
@@ -91,7 +93,7 @@ For more details, please see below and:
 
     {{ milestone_url }}
 {% else %}
-For more details, please see the git log history below.
+For more details, please see below.
 {% endif %}
 
 {% if bug_url %}
@@ -303,11 +305,12 @@ def generate_release_notes(library, library_path,
         branch=branch,
     )
     if end_revision in scanner_output:
-        reno_notes = formatter.format_report(
+        rst_notes = formatter.format_report(
             reporoot=library_path,
             scanner_output=scanner_output,
             versions_to_include=[end_revision],
         )
+        reno_notes = rst2txt.convert(rst_notes)
     else:
         reno_notes = ''
 
