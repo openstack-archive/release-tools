@@ -811,7 +811,10 @@ class TextTranslator(nodes.NodeVisitor):
             self.end_state()
 
     def visit_target(self, node):
-        raise nodes.SkipNode
+        pass
+
+    def depart_target(self, node):
+        self.add_text(' (%s)' % node['refuri'])
 
     def visit_index(self, node):
         raise nodes.SkipNode
