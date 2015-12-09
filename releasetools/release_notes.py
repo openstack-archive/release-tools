@@ -23,6 +23,9 @@ import sys
 import jinja2
 from oslo_concurrency import processutils
 import parawrap
+from reno import defaults as reno_defaults
+from reno import formatter
+from reno import scanner
 
 
 EMOTIONS = [
@@ -84,7 +87,7 @@ With package available at:
     {{ pypi_url }}
 {% endif %}
 {% if milestone_url %}
-For more details, please see the git log history below and:
+For more details, please see below and:
 
     {{ milestone_url }}
 {% else %}
@@ -99,7 +102,8 @@ Please report issues through launchpad:
 """
 
 # This will just be replaced with template values (no wrapping applied).
-CHANGE_RELEASE_TPL = """{% if notables %}
+CHANGE_RELEASE_TPL = """{% if reno_notes %}{{ reno_notes }}{% endif %}
+{% if notables %}
 Notable changes
 ----------------
 
@@ -225,6 +229,9 @@ def generate_release_notes(library, library_path,
     if not os.path.isfile(os.path.join(library_path, "setup.py")):
         raise RuntimeError("No 'setup.py' file found in %s\n" % library_path)
 
+    if not email_from:
+        raise RuntimeError('No email-from specified')
+
     # Get the python library/program description...
     cmd = [sys.executable, 'setup.py', '--description']
     stdout, stderr = run_cmd(cmd, cwd=library_path)
@@ -285,8 +292,24 @@ def generate_release_notes(library, library_path,
     change_header = ["Changes in %s %s" % (library_name, git_range)]
     change_header.append("-" * len(change_header[0]))
 
-    if not email_from:
-        raise RuntimeError('No email-from specified')
+    # Look for reno notes for this version.
+    branch = None
+    if is_stable:
+        branch = 'origin/stable/%s' % series
+    scanner_output = scanner.get_notes_by_version(
+        reporoot=library_path,
+        notesdir='%s/%s' % (reno_defaults.RELEASE_NOTES_SUBDIR,
+                            reno_defaults.NOTES_SUBDIR),
+        branch=branch,
+    )
+    if end_revision in scanner_output:
+        reno_notes = formatter.format_report(
+            reporoot=library_path,
+            scanner_output=scanner_output,
+            versions_to_include=[end_revision],
+        )
+    else:
+        reno_notes = ''
 
     params = dict(readme_sections)
     params.update({
@@ -310,6 +333,7 @@ def generate_release_notes(library, library_path,
         'email_to': email_to,
         'email_reply_to': email_reply_to,
         'email_tags': email_tags,
+        'reno_notes': reno_notes,
     })
     if include_pypi_link:
         params['pypi_url'] = PYPI_URL_TPL % library_name
