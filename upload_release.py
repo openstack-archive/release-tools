@@ -25,7 +25,8 @@ import subprocess
 import sys
 import tempfile
 import time
-import urllib
+
+from six.moves.urllib import request as urlreq
 
 import launchpadlib.launchpad
 
@@ -108,7 +109,7 @@ if not args.nop:
                (args.deliverable, base_tgz))
     tgz = os.path.join(tmpdir, base_tgz)
 
-    (tgz, message) = urllib.urlretrieve(url_tgz, filename=tgz)
+    (tgz, message) = urlreq.urlretrieve(url_tgz, filename=tgz)
 
     try:
         subprocess.check_call(['tar', 'ztvf', tgz])
@@ -181,7 +182,7 @@ if not args.nop:
     time.sleep(2)
     result_md5_url = ("http://launchpad.net/%s/+download/%s/+md5" %
                       (lp_release.self_link[30:], final_tgz))
-    result_md5_file = urllib.urlopen(result_md5_url)
+    result_md5_file = urlreq.urlopen(result_md5_url)
     result_md5 = result_md5_file.read().split()[0]
     result_md5_file.close()
     if md5 != result_md5:
