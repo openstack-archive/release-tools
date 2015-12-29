@@ -40,9 +40,8 @@ def main():
         args.releases_repo,
         args.deliverable_file,
     )
-    for deliverable_name, series_name, version, repo, hash in results:
-        print('%s %s %s %s %s' %
-              (deliverable_name, series_name, version, repo, hash))
+    for r in results:
+        print(' '.join(r))
     return 0
 
 

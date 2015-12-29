@@ -52,6 +52,14 @@ def get_modified_deliverable_file_content(reporoot, filenames):
         with open(filename, 'r') as f:
             deliverable_data = yaml.load(f.read())
 
+        # Determine where to send email announcements of
+        # releases. Default to the development list, to cut down on
+        # excessive emails to the announcement list.
+        send_announcements_to = deliverable_data.get(
+            'send-announcements-to',
+            'openstack-dev@lists.openstack.org',
+        )
+
         # The series name is part of the filename, rather than the file
         # body. That causes release.sh to be called with series="_independent"
         # for release:independent projects, and release.sh to use master branch
@@ -68,4 +76,5 @@ def get_modified_deliverable_file_content(reporoot, filenames):
         this_version = all_versions[version]
         for project in this_version['projects']:
             yield (deliverable_name, series_name, version,
-                   project['repo'], project['hash'])
+                   project['repo'], project['hash'],
+                   send_announcements_to)
