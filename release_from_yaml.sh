@@ -57,8 +57,9 @@ if [[ -z "$VIRTUAL_ENV" ]]; then
 fi
 
 list-deliverable-changes -r $RELEASES_REPO $DELIVERABLES \
-| while read deliverable series version repo hash; do
-    $TOOLSDIR/release.sh $announce $repo $series $version $hash
+| while read deliverable series version repo hash announce_to; do
+    title "$repo $series $version $hash $announce_to"
+    $TOOLSDIR/release.sh $announce $repo $series $version $hash $announce_to
 done
 
 exit 0
