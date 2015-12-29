@@ -24,9 +24,9 @@ TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
 
 function usage {
-    echo "Usage: release.sh [-a] repository series version SHA"
+    echo "Usage: release.sh [-a] repository series version SHA announce"
     echo
-    echo "Example: release.sh openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master"
+    echo "Example: release.sh openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master openstack-dev@lists.openstack.org"
 }
 
 announce=false
@@ -40,7 +40,7 @@ while getopts "a" opt "$@"; do
 done
 shift $((OPTIND-1))
 
-if [ $# -lt 4 ]; then
+if [ $# -lt 5 ]; then
     usage
     exit 2
 fi
@@ -49,6 +49,7 @@ REPO=$1
 SERIES=$2
 VERSION=$3
 SHA=$4
+ANNOUNCE=$5
 
 SHORTNAME=`basename $REPO`
 
@@ -87,6 +88,7 @@ else
 meta:version: $VERSION
 meta:series: $SERIES
 meta:release-type: $RELEASETYPE
+meta:announce: $ANNOUNCE
 "
     echo "Tag message is '$TAGMSG'"
     git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA

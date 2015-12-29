@@ -94,6 +94,13 @@ function get_tag_meta {
 # The series name is part of the commit message left by release.sh.
 SERIES=$(get_tag_meta series)
 
+# The receipient for announcements is part of the commit message left
+# by release.sh.
+ANNOUNCE=$(get_tag_meta announce)
+if [[ ! -z "$ANNOUNCE" ]]; then
+    emailto="--email-to $ANNOUNCE"
+fi
+
 # Figure out if that series is a stable branch or not.
 if git branch -a | grep -q origin/stable/$SERIES; then
     stable="--stable"
@@ -111,6 +118,7 @@ relnotes_file="$RELNOTESDIR/$SHORTNAME-$VERSION"
 
 release-notes \
     --email \
+    $email_to \
     $email_tags \
     --series $SERIES \
     $stable \
