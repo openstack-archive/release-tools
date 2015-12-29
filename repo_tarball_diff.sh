@@ -29,7 +29,7 @@ if [ $# -lt 2 ]; then
 fi
 
 TMPDIR=`mktemp -d`
-git clone -b $2 https://github.com/openstack/$1 $TMPDIR/repo || error "clone failed"
+git clone -b $2 https://git.openstack.org/openstack/$1 $TMPDIR/repo || error "clone failed"
 cd $TMPDIR/repo
 git archive -o $TMPDIR/repo.tar HEAD
 tar tf $TMPDIR/repo.tar | sort -g > $TMPDIR/repo.contents
