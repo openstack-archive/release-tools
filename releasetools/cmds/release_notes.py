@@ -73,7 +73,7 @@ def main():
     )
     email_group.add_argument(
         "--email-to",
-        default="openstack-announce@lists.openstack.org",
+        default="openstack-dev@lists.openstack.org",
         help="recipient of the email, defaults to %(default)s",
     )
     email_group.add_argument(
