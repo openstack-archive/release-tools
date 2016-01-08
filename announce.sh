@@ -128,4 +128,9 @@ release-notes \
 echo
 echo $relnotes_file
 
+echo
+echo "Sending release announcement"
+send-mail $relnotes_file || \
+    echo "Sending failed, see $relnotes_file for message body"
+
 exit 0
