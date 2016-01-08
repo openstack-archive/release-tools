@@ -33,10 +33,9 @@ REPODIR=$1
 VERSION=$2
 SHORTNAME=`basename $REPODIR`
 
-if [[ -z "$EMAIL" ]]; then
-    echo "ERROR: The EMAIL environment variable is not set."
-    exit 1
-fi
+# Assign a default "from" email address if one is not specified by the
+# user's environment.
+export EMAIL=${EMAIL:-no-reply@openstack.org}
 
 if [[ -z "$VIRTUAL_ENV" ]]; then
     (cd $TOOLSDIR && tox -e venv --notest)
