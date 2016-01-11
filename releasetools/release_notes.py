@@ -88,13 +88,7 @@ With package available at:
 
     {{ pypi_url }}
 {% endif %}
-{% if milestone_url %}
-For more details, please see below and:
-
-    {{ milestone_url }}
-{% else %}
 For more details, please see below.
-{% endif %}
 
 {% if bug_url %}
 Please report issues through launchpad:
@@ -287,10 +281,8 @@ def generate_release_notes(library, library_path,
     bug_url = readme_sections['bug_url']
     if bug_url:
         lp_url = bug_url.replace("bugs.", "").rstrip("/")
-        milestone_url = lp_url + "/+milestone/%s" % end_revision
     else:
         lp_url = ''
-        milestone_url = ''
     change_header = ["Changes in %s %s" % (library_name, git_range)]
     change_header.append("-" * len(change_header[0]))
 
@@ -321,7 +313,6 @@ def generate_release_notes(library, library_path,
         'end_rev': end_revision,
         'range': git_range,
         'lib': library_path,
-        'milestone_url': milestone_url,
         'skip_requirement_merges': skip_requirement_merges,
         'changes': changes,
         'requirement_changes': requirement_changes,
