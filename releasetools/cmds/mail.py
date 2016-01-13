@@ -27,7 +27,7 @@ import smtplib
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--server', default='localhost',
+    parser.add_argument('--server', default='lists.openstack.org',
                         help='the SMTP server')
     parser.add_argument('-v', dest='verbose',
                         action='store_true', default=False,
