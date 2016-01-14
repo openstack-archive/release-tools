@@ -79,6 +79,7 @@ PREVIOUS=$(get_last_tag $PREV_SERIES)
 title "Tagging $TARGETSHA as $VERSION"
 if git show-ref "$VERSION"; then
     echo "$REPO already has a version $VERSION tag"
+    PREVIOUS=$(git describe --abbrev=0 ${VERSION}^1)
 else
     # WARNING(dhellmann): announce.sh expects to be able to parse this
     # commit message, so if you change the format you may have to
