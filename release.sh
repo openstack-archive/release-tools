@@ -58,11 +58,6 @@ if [[ $VERSION =~ .*\.0[b,r].+ ]]; then
     RELEASETYPE="development milestone"
 fi
 
-if [[ -z "$VIRTUAL_ENV" ]]; then
-    (cd $TOOLSDIR && tox -e venv --notest)
-    source $TOOLSDIR/.tox/venv/bin/activate
-fi
-
 setup_temp_space release-tag-$SHORTNAME
 clone_repo $REPO
 REPODIR="$(cd $REPO && pwd)"
