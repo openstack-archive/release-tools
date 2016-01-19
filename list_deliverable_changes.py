@@ -72,7 +72,7 @@ def get_modified_deliverable_file_content(reporoot, filenames):
         # to evaluate fixed bugs.
         series_name = os.path.basename(
             os.path.dirname(os.path.abspath(filename))
-        )
+        ).lstrip('_')
         deliverable_name = os.path.splitext(os.path.basename(filename))[0]
 
         all_versions = {
