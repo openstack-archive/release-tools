@@ -298,6 +298,23 @@ Runs list_unreleased_changes.sh for all libraries managed by any
 project.
 
 
+list_stable_unreleased_changes.sh
+---------------------------------
+
+Runs changes.sh for all repositories taged with ``stable:follows-policy``.
+
+
+::
+
+  ./list_stable_unreleased_changes.sh stable/liberty
+
+
+is equivalent to:
+
+::
+
+  ./list_unreleased_changes.sh stable/liberty $(list-repos --tag stable:follows-policy)
+
 make_stable_branch.sh
 ---------------------
 
