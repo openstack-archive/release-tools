@@ -57,8 +57,10 @@ if [[ -z "$VERSION" ]]; then
     VERSION=$(get_last_tag)
 fi
 
-# Look for the previous version on the same branch.
-PREVIOUS_VERSION=$(git describe --abbrev=0 ${VERSION}^)
+# Look for the previous version on the same branch. If the command
+# fails because there are no other tags, we will produce the entire
+# history.
+PREVIOUS_VERSION=$(git describe --abbrev=0 ${VERSION}^ || echo "")
 
 # Extract the tag message by parsing the git show output, which looks
 # something like:
@@ -121,7 +123,7 @@ release-notes \
     $email_tags \
     --series $SERIES \
     $stable \
-    . $PREVIOUS_VERSION $VERSION \
+    . "$PREVIOUS_VERSION" "$VERSION" \
     --include-pypi-link \
     | tee $relnotes_file
 
