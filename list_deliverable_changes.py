@@ -55,6 +55,9 @@ def get_modified_deliverable_file_content(reporoot, filenames):
 
     for basename in deliverable_files:
         filename = os.path.join(reporoot, basename)
+        if not os.path.exists(filename):
+            # The file must have been deleted, skip it.
+            continue
         with open(filename, 'r') as f:
             deliverable_data = yaml.load(f.read())
 
