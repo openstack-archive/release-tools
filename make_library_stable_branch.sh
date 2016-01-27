@@ -38,9 +38,6 @@ REPO=$(lp_project_to_repo $PROJECT)
 
 NEW_BRANCH="stable/$SERIES"
 
-title "Checking that $VERSION exists in Launchpad for $LPROJECT"
-$TOOLSDIR/ms2version.py --onlycheck $LPROJECT $VERSION
-
 setup_temp_space release-tag-$PROJECT
 clone_repo $REPO_PREFIX/$REPO
 cd $REPO_PREFIX/$REPO
