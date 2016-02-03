@@ -29,17 +29,6 @@ function usage {
     echo "Example: release.sh openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master openstack-dev@lists.openstack.org"
 }
 
-announce=false
-while getopts "a" opt "$@"; do
-    case "$opt" in
-        a) announce=true;;
-        ?) echo "Invalid option: -$OPTARG" >&2;
-            usage;
-            exit 1;;
-    esac
-done
-shift $((OPTIND-1))
-
 if [ $# -lt 5 ]; then
     usage
     exit 2
@@ -104,13 +93,6 @@ else
         --subject="Fix included in $REPO $VERSION" \
         --content="This issue was fixed in the $REPO $VERSION $RELEASETYPE." \
         $BUGS
-fi
-
-# If we're running the script by hand, we might want to generate a
-# release announcement.
-if $announce; then
-    title "Generating release announcement"
-    (cd $TOOLSDIR && ./announce.sh $REPODIR $VERSION)
 fi
 
 exit 0

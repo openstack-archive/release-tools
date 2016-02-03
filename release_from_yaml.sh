@@ -23,22 +23,12 @@ TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
 
 function usage {
-    echo "Usage: release_from_yaml.sh [-a] releases_repository [deliverable_files]"
+    echo "Usage: release_from_yaml.sh releases_repository [deliverable_files]"
     echo
     echo "Example: release_from_yaml.sh ~/repos/openstack/releases"
-    echo "Example: release_from_yaml.sh -a ~/repos/openstack/releases"
+    echo "Example: release_from_yaml.sh ~/repos/openstack/releases"
     echo "Example: release_from_yaml.sh ~/repos/openstack/releases deliverables/mitaka/oslo.config.yaml"
 }
-
-while getopts "a" opt "$@"; do
-    case "$opt" in
-        a) announce="-a";;
-        ?) echo "Invalid option: -$OPTARG" >&2;
-            usage;
-            exit 1;;
-    esac
-done
-shift $((OPTIND-1))
 
 if [ $# -lt 1 ]; then
     echo "ERROR: No releases_repository specified"
@@ -54,7 +44,7 @@ DELIVERABLES="$@"
 $TOOLSDIR/list_deliverable_changes.py -r $RELEASES_REPO $DELIVERABLES \
 | while read deliverable series version repo hash announce_to; do
     title "$repo $series $version $hash $announce_to"
-    $TOOLSDIR/release.sh $announce $repo $series $version $hash $announce_to
+    $TOOLSDIR/release.sh $repo $series $version $hash $announce_to
 done
 
 exit 0
