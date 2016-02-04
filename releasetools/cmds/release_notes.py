@@ -45,9 +45,6 @@ def main():
                         default=False,
                         help='include a pypi hyperlink for the library',
                         )
-    parser.add_argument("--notable-changes", metavar='path',
-                        action="store",
-                        help="a file containing any notable changes")
     parser.add_argument("--skip-requirement-merges",
                         action='store_true', default=False,
                         help="skip requirement update commit messages"
@@ -95,11 +92,6 @@ def main():
 
     library_path = os.path.abspath(args.library)
 
-    notable_changes = ''
-    if args.notable_changes:
-        with open(args.notable_changes, 'r') as fh:
-            notable_changes = fh.read().rstrip()
-
     notes = release_notes.generate_release_notes(
         library=args.library,
         library_path=library_path,
@@ -107,7 +99,6 @@ def main():
         end_revision=args.end_revision,
         show_dates=args.show_dates,
         skip_requirement_merges=args.skip_requirement_merges,
-        notable_changes=notable_changes,
         is_stable=args.stable,
         series=args.series,
         email=args.email,

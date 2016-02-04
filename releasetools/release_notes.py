@@ -100,12 +100,6 @@ For more details, please see below.
 
 # This will just be replaced with template values (no wrapping applied).
 CHANGE_RELEASE_TPL = """{% if reno_notes %}{{ reno_notes }}{% endif %}
-{% if notables %}
-Notable changes
-----------------
-
-{{ notables }}
-{% endif %}
 {{ change_header }}{% if skip_requirement_merges %}
 
 NOTE: Skipping requirement commits...
@@ -188,7 +182,6 @@ def is_skippable_commit(skip_requirement_merges, line):
 def generate_release_notes(library, library_path,
                            start_revision, end_revision,
                            show_dates, skip_requirement_merges,
-                           notable_changes,
                            is_stable, series,
                            email, email_from,
                            email_to, email_reply_to, email_tags,
@@ -205,7 +198,6 @@ def generate_release_notes(library, library_path,
         in the output.
     :param skip_requirement_merges: Boolean indicating whether to
         skip merge commits for requirements changes.
-    :param notable_changes: Highlights from the release.
     :param is_stable: Boolean indicating whether this is a stable
         series or not.
     :param series: String holding the name of the series.
@@ -313,7 +305,6 @@ def generate_release_notes(library, library_path,
         'changes': changes,
         'requirement_changes': requirement_changes,
         'diff_stats': diff_stats,
-        'notables': notable_changes,
         'change_header': "\n".join(change_header),
         'emotion': random.choice(EMOTIONS),
         'stable_series': is_stable,
