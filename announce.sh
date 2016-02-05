@@ -31,7 +31,12 @@ source $TOOLSDIR/functions
 
 REPODIR=$1
 VERSION=$2
-SHORTNAME=`basename $REPODIR`
+
+# The repository directory may be named something other than what the
+# repository is, if we're running under CI or someone has checked it
+# out locally to an alternate name. Use the git remote URL as a source
+# of better information for the real repository name.
+SHORTNAME=$(basename $(cd $REPODIR && git config --get remote.origin.url))
 
 # Assign a default "from" email address if one is not specified by the
 # user's environment.
@@ -132,7 +137,7 @@ echo $relnotes_file
 
 echo
 echo "Sending release announcement"
-send-mail $relnotes_file || \
+send-mail -v $relnotes_file || \
     echo "Sending failed, see $relnotes_file for message body"
 
 exit 0
