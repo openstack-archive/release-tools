@@ -59,7 +59,7 @@ EMAIL_HEADER_TPL = """
 From: {{email_from}}
 To: {{email_to}}
 Reply-To: {{email_reply_to}}
-Subject: [release]{% if stable_series %}[stable]{% endif %}{{email_tags}} {{project}} {{end_rev}} release {% if series %}({{series}}){% endif %}
+Subject: [release]{% if stable_series %}[stable]{% endif %}{{email_tags}} {{project}} {{end_rev}} release{% if series %} ({{series}}){% endif %}
 {% endif %}
 """
 
@@ -215,6 +215,10 @@ def generate_release_notes(library, library_path,
 
     """
 
+    # Do not mention the series in independent model since there is none
+    if series == 'independent':
+        series = ''
+
     if not os.path.isfile(os.path.join(library_path, "setup.py")):
         raise RuntimeError("No 'setup.py' file found in %s\n" % library_path)
 
@@ -276,7 +280,7 @@ def generate_release_notes(library, library_path,
 
     # Look for reno notes for this version.
     branch = None
-    if is_stable:
+    if is_stable and series:
         branch = 'origin/stable/%s' % series
     scanner_output = scanner.get_notes_by_version(
         reporoot=library_path,
