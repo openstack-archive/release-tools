@@ -118,6 +118,12 @@ if [[ "$PROJECT_OWNER" != "" ]]; then
     email_tags="--email-tags ${PROJECT_OWNER}"
 fi
 
+# Only include the PyPI link if we are told to.
+INCLUDE_PYPI_LINK=$(get_tag_meta pypi)
+if [[ "$INCLUDE_PYPI_LINK" == "yes" ]]; then
+    include_pypi_link="--include-pypi-link"
+fi
+
 echo "$PREVIOUS_VERSION to $VERSION on $SERIES"
 
 relnotes_file="$RELNOTESDIR/$SHORTNAME-$VERSION"
@@ -129,7 +135,7 @@ release-notes \
     --series $SERIES \
     $stable \
     . "$PREVIOUS_VERSION" "$VERSION" \
-    --include-pypi-link \
+    $include_pypi_link \
     | tee $relnotes_file
 
 echo

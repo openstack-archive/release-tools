@@ -69,6 +69,15 @@ def get_modified_deliverable_file_content(reporoot, filenames):
             'openstack-dev@lists.openstack.org',
         )
 
+        # Determine whether announcements should include a PyPI
+        # link. Default to no, for service projects, because it is
+        # less irksome to fail to include a link to a thing that
+        # exists than to link to something that does not.
+        include_pypi_link = deliverable_data.get(
+            'include-pypi-link',
+            'no',
+        )
+
         # The series name is part of the filename, rather than the file
         # body. That causes release.sh to be called with series="_independent"
         # for release:independent projects, and release.sh to use master branch
@@ -86,7 +95,7 @@ def get_modified_deliverable_file_content(reporoot, filenames):
         for project in this_version['projects']:
             yield (deliverable_name, series_name, version,
                    project['repo'], project['hash'],
-                   send_announcements_to)
+                   send_announcements_to, include_pypi_link)
 
 
 def main():
