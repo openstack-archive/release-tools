@@ -300,7 +300,7 @@ def generate_release_notes(library, library_path,
 
     params = dict(readme_sections)
     params.update({
-        'project': os.path.basename(library_path),
+        'project': library_name,
         'description': description,
         'end_rev': end_revision,
         'range': git_range,
