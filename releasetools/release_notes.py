@@ -31,15 +31,24 @@ from releasetools import rst2txt
 
 
 EMOTIONS = [
+    'aloof',
     'amped',
+    'chipper',
     'chuffed',
     'content',
+    'convivial',
     'delighted',
     'eager',
+    'ecstatic',
+    'elated',
+    'enamored',
+    'enraptured',
     'excited',
     'glad',
     'gleeful',
     'happy',
+    'hunky-dory',
+    'indifferent',
     'jazzed',
     'jubilant',
     'overjoyed',
@@ -47,9 +56,11 @@ EMOTIONS = [
     'psyched',
     'pumped',
     'satisfied',
+    'spellbound',
     'stoked',
     'thrilled',
     'tickled pink',
+    'willing',
 ]
 
 # The email headers for generating a message to go right into sendmail
