@@ -1,0 +1,8 @@
+Code-Review+2: Doug Hellmann <doug@doughellmann.com>
+Workflow+1: Doug Hellmann <doug@doughellmann.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 10 Feb 2016 14:52:00 +0000
+Reviewed-on: https://review.openstack.org/278167
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
