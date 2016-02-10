@@ -95,7 +95,8 @@ def get_modified_deliverable_file_content(reporoot, filenames):
         for project in this_version['projects']:
             yield (deliverable_name, series_name, version,
                    project['repo'], project['hash'],
-                   send_announcements_to, include_pypi_link)
+                   send_announcements_to,
+                   'yes' if include_pypi_link else 'no')
 
 
 def main():
