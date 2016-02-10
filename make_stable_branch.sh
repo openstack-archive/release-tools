@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script to cut stable/foo release branch of a library
+# Script to cut stable/foo release branch of a project
 #
 # All Rights Reserved.
 #

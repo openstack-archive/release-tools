@@ -298,18 +298,15 @@ Runs list_unreleased_changes.sh for all libraries managed by any
 project.
 
 
-make_library_stable_branch.sh
+make_stable_branch.sh
 -----------------------------
 
-Libraries do not use proposed branches, and go directly to creating
-stable branches using a pre-tagged release version. This script makes
-that easy to coordinate and ensures that the desired version also
-exists in launchpad as a released milestone and by updating the
+This script makes a stable branch from an existing tag and updates the
 .gitreview file in the new branch for future submissions.
 
 ::
 
-  ./make_library_stable_branch.sh kilo oslo.config 1.9.2
+  ./make_stable_branch.sh kilo oslo.config 1.9.2
 
 make_feature_branch.sh
 ----------------------
