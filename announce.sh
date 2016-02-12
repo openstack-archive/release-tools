@@ -37,6 +37,7 @@ VERSION=$2
 # out locally to an alternate name. Use the git remote URL as a source
 # of better information for the real repository name.
 SHORTNAME=$(basename $(cd $REPODIR && git config --get remote.origin.url))
+REPOORGNAME=$(basename $(dirname $(cd $REPODIR && git config --get remote.origin.url)))
 
 # Assign a default "from" email address if one is not specified by the
 # user's environment.
@@ -113,7 +114,7 @@ if git branch -a | grep -q origin/stable/$SERIES; then
 fi
 
 # Set up email tags for the project owner.
-PROJECT_OWNER=${PROJECT_OWNER:-$(get-repo-owner --email-tag openstack/$SHORTNAME || echo "")}
+PROJECT_OWNER=${PROJECT_OWNER:-$(get-repo-owner --email-tag $REPOORGNAME/$SHORTNAME || echo "")}
 if [[ "$PROJECT_OWNER" != "" ]]; then
     email_tags="--email-tags ${PROJECT_OWNER}"
 fi
