@@ -67,6 +67,12 @@ fi
 # fails because there are no other tags, we will produce the entire
 # history.
 PREVIOUS_VERSION=$(git describe --abbrev=0 ${VERSION}^ || echo "")
+if [[ "$PREVIOUS_VERSION" = "" ]]; then
+    # There was no previous tag, so we're looking for the full history
+    # of the project.
+    PREVIOUS_VERSION=$(git rev-list --max-parents=0 HEAD)
+    first_release="--first-release"
+fi
 
 # Extract the tag message by parsing the git show output, which looks
 # something like:
@@ -135,6 +141,7 @@ release-notes \
     $email_tags \
     --series $SERIES \
     $stable \
+    $first_release \
     . "$PREVIOUS_VERSION" "$VERSION" \
     $include_pypi_link \
     | tee $relnotes_file
