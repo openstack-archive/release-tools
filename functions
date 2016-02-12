@@ -37,7 +37,7 @@ function _cleanup_tmp {
 
 
 function setup_temp_space {
-    MYTMPDIR=`mktemp -d ${1}-XXX`
+    MYTMPDIR=`mktemp -d _tmp-${1}-XXX`
     mkdir -p "$MYTMPDIR"
     trap _cleanup_tmp EXIT
     cd "$MYTMPDIR"
