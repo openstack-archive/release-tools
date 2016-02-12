@@ -143,7 +143,9 @@ def parse_readme(library_path):
                                      ("Source:", 'source_url')]:
                 pieces = line.split(name, 1)
                 if len(pieces) == 2:
-                    sections[key_name] = pieces[1].strip()
+                    candidate = pieces[1].strip()
+                    if 'http' in candidate:
+                        sections[key_name] = candidate
     for (k, v) in sections.items():
         if not v:
             what = k.replace("_", " ")
