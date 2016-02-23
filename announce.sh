@@ -29,7 +29,7 @@ fi
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
 
-REPODIR=$(realpath $1)
+REPODIR=$(cd $1 && pwd)
 VERSION=$2
 
 # The repository directory may be named something other than what the
