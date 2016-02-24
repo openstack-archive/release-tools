@@ -1,0 +1,10 @@
+Code-Review+1: Syd Logan <syd.logan@broadcom.com>
+Code-Review+2: Davanum Srinivas (dims) <davanum@gmail.com>
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Workflow+1: Thierry Carrez <thierry@openstack.org>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 24 Feb 2016 17:03:20 +0000
+Reviewed-on: https://review.openstack.org/279743
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
