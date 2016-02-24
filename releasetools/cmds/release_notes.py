@@ -45,6 +45,11 @@ def main():
                         default=False,
                         help='include a pypi hyperlink for the library',
                         )
+    parser.add_argument('--first-release',
+                        action='store_true',
+                        default=False,
+                        help='this is the first release of the project',
+                        )
     parser.add_argument("--skip-requirement-merges",
                         action='store_true', default=False,
                         help="skip requirement update commit messages"
@@ -108,6 +113,7 @@ def main():
         email_tags=args.email_tags,
         include_pypi_link=args.include_pypi_link,
         changes_only=args.changes_only,
+        first_release=args.first_release,
     )
     print(notes.encode('utf-8'))
     return 0

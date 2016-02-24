@@ -73,6 +73,9 @@ We are {{ emotion }} to announce the release of:
 
 {{ project }} {{ end_rev }}: {{ description }}
 
+{% if first_release -%}
+This is the first release of {{project}}.
+{%- endif %}
 {% if series -%}
 This release is part of the {{series}} {% if stable_series %}stable {% endif %}release series.
 {%- endif %}
@@ -108,6 +111,7 @@ NOTE: Skipping requirement commits...
 {% for change in changes -%}
 {{ change }}
 {% endfor %}
+{% if not first_release -%}
 Diffstat (except docs and test files)
 -------------------------------------
 
@@ -121,6 +125,7 @@ Requirements updates
 {% for change in requirement_changes -%}
 {{ change }}
 {% endfor %}
+{%- endif %}
 {% endif %}
 """
 
@@ -189,6 +194,7 @@ def generate_release_notes(library, library_path,
                            email_to, email_reply_to, email_tags,
                            include_pypi_link,
                            changes_only,
+                           first_release,
                            ):
     """Return the text of the release notes.
 
@@ -214,6 +220,8 @@ def generate_release_notes(library, library_path,
         page.
     :param changes_only: Boolean indicating whether to limit output to
         the list of changes, without any extra data.
+    :param first_release: Boolean indicating whether this is the first
+        release of the project
 
     """
 
@@ -321,6 +329,7 @@ def generate_release_notes(library, library_path,
         'email_reply_to': email_reply_to,
         'email_tags': email_tags,
         'reno_notes': reno_notes,
+        'first_release': first_release,
     })
     if include_pypi_link:
         params['pypi_url'] = PYPI_URL_TPL % library_name
