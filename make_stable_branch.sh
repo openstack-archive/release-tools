@@ -38,7 +38,7 @@ REPO=$(lp_project_to_repo $PROJECT)
 
 NEW_BRANCH="stable/$SERIES"
 
-setup_temp_space release-tag-$PROJECT
+setup_temp_space stable-branch-$PROJECT-$SERIES
 clone_repo $REPO_PREFIX/$REPO
 cd $REPO_PREFIX/$REPO
 LANG=C git review -s
