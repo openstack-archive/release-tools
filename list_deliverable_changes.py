@@ -75,8 +75,9 @@ def get_modified_deliverable_file_content(reporoot, filenames):
         # exists than to link to something that does not.
         include_pypi_link = deliverable_data.get(
             'include-pypi-link',
-            'no',
+            False,
         )
+        include_pypi_link = 'yes' if include_pypi_link else 'no'
 
         # The series name is part of the filename, rather than the file
         # body. That causes release.sh to be called with series="_independent"
@@ -96,7 +97,7 @@ def get_modified_deliverable_file_content(reporoot, filenames):
             yield (deliverable_name, series_name, version,
                    project['repo'], project['hash'],
                    send_announcements_to,
-                   'yes' if include_pypi_link else 'no')
+                   include_pypi_link)
 
 
 def main():
