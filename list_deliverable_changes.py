@@ -19,9 +19,15 @@ from __future__ import print_function
 
 import argparse
 import os.path
+import re
 import subprocess
 
 import yaml
+
+
+PRE_RELEASE_RE = re.compile('''
+    \.(\d+(?:[ab]|rc)+\d*)$
+''', flags=re.VERBOSE | re.UNICODE)
 
 
 def find_modified_deliverable_files(reporoot):
@@ -42,7 +48,9 @@ def get_modified_deliverable_file_content(reporoot, filenames):
     """Return a sequence of tuples containing the new versions.
 
     Return tuples containing (deliverable name, series name, version
-    number, list of repositories).
+    number, repository name, hash SHA, include pypi link, first full
+    version)
+
     """
     # Determine which deliverable files to process by taking our
     # command line arguments or by scanning the git repository
@@ -93,11 +101,21 @@ def get_modified_deliverable_file_content(reporoot, filenames):
         }
         version = deliverable_data['releases'][-1]['version']
         this_version = all_versions[version]
+        final_versions = [
+            r['version']
+            for r in deliverable_data['releases']
+            if not PRE_RELEASE_RE.search(r['version'])
+        ]
+        first_full_release = 'yes' if (
+            final_versions and
+            this_version['version'] == final_versions[0]
+        ) else 'no'
         for project in this_version['projects']:
             yield (deliverable_name, series_name, version,
                    project['repo'], project['hash'],
                    send_announcements_to,
-                   include_pypi_link)
+                   include_pypi_link,
+                   first_full_release)
 
 
 def main():

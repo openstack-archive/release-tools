@@ -40,12 +40,18 @@ VERSION=$3
 SHA=$4
 ANNOUNCE=$5
 INCLUDE_PYPI=${6:-no}
+FIRST_FULL=${7:-no}
 
 SHORTNAME=`basename $REPO`
 
-RELEASETYPE="release"
-if [[ $VERSION =~ .*\.0[b,r].+ ]]; then
+pre_release_pat='\.[[:digit:]]+[ab][[:digit:]]+'
+rc_release_pat='\.[[:digit:]]+rc[[:digit:]]+'
+if [[ $VERSION =~ $pre_release_pat ]]; then
     RELEASETYPE="development milestone"
+elif [[ $VERSION =~ $rc_release_pat ]]; then
+    RELEASETYPE="release candidate"
+else
+    RELEASETYPE="release"
 fi
 
 setup_temp_space release-tag-$SHORTNAME
@@ -76,6 +82,7 @@ meta:series: $SERIES
 meta:release-type: $RELEASETYPE
 meta:announce: $ANNOUNCE
 meta:pypi: $INCLUDE_PYPI
+meta:first: $FIRST_FULL
 "
     echo "Tag message is '$TAGMSG'"
     git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA

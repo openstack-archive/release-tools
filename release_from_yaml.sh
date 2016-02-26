@@ -42,9 +42,9 @@ shift
 DELIVERABLES="$@"
 
 $TOOLSDIR/list_deliverable_changes.py -r $RELEASES_REPO $DELIVERABLES \
-| while read deliverable series version repo hash announce_to pypi; do
+| while read deliverable series version repo hash announce_to pypi first_full; do
     title "$repo $series $version $hash $announce_to"
-    $TOOLSDIR/release.sh $repo $series $version $hash $announce_to $pypi
+    $TOOLSDIR/release.sh $repo $series $version $hash $announce_to $pypi $first_full
 done
 
 exit 0

@@ -66,7 +66,7 @@ fi
 # Look for the previous version on the same branch. If the command
 # fails because there are no other tags, we will produce the entire
 # history.
-PREVIOUS_VERSION=$(git describe --abbrev=0 ${VERSION}^ || echo "")
+PREVIOUS_VERSION=$(git describe --abbrev=0 ${VERSION}^ 2>/dev/null || echo "")
 if [[ "$PREVIOUS_VERSION" = "" ]]; then
     # There was no previous tag, so we're looking for the full history
     # of the project.
@@ -107,6 +107,9 @@ function get_tag_meta {
 # The series name is part of the commit message left by release.sh.
 SERIES=$(get_tag_meta series)
 
+# The type of release this is.
+RELEASETYPE=$(get_tag_meta release-type)
+
 # The recipient for announcements is part of the commit message left
 # by release.sh.
 ANNOUNCE=$(get_tag_meta announce)
@@ -114,9 +117,20 @@ if [[ ! -z "$ANNOUNCE" ]]; then
     email_to="--email-to $ANNOUNCE"
 fi
 
-# Figure out if that series is a stable branch or not.
-if git branch -a | grep -q origin/stable/$SERIES; then
-    stable="--stable"
+# Figure out if that series is a stable branch or not. We don't
+# release pre-releases on stable branches, so we only need to check
+# for stable if the release type is a normal release.
+if [[ $RELEASETYPE = "release" ]]; then
+    if git branch -a | grep -q origin/stable/$SERIES; then
+        stable="--stable"
+    fi
+fi
+
+# If this is the first full release in a series, it isn't "stable"
+# yet.
+FIRST_FULL=$(get_tag_meta first)
+if [[ $FIRST_FULL = "yes" ]]; then
+    stable=""
 fi
 
 # Set up email tags for the project owner.
