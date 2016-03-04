@@ -72,6 +72,13 @@ class Deliverable(object):
         }
 
     @property
+    def type(self):
+        for t in self.tags:
+            if t.startswith('type:'):
+                return t.partition(':')[-1]
+        return 'unknown'
+
+    @property
     def tags(self):
         return set(self.data.get('tags', [])).union(self.team.tags)
 
