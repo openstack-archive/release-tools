@@ -1,2 +1,9 @@
 curl
 realpath [platform:ubuntu-trusty]
+
+# Needed with current setup of gate jobs
+libmysqlclient-dev
+mysql-client
+mysql-server
+postgresql
+postgresql-client
