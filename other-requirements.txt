@@ -1,2 +1,2 @@
 curl
-realpath [platform:ubuntu-trusty]
+realpath [platform:dpkg]
