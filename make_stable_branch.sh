@@ -19,9 +19,9 @@
 set -e
 
 if [[ $# -lt 3 ]]; then
-    echo "Usage: $0 series projectname version"
+    echo "Usage: $0 series repo_name version"
     echo
-    echo "Example: $0 kilo oslo.config 1.9.2"
+    echo "Example: $0 kilo openstack/oslo.config 1.9.2"
     exit 2
 fi
 
@@ -29,18 +29,17 @@ TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
 
 SERIES=$1
-PROJECT=$2
+REPO=$2
 VERSION=$3
 LPROJECT="$PROJECT"
-REPO_PREFIX=${4:-openstack}
 
-REPO=$(lp_project_to_repo $PROJECT)
+PROJECT=$(basename $REPO)
 
 NEW_BRANCH="stable/$SERIES"
 
 setup_temp_space stable-branch-$PROJECT-$SERIES
-clone_repo $REPO_PREFIX/$REPO
-cd $REPO_PREFIX/$REPO
+clone_repo $REPO
+cd $REPO
 LANG=C git review -s
 
 if $(git branch -r | grep $NEW_BRANCH > /dev/null); then
