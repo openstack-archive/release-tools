@@ -306,7 +306,7 @@ This script makes a stable branch from an existing tag and updates the
 
 ::
 
-  ./make_stable_branch.sh kilo oslo.config 1.9.2
+  ./make_stable_branch.sh kilo openstack/oslo.config 1.9.2
 
 make_feature_branch.sh
 ----------------------
