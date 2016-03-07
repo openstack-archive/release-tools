@@ -299,7 +299,7 @@ project.
 
 
 make_stable_branch.sh
------------------------------
+---------------------
 
 This script makes a stable branch from an existing tag and updates the
 .gitreview file in the new branch for future submissions.
@@ -307,6 +307,16 @@ This script makes a stable branch from an existing tag and updates the
 ::
 
   ./make_stable_branch.sh kilo openstack/oslo.config 1.9.2
+
+batch-stable-branches
+---------------------
+
+This command generates a series of calls to make_stable_branch.sh
+using the governance repository and releases repository as inputs.
+
+::
+
+  batch-stable-branches --tag type:library --tag release:has-stable-branches --tag release:managed -r ~/repos/openstack/releases mitaka
 
 make_feature_branch.sh
 ----------------------
