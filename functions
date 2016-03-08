@@ -65,7 +65,7 @@ function update_gitreview {
     git checkout $branch
     # Remove a trailing newline, if present, to ensure consistent
     # formatting when we add the defaultbranch line next.
-    typeset grcontents="$(echo -n "$(cat .gitreview)")
+    typeset grcontents="$(echo -n "$(cat .gitreview | grep -v defaultbranch)")
 defaultbranch=$branch"
     echo "$grcontents" > .gitreview
     git add .gitreview
