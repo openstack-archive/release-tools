@@ -784,3 +784,21 @@ Example::
 
 Add a 'You won!' comment (with subject line 'Winner') to Launchpad
 bugs #1000000 and #2000000
+
+
+update_reviews
+--------------
+
+Lift your -2 reviews from a project. Use this after the stable branch has been
+created and the project is ready for accept new features.
+
+This tool uses the Gerrit REST API. So you need to provide your username and
+password somehow. You probably already have a .gertty.yaml, if not make one.
+
+Example::
+
+  update_reviews oslo.config
+
+The tool looks for all of the changes in the project that you have a -2 vote on
+and changes your vote to 0, with the message "This project is now open for new
+features."
