@@ -15,7 +15,11 @@
 from __future__ import print_function
 import argparse
 import csv
+import glob
+import os.path
 import sys
+
+import yaml
 
 from releasetools import governance
 
@@ -31,11 +35,36 @@ def main():
         help='a URL pointing to a projects.yaml file, defaults to %(default)s',
     )
     parser.add_argument(
+        '--releases-repo',
+        default=os.path.expanduser('~/repos/openstack/releases'),
+        help='path to local copy of the releases repository',
+    )
+    parser.add_argument(
         '--format', '-f',
         choices=['csv', 'etherpad'],
         default='etherpad',
     )
+    parser.add_argument(
+        'series',
+        help='the series name',
+    )
     args = parser.parse_args()
+
+    # Load all of the existing deliverable data and determine the most
+    # recent version tagged.
+    latest_versions = {}
+    pat = os.path.join(
+        args.releases_repo,
+        'deliverables',
+        args.series,
+        '*.yaml',
+    )
+    for fn in glob.glob(pat):
+        with open(fn, 'r') as f:
+            y = yaml.safe_load(f.read())
+        deliverable = os.path.basename(fn)[:-5]
+        v = y['releases'][-1]['version']
+        latest_versions[deliverable] = v
 
     team_data = governance.get_team_data()
     teams = {
@@ -78,7 +107,8 @@ def main():
              'PTL Nick',
              'IRC Channel',
              'Deliverable Type',
-             'Deliverable Name'))
+             'Deliverable Name',
+             'Latest Version'))
         for model in [MILESTONE, INTERMEDIARY]:
             for managed in ['managed', 'unmanaged']:
                 dbm_teams = sorted(deliverables_by_model[model][managed].items())
@@ -92,7 +122,8 @@ def main():
                              team.data['ptl']['irc'],
                              team.data.get('irc-channel'),
                              d.type,
-                             d.name))
+                             d.name,
+                             latest_versions.get(d.name, 'not found')))
     else:
         for model in [MILESTONE, INTERMEDIARY]:
             print('{}\n'.format(model))
@@ -106,5 +137,6 @@ def main():
                     print('      * IRC: {}'.format(team.data.get('irc-channel', '')))
                     print('      * Deliverables')
                     for d in sorted(team_deliverables, key=lambda d: d.name):
-                        print('        * {d.name} ({d.type})'.format(d=d))
+                        v = latest_versions.get(d.name, 'not found')
+                        print('        * {d.name} ({d.type}) [{v}]'.format(d=d, v=v))
                     print()
