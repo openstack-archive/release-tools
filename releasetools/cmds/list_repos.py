@@ -47,7 +47,7 @@ def main():
     )
     args = parser.parse_args()
 
-    team_data = governance.get_team_data()
+    team_data = governance.get_team_data(url=args.project_list)
     repos = governance.get_repositories(
         team_data,
         args.team,
