@@ -42,7 +42,7 @@ def main():
     parser.add_argument(
         '--format', '-f',
         choices=['csv', 'etherpad'],
-        default='etherpad',
+        default='csv',
     )
     parser.add_argument(
         'series',
