@@ -68,7 +68,7 @@ def main():
 
     team_data = governance.get_team_data()
     teams = {
-        n: governance.Team(n, i)
+        n.lower(): governance.Team(n, i)
         for n, i in team_data.items()
     }
 
@@ -93,7 +93,7 @@ def main():
                     else:
                         managed = 'unmanaged'
                     dbm_team = deliverables_by_model[model][managed].setdefault(
-                        di.team.name, [])
+                        di.team.name.lower(), [])
                     dbm_team.append(di)
                     break
 
