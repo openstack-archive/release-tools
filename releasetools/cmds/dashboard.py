@@ -105,6 +105,7 @@ def main():
              'Release Model',
              'Team',
              'PTL Nick',
+             'PTL Email',
              'IRC Channel',
              'Deliverable Type',
              'Deliverable Name',
@@ -121,6 +122,7 @@ def main():
                              short_model,
                              team.name.lower(),
                              team.data['ptl']['irc'],
+                             team.data['ptl']['email'],
                              team.data.get('irc-channel'),
                              d.type,
                              d.name,
@@ -134,7 +136,10 @@ def main():
                 for team_name, team_deliverables in dbm_teams:
                     team = teams[team_name]
                     print('    * {}'.format(team_name))
-                    print('      * PTL: {}'.format(team.data['ptl']['irc']))
+                    print('      * PTL: {} - {}'.format(
+                        team.data['ptl']['irc'],
+                        team.data['ptl']['email'],
+                    ))
                     print('      * IRC: {}'.format(team.data.get('irc-channel', '')))
                     print('      * Deliverables')
                     for d in sorted(team_deliverables, key=lambda d: d.name):
