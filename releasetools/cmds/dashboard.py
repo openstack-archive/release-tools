@@ -101,34 +101,35 @@ def main():
     if args.format == 'csv':
         writer = csv.writer(sys.stdout)
         writer.writerow(
-            ('Release Model',
-             'Managed',
+            ('Managed',
+             'Release Model',
              'Team',
              'PTL Nick',
              'IRC Channel',
              'Deliverable Type',
              'Deliverable Name',
              'Latest Version'))
-        for model in [MILESTONE, INTERMEDIARY]:
-            for managed in ['managed', 'unmanaged']:
+        for managed in ['managed', 'unmanaged']:
+            for model in [MILESTONE, INTERMEDIARY]:
+                short_model = model.rpartition('-')[-1]
                 dbm_teams = sorted(deliverables_by_model[model][managed].items())
                 for team_name, team_deliverables in dbm_teams:
                     team = teams[team_name]
                     for d in sorted(team_deliverables, key=lambda d: d.name):
                         writer.writerow(
-                            (model,
-                             managed,
-                             team.name,
+                            (managed,
+                             short_model,
+                             team.name.lower(),
                              team.data['ptl']['irc'],
                              team.data.get('irc-channel'),
                              d.type,
                              d.name,
                              latest_versions.get(d.name, 'not found')))
     else:
-        for model in [MILESTONE, INTERMEDIARY]:
-            print('{}\n'.format(model))
-            for managed in ['managed', 'unmanaged']:
-                print('  * {}\n'.format(managed))
+        for managed in ['managed', 'unmanaged']:
+            print('{}\n'.format(managed))
+            for model in [MILESTONE, INTERMEDIARY]:
+                print('  * {}\n'.format(model))
                 dbm_teams = sorted(deliverables_by_model[model][managed].items())
                 for team_name, team_deliverables in dbm_teams:
                     team = teams[team_name]
