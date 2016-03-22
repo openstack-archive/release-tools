@@ -940,3 +940,13 @@ Example::
   ./bugs-fixed-since.py --start=8.0.0 | ./annotate-lp-bugs neutron
 
 Pull in detailed description for bugs that are fixed in master since 8.0.0.
+
+
+lp-reset-backport-potential.py
+------------------------------
+
+Clean up <*>-backport-potential tags for bugs with in-stable-<*> tag set.
+
+Example::
+
+  ./lp-reset-backport-potential.py neutron python-neutronclient
