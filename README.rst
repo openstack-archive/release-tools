@@ -888,3 +888,26 @@ List bugs mentioned in master commit messages starting from a specified commit.
 Example::
 
   ./bugs-fixed-since.py -r ../neutron --start=8.0.0
+
+
+lp-filter-bugs-by-importance.py
+-------------------------------
+
+Reads the list of Launchpad bug numbers on stdin and filters out those of
+importance specified. Filtering out Wishlist bugs if importance not specified.
+
+Example::
+
+  ./bugs-fixed-since.py --start=8.0.0 | ./lp-filter-bugs-by-importance.py
+
+List bugs that are fixed in master since 8.0.0 that are not of Wishlist
+importance.
+
+Example::
+
+  ./bugs-fixed-since.py --start=8.0.0 | \
+  ./lp-filter-bugs-by-importance.py neutron | \
+  ./lp-filter-bugs-by-importance.py neutron --importance Low
+
+List bugs that are fixed in master since 8.0.0 that are not of Wishlist or Low
+importance.
