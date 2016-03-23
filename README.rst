@@ -927,3 +927,16 @@ Example::
 
 List bugs that are fixed in master since 8.0.0 that don't have relevant fixes
 merged in stable/mitaka.
+
+
+annotate-lp-bugs.py
+-------------------
+
+Reads the list of Launchpad bug numbers on stdin and writes out a nice and
+detailed description for each of them.
+
+Example::
+
+  ./bugs-fixed-since.py --start=8.0.0 | ./annotate-lp-bugs neutron
+
+Pull in detailed description for bugs that are fixed in master since 8.0.0.
