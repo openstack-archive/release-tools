@@ -878,3 +878,13 @@ Example::
 The tool looks for all of the changes in the project that you have a -2 vote on
 and changes your vote to 0, with the message "This project is now open for new
 features."
+
+
+bugs-fixed-since.py
+-------------------
+
+List bugs mentioned in master commit messages starting from a specified commit.
+
+Example::
+
+  ./bugs-fixed-since.py -r ../neutron --start=8.0.0
