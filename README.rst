@@ -390,7 +390,7 @@ constraints for things we release are all updated at the end of a
 release cycle. To run the script, check out both the release-tools and
 requirements repositories and then run the script as::
 
-  $ check_library_constraints.sh /path/to/requirements-repository
+  $ check_library_constraints.sh /path/to/requirements-repository stable/mitaka
 
 
 Base tools

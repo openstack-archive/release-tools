@@ -11,26 +11,27 @@ if [[ -z "$VIRTUAL_ENV" ]]; then
     source ./.tox/venv/bin/activate
 fi
 
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <requirements-repo-dir>"
+if [[ $# -ne 2 ]]; then
+    echo "Usage: $0 requirements-repo-dir branch"
+    echo "For example: $0 ~/repos/openstack/requirements stable/mitaka"
+    echo "For example: $0 ~/repos/openstack/requirements master"
     exit 1
 fi
 REQ_REPO="$1"
+BRANCH="$2"
 
 setup_temp_space update-constraints-$PROJECT
 
 title "Making a list of library repositories"
-repos="$(list-repos --code-only --tag type:library --tag release:managed)"
+repos="$(list-repos --code-only --tag type:library)"
 
 constraints_file=$REQ_REPO/upper-constraints.txt
 blacklist_file=$REQ_REPO/blacklist.txt
 
-for repo in $repos; do
-    clone_repo $repo
-done
-
 title "Comparing constraints"
 for repo in $repos; do
+    cd $MYTMPDIR
+    clone_repo $repo $BRANCH
     cd $MYTMPDIR/$repo
 
     # NOTE(dhellmann): Convert _ to - in the way safe_name() does to
@@ -45,11 +46,19 @@ for repo in $repos; do
         continue
     fi
 
-    version=$(git describe --abbrev=0)
-    expected="${name}===${version}"
-    existing=$(grep $name $constraints_file)
-    if [[ "$expected" != "$existing" ]]; then
-        echo "$existing UPDATE ${version}"
+    version=$(git describe --abbrev=0 origin/$BRANCH)
+    if [[ -z "$version" ]]; then
+        echo "ERROR: Could not determine update"
+        continue
     fi
-
+    expected="${name}===${version}"
+    existing=$(grep "^${name}=" $constraints_file)
+    if [[ -z "$existing" ]]; then
+        echo "Not currently constrained"
+        continue
+    fi
+    if [[ "$expected" != "$existing" ]]; then
+        sed -i -e "s/$existing/$expected/" $constraints_file
+        echo "$existing updated to ${version}"
+    fi
 done
