@@ -336,6 +336,18 @@ using the governance repository and releases repository as inputs.
 
   batch-stable-branches --tag type:library --tag release:has-stable-branches --tag release:managed -r ~/repos/openstack/releases mitaka
 
+branch_from_yaml.sh
+-------------------
+
+This script looks at the deliverable files to decide how to create
+stable branches.
+
+::
+
+  $ branch_from_yaml.sh ~/repos/openstack/releases mitaka
+  $ branch_from_yaml.sh ~/repos/openstack/releases mitaka
+  $ branch_from_yaml.sh ~/repos/openstack/releases mitaka deliverables/_independent/openstack-ansible.yaml
+
 make_feature_branch.sh
 ----------------------
 
