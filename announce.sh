@@ -70,7 +70,7 @@ PREVIOUS_VERSION=$(git describe --abbrev=0 ${VERSION}^ 2>/dev/null || echo "")
 if [[ "$PREVIOUS_VERSION" = "" ]]; then
     # There was no previous tag, so we're looking for the full history
     # of the project.
-    PREVIOUS_VERSION=$(git rev-list --max-parents=0 HEAD)
+    PREVIOUS_VERSION=$(git rev-list --max-parents=0 HEAD | tail -1)
     first_release="--first-release"
 fi
 
