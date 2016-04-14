@@ -1,0 +1,11 @@
+Code-Review+1: Evgeny Sikachev <esikachev@mirantis.com>
+Code-Review+1: Vitaly Gridnev <vgridnev@mirantis.com>
+Code-Review+2: Doug Hellmann <doug@doughellmann.com>
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Workflow+1: Thierry Carrez <thierry@openstack.org>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Thu, 14 Apr 2016 11:58:04 +0000
+Reviewed-on: https://review.openstack.org/305272
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
