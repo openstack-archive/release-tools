@@ -94,7 +94,7 @@ fi
 set +e
 
 title "Adding comments to fixed bugs"
-BUGS=$(git log $PREVIOUS..$VERSION | grep "Closes-Bug:" | egrep -o "[0-9]+")
+BUGS=$(git log $PREVIOUS..$VERSION | egrep -i "Closes(.| )Bug:" | egrep -o "[0-9]+")
 if [[ -z "$BUGS" ]]; then
     echo "No bugs found $PREVIOUS .. $VERSION"
 else
