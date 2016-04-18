@@ -36,14 +36,13 @@ PROJECT=$(basename $REPO)
 
 setup_temp_space compare-tarball-diff
 
-title "Testing $PROJECT $VERSION from $REPO"
+title "$REPO $VERSION"
 
 cd $MYTMPDIR
 
-clone_repo $REPO || error "clone failed"
+clone_repo $REPO >/dev/null 2>&1 || error "clone failed"
 cd $REPO
-echo "Checking out $VERSION"
-git checkout $VERSION || error "could not checkout $VERSION"
+git checkout $VERSION >/dev/null 2>&1 || error "could not checkout $VERSION"
 
 python setup.py sdist > /dev/null 2>&1 || error "sdist failed"
 
@@ -54,11 +53,9 @@ mkdir local/
 tar -C local/ -xzf $DIST_FILE
 
 URL="http://tarballs.openstack.org/$PROJECT/$DIST_FILE"
-echo "Downloading and extracting $URL"
-wget -q -O remote.tar.gz $URL || error "could not download existing tarball"
+wget -q -O remote.tar.gz $URL || error "could not download $URL"
 
 mkdir remote/
 tar -C remote/ -xzf remote.tar.gz
 
-echo "Comparing"
 diff -Bbwurd local/ remote/
