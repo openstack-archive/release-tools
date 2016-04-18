@@ -508,6 +508,18 @@ Example:
 
   ./compare_tarball_diff.sh openstack/nova 13.0.0
 
+validate_tarballs.sh
+--------------------
+
+Given a release series, download and validate all of the tarballs to
+ensure that they match what was tagged.
+
+Example:
+
+::
+
+  ./validate_tarballs.sh ~/repos/openstack/releases mitaka
+
 pre_expire.py
 -------------
 
