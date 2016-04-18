@@ -42,6 +42,7 @@ def main():
     if args.verbose:
         server.set_debuglevel(True)
     try:
-        server.sendmail(msg['from'], [msg['to']], msg.as_string())
+        tolist = [address.strip() for address in msg['to'].split(",")]
+        server.sendmail(msg['from'], tolist, msg.as_string())
     finally:
         server.quit()
