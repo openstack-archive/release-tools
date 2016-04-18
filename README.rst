@@ -485,6 +485,19 @@ Example:
 Check the difference between Nova master branch contant and a tarball
 that would be generated from it.
 
+compare_tarball_diff.sh
+-----------------------
+
+Download published tarballs and compare them against what is produced
+by running the sdist command locally. This can be used to verify that
+a tarball published for download was built correctly and has not been
+modified.
+
+Example:
+
+::
+
+  ./compare_tarball_diff.sh openstack/nova 13.0.0
 
 pre_expire.py
 -------------
