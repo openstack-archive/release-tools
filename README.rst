@@ -370,6 +370,15 @@ of the repositories, filtered by team and/or tag.
   list-repos --team oslo
   list-repos --tag release:managed --tag type:library
 
+latest-deliverable-versions
+---------------------------
+
+Show each repository and the latest tag recorded in the deliverable
+file associated with that repo.
+
+::
+
+  latest-deliverable-versions -r ~/repos/openstack/releases mitaka
 
 update_git_review.sh
 --------------------
