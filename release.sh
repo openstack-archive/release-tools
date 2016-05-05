@@ -61,16 +61,15 @@ cd $REPODIR
 TARGETSHA=`git log -1 $SHA --format='%H'`
 
 # Determine the most recent tag before we add the new one.
-PREV_SERIES=""
-if git branch -a | grep -q origin/stable/$SERIES; then
-    PREV_SERIES=origin/stable/$SERIES
-fi
-PREVIOUS=$(get_last_tag $PREV_SERIES)
+PREVIOUS=$(git describe --abbrev=0 --first-parent ${TARGETSHA})
 
 title "Tagging $TARGETSHA as $VERSION"
 if git show-ref "$VERSION"; then
     echo "$REPO already has a version $VERSION tag"
-    PREVIOUS=$(git describe --abbrev=0 ${VERSION}^1)
+    # Reset the notion of "previous" to the version associated with
+    # the parent of the commit being tagged, since the tag we're
+    # applying already exists.
+    PREVIOUS=$(git describe --abbrev=0 --first-parent ${TARGETSHA}^1)
 else
     # WARNING(dhellmann): announce.sh expects to be able to parse this
     # commit message, so if you change the format you may have to
