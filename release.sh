@@ -103,4 +103,21 @@ else
         $BUGS
 fi
 
+# Try to propose a constraints update for libraries.
+if [[ $INCLUDE_PYPI == "yes" ]]; then
+    title "Proposing constraints update"
+    dist_name=$(python setup.py --name)
+    if [[ -z "$dist_name" ]]; then
+        echo "Could not determine the name of the constraint to update"
+    else
+        cd $MYTMPDIR
+        clone_repo openstack/requirements
+        cd openstack/requirements
+        git checkout -b "$dist_name-$VERSION"
+        sed -e "s/^$dist_name.*/$dist_name===$VERSION/" --in-place upper-constraints.txt
+        git commit -a -m "update constraint for $dist_name to $VERSION"
+        git review
+    fi
+fi
+
 exit 0
