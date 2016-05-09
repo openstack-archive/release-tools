@@ -24,9 +24,9 @@ TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
 
 function usage {
-    echo "Usage: release.sh [-a] repository series version SHA announce include_pypi"
+    echo "Usage: release.sh [-a] repository series version SHA announce include_pypi first-full-release extra-metadata"
     echo
-    echo "Example: release.sh openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master openstack-dev@lists.openstack.org yes"
+    echo "Example: release.sh openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master openstack-dev@lists.openstack.org yes no 'meta:release:Workflow+1: Doug Hellmann <doug@doughellmann.com>'"
 }
 
 if [ $# -lt 5 ]; then
@@ -41,6 +41,7 @@ SHA=$4
 ANNOUNCE=$5
 INCLUDE_PYPI=${6:-no}
 FIRST_FULL=${7:-no}
+EXTRA_METADATA="$8"
 
 SHORTNAME=`basename $REPO`
 
@@ -82,6 +83,7 @@ meta:release-type: $RELEASETYPE
 meta:announce: $ANNOUNCE
 meta:pypi: $INCLUDE_PYPI
 meta:first: $FIRST_FULL
+$EXTRA_METADATA
 "
     echo "Tag message is '$TAGMSG'"
     git tag -m "$TAGMSG" -s "$VERSION" $TARGETSHA

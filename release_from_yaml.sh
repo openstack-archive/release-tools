@@ -41,10 +41,24 @@ RELEASES_REPO="$1"
 shift
 DELIVERABLES="$@"
 
+# Configure git to pull the notes where gerrit stores review history
+# like who approved a patch.
+cd $RELEASES_REPO
+if ! git config --get remote.origin.fetch | grep -q refs/notes/review; then
+    git config --add remote.origin.fetch refs/notes/review:refs/notes/review
+    git config --add core.notesRef refs/notes/review
+    git remote update origin
+fi
+
+# Look for metadata about the release instructions to include in the
+# tag message.
+parent=$(git show --pretty=%P | cut -f2 -d' ')
+RELEASE_META=$(git show --format=full --show-notes=review $parent | egrep -i '(Author|Commit:|Code-Review|Workflow|Change-Id)' | sed -e 's/^    //g' -e 's/^/meta:release:/g')
+
 $TOOLSDIR/list_deliverable_changes.py -r $RELEASES_REPO $DELIVERABLES \
 | while read deliverable series version repo hash announce_to pypi first_full; do
     title "$repo $series $version $hash $announce_to"
-    $TOOLSDIR/release.sh $repo $series $version $hash $announce_to $pypi $first_full
+    $TOOLSDIR/release.sh $repo $series $version $hash $announce_to $pypi $first_full "$RELEASE_META"
 done
 
 exit 0
