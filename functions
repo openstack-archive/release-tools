@@ -49,11 +49,14 @@ function setup_temp_space {
 
 
 function get_last_tag {
-    # Print the most recent tag on a branch. If no branch is
-    # specified, the currently checked out branch is examined.
-    typeset branch="$1"
-
-    git describe --abbrev=0 $branch || return 0
+    # Print the most recent tag for a ref. If no ref is specified, the
+    # currently checked out branch is examined.
+    local ref="$1"
+    if ! git describe --abbrev=0 --first-parent ${ref} >/dev/null 2>&1; then
+        echo ""
+    else
+        git describe --abbrev=0 --first-parent ${ref}
+    fi
 }
 
 
