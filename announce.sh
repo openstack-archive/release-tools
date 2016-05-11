@@ -93,56 +93,54 @@ fi
 # ...
 #
 TAG_META=$(git show --no-patch "$VERSION" | grep '^meta:' || true)
-if [[ -z "$TAG_META" ]]; then
-    echo ERROR: Missing meta lines in $VERSION tag message.
-    exit 1
-fi
+if [[ -n "$TAG_META" ]]; then
+    function get_tag_meta {
+        typeset fieldname="$1"
 
-function get_tag_meta {
-    typeset fieldname="$1"
+        echo "$TAG_META" | grep "^meta:$fieldname:" | cut -f2 -d' '
+    }
 
-    echo "$TAG_META" | grep "^meta:$fieldname:" | cut -f2 -d' '
-}
+    # The series name is part of the commit message left by release.sh.
+    SERIES=$(get_tag_meta series)
+    series_opt="--series $SERIES"
 
-# The series name is part of the commit message left by release.sh.
-SERIES=$(get_tag_meta series)
+    # The type of release this is.
+    RELEASETYPE=$(get_tag_meta release-type)
 
-# The type of release this is.
-RELEASETYPE=$(get_tag_meta release-type)
-
-# The recipient for announcements is part of the commit message left
-# by release.sh.
-ANNOUNCE=$(get_tag_meta announce)
-if [[ ! -z "$ANNOUNCE" ]]; then
-    email_to="--email-to $ANNOUNCE"
-fi
-
-# Figure out if that series is a stable branch or not. We don't
-# release pre-releases on stable branches, so we only need to check
-# for stable if the release type is a normal release.
-if [[ $RELEASETYPE = "release" ]]; then
-    if git branch -a | grep -q origin/stable/$SERIES; then
-        stable="--stable"
+    # Figure out if that series is a stable branch or not. We don't
+    # release pre-releases on stable branches, so we only need to check
+    # for stable if the release type is a normal release.
+    if [[ $RELEASETYPE = "release" ]]; then
+        if git branch -a | grep -q origin/stable/$SERIES; then
+            stable="--stable"
+        fi
     fi
-fi
 
-# If this is the first full release in a series, it isn't "stable"
-# yet.
-FIRST_FULL=$(get_tag_meta first)
-if [[ $FIRST_FULL = "yes" ]]; then
-    stable=""
+    # If this is the first full release in a series, it isn't "stable"
+    # yet.
+    FIRST_FULL=$(get_tag_meta first)
+    if [[ $FIRST_FULL = "yes" ]]; then
+        stable=""
+    fi
+
+    # The recipient for announcements is part of the commit message left
+    # by release.sh.
+    ANNOUNCE=$(get_tag_meta announce)
+    if [[ ! -z "$ANNOUNCE" ]]; then
+        email_to="--email-to $ANNOUNCE"
+    fi
+
+    # Only include the PyPI link if we are told to.
+    INCLUDE_PYPI_LINK=$(get_tag_meta pypi)
+    if [[ "$INCLUDE_PYPI_LINK" == "yes" ]]; then
+        include_pypi_link="--include-pypi-link"
+    fi
 fi
 
 # Set up email tags for the project owner.
 PROJECT_OWNER=${PROJECT_OWNER:-$(get-repo-owner --email-tag $REPOORGNAME/$SHORTNAME || echo "")}
 if [[ "$PROJECT_OWNER" != "" ]]; then
     email_tags="--email-tags ${PROJECT_OWNER}"
-fi
-
-# Only include the PyPI link if we are told to.
-INCLUDE_PYPI_LINK=$(get_tag_meta pypi)
-if [[ "$INCLUDE_PYPI_LINK" == "yes" ]]; then
-    include_pypi_link="--include-pypi-link"
 fi
 
 echo "$PREVIOUS_VERSION to $VERSION on $SERIES"
@@ -153,7 +151,7 @@ release-notes \
     --email \
     $email_to \
     $email_tags \
-    --series $SERIES \
+    $series_opt \
     $stable \
     $first_release \
     . "$PREVIOUS_VERSION" "$VERSION" \
