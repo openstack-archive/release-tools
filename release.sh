@@ -118,7 +118,7 @@ if [[ $INCLUDE_PYPI == "yes" ]]; then
         git checkout -b "$dist_name-$VERSION"
         sed -e "s/^$dist_name.*/$dist_name===$VERSION/" --in-place upper-constraints.txt
         git commit -a -m "update constraint for $dist_name to $VERSION"
-        git review
+        git review -t 'new-release'
     fi
 fi
 
