@@ -1,0 +1,10 @@
+Code-Review+1: Lee Yarwood <lyarwood@redhat.com>
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Code-Review+2: Doug Hellmann <doug@doughellmann.com>
+Workflow+1: Doug Hellmann <doug@doughellmann.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Mon, 23 May 2016 19:51:01 +0000
+Reviewed-on: https://review.openstack.org/296470
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
