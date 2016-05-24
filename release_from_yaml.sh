@@ -52,7 +52,14 @@ fi
 
 # Look for metadata about the release instructions to include in the
 # tag message.
-parent=$(git show --pretty=%P | cut -f2 -d' ')
+if git show --no-patch --pretty=format:%P | grep -q ' '; then
+    # multiple parents, look at the submitted patch instead of the
+    # merge commit
+    parent=$(git show --no-patch --pretty=format:%P | cut -f2 -d' ')
+else
+    # single parent, look at the current patch
+    parent=''
+fi
 RELEASE_META=$(git show --format=full --show-notes=review $parent | egrep -i '(Author|Commit:|Code-Review|Workflow|Change-Id)' | sed -e 's/^    //g' -e 's/^/meta:release:/g')
 
 $TOOLSDIR/list_deliverable_changes.py -r $RELEASES_REPO $DELIVERABLES \
