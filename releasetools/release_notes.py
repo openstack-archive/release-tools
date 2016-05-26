@@ -141,7 +141,18 @@ def parse_readme(library_path):
         'bug_url': '',
         'source_url': '',
     }
-    readme_path = os.path.join(library_path, 'README.rst')
+    readme_formats = ['rst', 'md']
+    for k in readme_formats:
+        readme_path = os.path.join(library_path, 'README.%s' % k)
+        try:
+            f = open(readme_path, 'r')
+            f.close()
+            break
+        except IOError:
+            continue
+    else:
+        raise RuntimeError("No README file found in %s\n" % library_path)
+
     with open(readme_path, 'r') as fh:
         for line in fh:
             for (name, key_name) in [("Bugs:", "bug_url"),
