@@ -552,6 +552,53 @@ Test prepare for expiration on Launchpad Staging servers.
 Prepare for expiration dry-run: print actions without executing them.
 
 
+expire_old_bug_reports.py
+-------------------------
+
+Closes *Launchpad* bug reports which are older than the oldest stable release
+(usually 18 months, see ``DAYS_SINCE_CREATED``). It ignores bug reports which:
+* have a special comment (see constant ``STILL_VALID_FLAG``).
+* have the status ``In Progress``
+* have the importance ``Wishlist``
+By default it uses a *dry-run* to not accidentally close bug reports. You
+have to use a flag to make it a real execution.
+
+Closed bug reports will have:
+* status = ``Won't Fix``
+* assignee = ``None``
+* importance = ``Undecided``
+* a comment which explains *why* this was done.
+
+Examples:
+
+::
+
+  ./expire_old_bug_reports.py nova --verbose
+
+Show which bug reports of *Nova* **would be** expired (a dry-run is the
+default).
+
+::
+
+  ./expire_old_bug_reports.py nova --no_dry_run
+
+Actually expire old bug reports of *Nova*.
+
+::
+
+  ./expire_old_bug_reports.py nova --no_dry_run --credentials-file cred.txt
+
+Use a credentials file to expire bug reports (see `launchpad-login`_).
+
+::
+
+  export LP_CREDS_FILE=path/to/my/lp/credentials/files/cred.txt
+  ./expire_old_bug_reports.py nova --no_dry_run
+
+Use an environment variable to access the credentials file instead of the
+``--credentials-file`` flag.
+
+
 process_bugs.py
 ---------------
 
