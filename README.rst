@@ -937,7 +937,7 @@ detailed description for each of them.
 
 Example::
 
-  ./bugs-fixed-since.py [...] --start=8.0.0 | ./annotate-lp-bugs neutron
+  ./bugs-fixed-since.py [...] --start=8.0.0 | ./annotate-lp-bugs.py neutron
 
 Pull in detailed description for bugs that are fixed in master since 8.0.0.
 
