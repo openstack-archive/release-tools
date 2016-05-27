@@ -898,7 +898,7 @@ importance specified. Filtering out Wishlist bugs if importance not specified.
 
 Example::
 
-  ./bugs-fixed-since.py --start=8.0.0 | \
+  ./bugs-fixed-since.py [...] --start=8.0.0 | \
   ./lp-filter-bugs-by-importance.py neutron
 
 List bugs that are fixed in master since 8.0.0 that are not of Wishlist
@@ -922,7 +922,7 @@ a tag specified.
 
 Example::
 
-  ./bugs-fixed-since.py --start=8.0.0 | \
+  ./bugs-fixed-since.py [...] --start=8.0.0 | \
   ./lp-filter-bugs-by-tag.py neutron --tag in-stable-mitaka
 
 List bugs that are fixed in master since 8.0.0 that don't have relevant fixes
@@ -937,7 +937,7 @@ detailed description for each of them.
 
 Example::
 
-  ./bugs-fixed-since.py --start=8.0.0 | ./annotate-lp-bugs neutron
+  ./bugs-fixed-since.py [...] --start=8.0.0 | ./annotate-lp-bugs neutron
 
 Pull in detailed description for bugs that are fixed in master since 8.0.0.
 
@@ -950,3 +950,15 @@ Clean up <*>-backport-potential tags for bugs with in-stable-<*> tag set.
 Example::
 
   ./lp-reset-backport-potential.py neutron python-neutronclient
+
+
+lp-tag.py
+---------
+
+Append a tag to bugs specified on stdin.
+
+Example::
+
+  ./bugs-fixed-since.py [...] --start=8.0.0 | ./lp-tag.py foo-tag
+
+This command will add the 'foo-tag' tag to all bugs fixed since 8.0.0.
