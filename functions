@@ -3,6 +3,10 @@
 # Shared functions for shell scripts
 #
 
+# Make sure custom grep options don't get in the way
+unset GREP_OPTIONS
+
+
 function lp_project_to_repo {
     typeset proj="$1"
 
