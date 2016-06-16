@@ -94,8 +94,11 @@ fi
 #
 TAG_META=$(git show --no-patch "$VERSION" | grep '^meta:' || true)
 if [[ -z "$TAG_META" ]]; then
-    echo ERROR: Missing meta lines in $VERSION tag message.
-    exit 1
+    echo "WARNING: Missing meta lines in $VERSION tag message,"
+    echo "         skipping announcement."
+    echo
+    echo "Was the tag for $VERSION created with release.sh?"
+    exit 0
 fi
 
 function get_tag_meta {
