@@ -116,7 +116,7 @@ if [[ $INCLUDE_PYPI == "yes" ]]; then
         clone_repo openstack/requirements stable/$SERIES
         cd openstack/requirements
         git checkout -b "$dist_name-$VERSION"
-        sed -e "s/^$dist_name.*/$dist_name===$VERSION/" --in-place upper-constraints.txt
+        sed -e "s/^${dist_name}=.*/$dist_name===$VERSION/" --in-place upper-constraints.txt
         git commit -a -m "update constraint for $dist_name to new release $VERSION
 
 $TAGMSG
