@@ -26,12 +26,12 @@ if you start a release and run into trouble with launchpad auth.
 
 When a release request is ready to be approved, follow these steps:
 
-1. The release team member taking responsibility for the
+#. The release team member taking responsibility for the
    release should approve the change in ``openstack/releases``.
    Release requests should not be approved until we are actually ready
    to cut the release.
 
-2. After the release request merges, check out or update a local copy
+#. After the release request merges, check out or update a local copy
    of ``openstack/releases`` to get the new version of the file under
    the ``deliverables`` directory. Make sure you check out the
    releases repository to the commit with the new release request you
@@ -39,22 +39,38 @@ When a release request is ready to be approved, follow these steps:
    time. The release tools only look at the most recent commit to
    detect which deliverable files have changed.
 
-3. In a local copy of this
-   ``openstack-infra/release-tools`` repository, run
-   ``release_from_yaml.sh``, giving the path to the
+#. Check out or update a local copy of
+   ``openstack-infra/project-config`` repository, which contains the
+   tools for tagging a release.
+
+#. Change directories to
+   ``project-config/jenkins/scripts/release-tools``.
+
+#. Create or update a virtualenv and install all of the dependencies
+   for the release tools using
+   ``openstack-infra/project-config/jenkins/scripts/release-tools/requirements.txt``
+   as the basis.
+
+   For example::
+
+      $ virtualenv .venv
+      $ source .venv/bin/activate
+      $ pip install -U -r requirements.txt
+
+#. Run ``release_from_yaml.sh``, giving the path to the
    ``openstack/releases`` repository.
 
    For example::
 
       $ ./release_from_yaml.sh ~/repos/openstack/releases
 
-4. As the release script runs, it will prompt you for your GPG key
+#. As the release script runs, it will prompt you for your GPG key
    passphrase before adding the tag. This gives you a last chance to
    review the proposed tag before proceeding. After the tag is created
    locally and pushed up to the remote server, the script will push
    comments to closed Launchpad bugs since the previous tag.
 
-5. Announce the release.
+#. Announce the release.
 
    1. Milestones are manually announced once all projects are done
       (usually at the closing of the milestone window), using an email
@@ -84,51 +100,11 @@ Top-level scripts
 
 The top-level scripts call the various base tools to get their work done.
 
+.. note::
 
-release_from_yaml.sh
---------------------
-
-This script takes YAML files describing deliverables to release (like those
-living in ``openstack/releases``) and calls the release.sh script (see below)
-to apply the corresponding tags. It will create a tag for the last release
-mentioned in the file(s). You can point it to specific YAML files, or to a
-local git repository (in which case it will look at the files modified in the
-most recent commit).
-
-Examples:
-
-::
-
-  ./release_from_yaml.sh ../openstack-releases deliverables/mitaka/nova.yaml
-
-Call release.sh for all repositories mentioned in the last release added
-to ../openstack-releases/deliverables/mitaka/nova.yaml
-
-::
-
-  ./release_from_yaml.sh ../openstack-releases
-
-Look into the git repository at ../openstack-releases for deliverable YAML
-files modified at the last commit, and call release.sh for all repositories
-mentioned on the last release in each such file.
-
-
-release.sh
-----------
-
-This script creates a tag on a given repository SHA and pushes it to Gerrit.
-Additionally it will add a message on Launchpad bugs that are mentioned as
-"closed" in git commit messages since the last tag on the same series.
-
-Example:
-
-::
-
-  ./release.sh openstack/oslo.rootwrap mitaka 3.0.3 gerrit/master
-
-Apply a 3.0.3 tag (associated to the mitaka series) to the gerrit master
-HEAD of the openstack/oslo.rootwrap reporitory, and add a comment for each
-closed bug mentioned in commit messages since the previous mitaka tag (3.0.2).
+   The scripts involved in tagging releases have moved from this
+   repository to
+   ``openstack-infra/project-config/jenkins/scripts/release-tools``.
 
 announce.sh
 -----------
