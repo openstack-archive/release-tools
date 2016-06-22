@@ -104,7 +104,7 @@ For more details, please see below.
 
 # This will just be replaced with template values (no wrapping applied).
 CHANGE_RELEASE_TPL = """{% if reno_notes %}{{ reno_notes }}{% endif %}
-{{ change_header }}{% if skip_requirement_merges %}
+{% if changes %}{{ change_header }}{% if skip_requirement_merges %}
 
 NOTE: Skipping requirement commits...
 {%- endif %}
@@ -112,6 +112,8 @@ NOTE: Skipping requirement commits...
 {% for change in changes -%}
 {{ change }}
 {% endfor %}
+{%- endif %}
+{% if diff_stats %}
 {% if not first_release -%}
 Diffstat (except docs and test files)
 -------------------------------------
@@ -119,6 +121,7 @@ Diffstat (except docs and test files)
 {% for change in diff_stats -%}
 {{ change }}
 {% endfor %}
+{%- endif %}
 {% if requirement_changes %}
 Requirements updates
 --------------------
