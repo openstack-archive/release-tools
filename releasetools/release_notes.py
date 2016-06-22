@@ -25,6 +25,7 @@ from oslo_concurrency import processutils
 import parawrap
 from reno import defaults as reno_defaults
 from reno import formatter
+from reno import loader
 from reno import scanner
 
 from releasetools import rst2txt
@@ -303,16 +304,15 @@ def generate_release_notes(library, library_path,
     branch = None
     if is_stable and series:
         branch = 'origin/stable/%s' % series
-    scanner_output = scanner.get_notes_by_version(
+    ldr = loader.Loader(
         reporoot=library_path,
         notesdir='%s/%s' % (reno_defaults.RELEASE_NOTES_SUBDIR,
                             reno_defaults.NOTES_SUBDIR),
         branch=branch,
     )
-    if end_revision in scanner_output:
+    if end_revision in ldr.versions:
         rst_notes = formatter.format_report(
-            reporoot=library_path,
-            scanner_output=scanner_output,
+            ldr,
             versions_to_include=[end_revision],
         )
         reno_notes = rst2txt.convert(rst_notes)
