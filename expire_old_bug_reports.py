@@ -7,7 +7,7 @@
 # * have the importance "Wishlist"
 #
 # example execution:
-#     $ python expire_old_bug_reports.py nova --no_dry_run
+#     $ python expire_old_bug_reports.py nova --no-dry-run
 #
 #
 # Copyright 2016 Markus Zoeller (mzoeller@linux.vnet.ibm.com)
@@ -31,12 +31,12 @@ import argparse
 import datetime
 import logging
 import os
+from prettytable import PrettyTable
 import sys
 import time
 
 from launchpadlib.launchpad import Launchpad
 import lazr.restfulclient.errors
-
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
 logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
@@ -48,7 +48,8 @@ parser.add_argument('project_name',
 parser.add_argument('--verbose', '-v',
                     help='Enable debug logging.',
                     action="store_true")
-parser.add_argument('--no_dry_run',
+parser.add_argument('--no-dry-run',
+                    dest='no_dry_run',
                     help='Execute the expiration for real.',
                     action='store_true')
 parser.add_argument('--credentials-file', '-c',
@@ -68,6 +69,10 @@ if args.verbose:
 DAYS_SINCE_CREATED = 30 * 18  # 18 months
 STILL_VALID_FLAG = "CONFIRMED FOR: %(release_name)s"  # UPPER CASE
 SUPPORTED_RELEASE_NAMES = []  # UPPER CASE
+
+BUG_TASK_STATUS_AFTER_RUN = "Expired"
+BUG_TASK_ASSIGNEE_AFTER_RUN = None
+BUG_TASK_IMPORTANCE_AFTER_RUN = "Undecided"
 
 
 class BugReport(object):
@@ -154,14 +159,14 @@ def get_expired_reports(lp_project):
 def expire_bug_report(bug_report):
     subject = "Cleanup EOL bug report"
     comment = """
-This is an automated cleanup. This bug report got closed because it
+This is an automated cleanup. This bug report has been closed because it
 is older than %(mm)d months and there is no open code change to fix this.
 After this time it is unlikely that the circumstances which lead to
 the observed issue can be reproduced.
 
-If you can reproduce it, please:
+If you can reproduce the bug, please:
 * reopen the bug report (set to status "New")
-* AND add the steps to reproduce the issue (if applicable)
+* AND add the detailed steps to reproduce the issue (if applicable)
 * AND leave a comment "CONFIRMED FOR: <RELEASE_NAME>"
   Only still supported release names are valid (%(supported_releases)s).
   Valid example: CONFIRMED FOR: %(valid_release_name)s
@@ -170,18 +175,30 @@ If you can reproduce it, please:
        'valid_release_name': SUPPORTED_RELEASE_NAMES[0]}
 
     bug_task = bug_report.bug_task
-    bug_task.status = "Won't Fix"
-    bug_task.assignee = None
-    bug_task.importance = "Undecided"
+    bug_task.status = BUG_TASK_STATUS_AFTER_RUN
+    bug_task.assignee = BUG_TASK_ASSIGNEE_AFTER_RUN
+    bug_task.importance = BUG_TASK_IMPORTANCE_AFTER_RUN
     try:
         if args.no_dry_run:
             bug_task.lp_save()
             bug_task.bug.newMessage(subject=subject, content=comment)
-            LOG.debug("expired bug report %s" % bug_report)
+        LOG.debug("expired bug report %s" % bug_report)
     except lazr.restfulclient.errors.ServerError as e:
         LOG.error(" - TIMEOUT during save ! (%s)" % e, end='')
     except Exception as e:
         LOG.error(" - ERROR during save ! (%s)" % e, end='')
+
+
+def write_expired_table_to_file(expired_reports, file_name):
+    x = PrettyTable()
+    x.field_names = ["Bug #", "Title", "Age (d)"]
+    x.align["Bug #"] = "r"
+    x.align["Title"] = "l"
+    x.align["Age (d)"] = "r"
+    for r in expired_reports:
+        x.add_row([r.bug_task.bug.id, r.title, r.age])
+    with open(file_name, 'w') as w:
+        w.write(str(x))
 
 
 def main():
@@ -196,7 +213,11 @@ def main():
     LOG.info("starting expiration...")
     for e in expired_reports:
         expire_bug_report(e)
-    LOG.info("expiration done")
+    LOG.info("expired %d bug reports", len(expired_reports))
+    LOG.info("writing an ASCII table for notification purposes...")
+    file_name = "expired_bug_reports_%s" % datetime.datetime.now().isoformat()
+    write_expired_table_to_file(expired_reports, file_name)
+    LOG.info("wrote ASCII table to file %s", file_name)
 
 
 if __name__ == '__main__':
