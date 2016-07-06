@@ -426,6 +426,21 @@ changes, and push the patch to gerrit.
 
   $ propose-final-releases -r ~/repos/openstack/releases mitaka
 
+ptl
+---
+
+Report information about the PTL of a project by querying the
+governance repository.
+
+::
+
+    $ ptl "release management"
+    
+    Name        : Doug Hellmann
+    IRC Nick    : dhellmann
+    IRC Channel : openstack-release
+    Email       : doug@doughellmann.com
+
 Base tools
 ==========
 
