@@ -1,0 +1,10 @@
+Code-Review+1: Dave Walker <email@daviey.com>
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Code-Review+2: Davanum Srinivas (dims) <davanum@gmail.com>
+Workflow+1: Davanum Srinivas (dims) <davanum@gmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Thu, 07 Jul 2016 16:32:34 +0000
+Reviewed-on: https://review.openstack.org/332448
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
