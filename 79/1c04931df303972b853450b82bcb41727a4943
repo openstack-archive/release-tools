@@ -1,0 +1,10 @@
+Code-Review+1: Tony Breeds <tony@bakeyournoodle.com>
+Code-Review+2: Davanum Srinivas (dims) <davanum@gmail.com>
+Code-Review+2: Doug Hellmann <doug@doughellmann.com>
+Workflow+1: Doug Hellmann <doug@doughellmann.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Fri, 15 Jul 2016 13:58:41 +0000
+Reviewed-on: https://review.openstack.org/342053
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
