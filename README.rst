@@ -417,6 +417,28 @@ governance repository.
     IRC Channel : openstack-release
     Email       : doug@doughellmann.com
 
+milestone-checkup
+-----------------
+
+Tool to report on the status of milestone tags for projects using the
+cycle-with-milestone release model.
+
+::
+
+    $ milestone-checkup ~/repos/openstack/releases newton 2
+    training-labs (Documentation)
+      did not find /home/dhellmann/repos/openstack/releases/deliverables/newton/training-labs.yaml
+
+    aodh (Telemetry)
+      did not find /home/dhellmann/repos/openstack/releases/deliverables/newton/aodh.yaml
+
+    ceilometer (Telemetry)
+      did not find /home/dhellmann/repos/openstack/releases/deliverables/newton/ceilometer.yaml
+
+    astara (astara)
+    ...
+
+
 Base tools
 ==========
 
