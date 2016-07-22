@@ -1,0 +1,10 @@
+Code-Review+2: Doug Hellmann <doug@doughellmann.com>
+Code-Review+1: Davanum Srinivas (dims) <davanum@gmail.com>
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Workflow+1: Thierry Carrez <thierry@openstack.org>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Fri, 22 Jul 2016 09:56:58 +0000
+Reviewed-on: https://review.openstack.org/333875
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
