@@ -55,6 +55,7 @@ REALSHA=`git show-ref -s $NEW_BRANCH`
 git push gerrit $NEW_BRANCH
 
 update_gitreview "$NEW_BRANCH"
+update_upper_constraints "$NEW_BRANCH"
 if [[ -d releasenotes/source ]]; then
     # Also update the reno settings, in master
     title "Updating reno"
