@@ -171,4 +171,4 @@ echo "Sending release announcement"
 send-mail -v $relnotes_file || \
     echo "Sending failed, see $relnotes_file for message body"
 
-exit 0
+exit $?
