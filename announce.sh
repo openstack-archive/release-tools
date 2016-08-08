@@ -107,6 +107,14 @@ function get_tag_meta {
     echo "$TAG_META" | grep "^meta:$fieldname:" | cut -f2 -d' '
 }
 
+# How far back should we look for release info? If there is no
+# explicit metadata, use whatever previous version number we were able
+# to detect.
+DIFF_START=$(get_tag_meta diff-start)
+if [[ -z "$DIFF_START" ]]; then
+    DIFF_START="$PREVIOUS_VERSION"
+fi
+
 # The series name is part of the commit message left by release.sh.
 SERIES=$(get_tag_meta series)
 
@@ -148,7 +156,7 @@ if [[ "$INCLUDE_PYPI_LINK" == "yes" ]]; then
     include_pypi_link="--include-pypi-link"
 fi
 
-echo "$PREVIOUS_VERSION to $VERSION on $SERIES"
+echo "$DIFF_START to $VERSION on $SERIES"
 
 relnotes_file="$RELNOTESDIR/$SHORTNAME-$VERSION"
 
@@ -159,7 +167,7 @@ release-notes \
     --series $SERIES \
     $stable \
     $first_release \
-    . "$PREVIOUS_VERSION" "$VERSION" \
+    . "$DIFF_START" "$VERSION" \
     $include_pypi_link \
     | tee $relnotes_file
 
