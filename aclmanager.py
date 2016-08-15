@@ -122,13 +122,21 @@ def modify_gerrit_groups(args):
     """Handles the 'groups' action"""
 
     if args.stage == 'pre_release':
-        actions = [('DELETE', lambda x: '%s-stable-maint' % x),
-                   ('PUT', lambda x: '%s-release' % x)]
+        # At pre-release stage we want to have $PROJECT-release and
+        # Release Managers (and remove $PROJECT-stable-maint if present)
+        actions = [
+            ('PUT', lambda x: '%s-release' % x),
+            ('PUT', lambda x: 'Release Managers'),
+            ('DELETE', lambda x: '%s-stable-maint' % x),
+        ]
     elif args.stage == 'post_release':
-        actions = [('DELETE', lambda x: '%s-release' % x),
-                   ('PUT', lambda x: '%s-stable-maint' % x)]
-    elif args.stage == 'ensure_rm':
-        actions = [('PUT', lambda x: 'Release Managers')]
+        # At post-release stage we want to have $PROJECT-stable-maint
+        # (and remove Release Managers and $PROJECT-release if present)
+        actions = [
+            ('PUT', lambda x: '%s-stable-maint' % x),
+            ('DELETE', lambda x: 'Release Managers'),
+            ('DELETE', lambda x: '%s-release' % x),
+        ]
 
     # Build the list of calls to make
     print('Computing the list of modifications')
@@ -177,7 +185,7 @@ def main(args=sys.argv[1:]):
         help='modify Gerrit groups membership')
     do_groups.add_argument(
         'stage',
-        choices=['ensure_rm', 'pre_release', 'post_release'],
+        choices=['pre_release', 'post_release'],
         help='type of modification to push')
     do_groups.add_argument(
         'username',
