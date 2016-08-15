@@ -67,7 +67,9 @@ label-Workflow = -1..+1 group {group}
     for project in config:
         aclfilename = project.get('acl-config')
         if aclfilename:
-            acl[project['project']] = aclfilename[19:]
+            (head, tail) = os.path.split(aclfilename)
+            acl[project['project']] = os.path.join(os.path.basename(head),
+                                                   tail)
         else:
             acl[project['project']] = project['project'] + '.config'
 
