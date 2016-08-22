@@ -28,9 +28,17 @@ PROJECT_TEMPLATE = '''\
 
 VERSION_TEMPLATE = '''\
   - version: {version}
+    diff-start: {diff_start}
     projects:
 {projects}
 '''
+
+
+def get_prior_branch_point(version):
+    "Assuming we always branch on the rc1 tag..."
+    parts = version.split('.')
+    prior = int(parts[0]) - 1
+    return '{}.0.0.0rc1'.format(prior)
 
 
 def main():
@@ -88,8 +96,10 @@ def main():
                 print('#  not a release candidate')
             continue
         new_version = latest_release['version'].split('.0rc')[0]
+        diff_start = get_prior_branch_point(new_version)
         deliverable_data['releases'].append({
             'version': new_version,
+            'diff_start': diff_start,
             'projects': latest_release['projects'],
         })
         print('new version for {}: {}'.format(os.path.basename(filename),
@@ -101,6 +111,7 @@ def main():
                              for p in latest_release['projects'])
         new_block = VERSION_TEMPLATE.format(
             version=new_version,
+            diff_start=diff_start,
             projects=projects,
         ).rstrip() + '\n'
         with open(filename, 'a') as f:
