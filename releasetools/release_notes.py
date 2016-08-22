@@ -163,7 +163,9 @@ def parse_readme(library_path):
         except IOError:
             continue
     else:
-        raise RuntimeError("No README file found in %s\n" % library_path)
+        sys.stderr.write("WARNING: No README file found in %s\n"
+                         % library_path)
+        return sections
 
     with open(readme_path, 'r') as fh:
         for line in fh:
