@@ -25,6 +25,7 @@ import sys
 import requests
 import yaml
 
+from releasetools import governance
 
 GERRIT_URL = 'https://review.openstack.org/'
 
@@ -36,14 +37,11 @@ EXCEPTIONS = ['openstack/training-labs',
 def repositories_list():
     """Yields (team, repo) tuples for cycle-with-milestones deliverables"""
 
-    r = requests.get('http://git.openstack.org/cgit/openstack/governance/plain/reference/projects.yaml')  # noqa
-    teams = yaml.load(r.text)
-    for tname, team in teams.iteritems():
-        for dname, deliverable in team['deliverables'].items():
-            if 'release:cycle-with-milestones' in deliverable.get('tags', []):
-                for repo in deliverable.get('repos', []):
-                    if repo not in EXCEPTIONS:
-                        yield(tname, repo)
+    repos = governance.get_repositories(governance.get_team_data(),
+                                        tags=['release:cycle-with-milestones'])
+    for repo in repos:
+        if repo.name not in EXCEPTIONS:
+            yield(repo.deliverable.team.name, repo.name)
 
 
 def patch_acls(args):
