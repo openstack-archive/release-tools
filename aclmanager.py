@@ -105,14 +105,14 @@ label-Workflow = -1..+1 group {group}
                 aclfile.write(newcontent)
 
 
-def gerrit_group_membership_test(action, group, member):
+def gerrit_group_membership_test(gerritauth, action, group, member):
     """Test for Gerrit group membership based on action taken"""
 
-    call = '/groups/%s/groups/%s' % (group, member)
-    r = requests.get(GERRIT_URL + call)
+    call = 'a/groups/%s/groups/%s' % (group, member)
+    r = requests.get(GERRIT_URL + call, auth=gerritauth)
     if action == 'PUT':
-        # For PUT operations, return true if member is not already there
-        return r.status_code != 200
+        # For PUT operations, return true if member is missing
+        return r.status_code == 404
     else:
         # For DELETE operations, return true if member already there
         return r.status_code == 200
@@ -121,6 +121,7 @@ def gerrit_group_membership_test(action, group, member):
 def modify_gerrit_groups(args):
     """Handles the 'groups' action"""
 
+    gerritauth = requests.auth.HTTPDigestAuth(args.username, getpass.getpass())
     if args.stage == 'pre_release':
         # At pre-release stage we want to have $PROJECT-release and
         # Release Managers (and remove $PROJECT-stable-maint if present)
@@ -146,13 +147,12 @@ def modify_gerrit_groups(args):
         for (verb, memberformat) in actions:
             member = memberformat(team)
             # Filter based on already-handled names
-            if gerrit_group_membership_test(verb, group, member):
+            if gerrit_group_membership_test(gerritauth, verb, group, member):
                 calls.add((verb, group, member))
             else:
                 print("Skipping %s %s in %s (already done)" %
                       (verb, member, group))
 
-    gerritauth = requests.auth.HTTPDigestAuth(args.username, getpass.getpass())
     for verb, group, member in calls:
         call = 'a/groups/%s/groups/%s' % (group, member)
         print('Updating %s group using %s %s' % (group, verb, call))
