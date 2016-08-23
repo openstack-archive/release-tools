@@ -160,6 +160,15 @@ echo "$DIFF_START to $VERSION on $SERIES"
 
 relnotes_file="$RELNOTESDIR/$SHORTNAME-$VERSION"
 
+# Some projects have setup_requires dependencies on packages that are
+# not pre-installed, so run a setuptools command in a way to get them
+# installed without capturing the output in the email we're going to
+# be sending.
+echo "Priming setup_requires packages"
+python setup.py --name
+
+echo
+echo "Generating email body in $relnotes_file"
 release-notes \
     --email \
     $email_to \
@@ -170,9 +179,6 @@ release-notes \
     . "$DIFF_START" "$VERSION" \
     $include_pypi_link \
     | tee $relnotes_file
-
-echo
-echo $relnotes_file
 
 echo
 echo "Sending release announcement"
