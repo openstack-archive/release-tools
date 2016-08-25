@@ -25,6 +25,7 @@ from releasetools import governance
 
 MILESTONE = 'release:cycle-with-milestones'
 INTERMEDIARY = 'release:cycle-with-intermediary'
+TRAILING = 'release:cycle-trailing'
 
 
 def main():
@@ -53,6 +54,7 @@ def main():
     # Load all of the existing deliverable data and determine the most
     # recent version tagged.
     latest_versions = {}
+    release_notes = {}
     pat = os.path.join(
         args.releases_repo,
         'deliverables',
@@ -65,6 +67,7 @@ def main():
         deliverable = os.path.basename(fn)[:-5]
         v = y['releases'][-1]['version']
         latest_versions[deliverable] = v
+        release_notes[deliverable] = y.get('release-notes')
 
     team_data = governance.get_team_data()
     teams = {
@@ -75,24 +78,15 @@ def main():
     # Organize deliverables by their release model, whether they are
     # managed, and the team that owns them.
     deliverables_by_model = {
-        MILESTONE: {
-            'managed': {},
-            'unmanaged': {},
-        },
-        INTERMEDIARY: {
-            'managed': {},
-            'unmanaged': {},
-        },
+        MILESTONE: {},
+        INTERMEDIARY: {},
+        TRAILING: {},
     }
     for t in teams.values():
         for dn, di in t.deliverables.items():
             for model in deliverables_by_model.keys():
                 if model in di.tags:
-                    if 'release:managed' in di.tags:
-                        managed = 'managed'
-                    else:
-                        managed = 'unmanaged'
-                    dbm_team = deliverables_by_model[model][managed].setdefault(
+                    dbm_team = deliverables_by_model[model].setdefault(
                         di.team.name.lower(), [])
                     dbm_team.append(di)
                     break
@@ -101,48 +95,56 @@ def main():
     if args.format == 'csv':
         writer = csv.writer(sys.stdout)
         writer.writerow(
-            ('Managed',
-             'Release Model',
+            ('Release Model',
              'Team',
              'PTL Nick',
              'PTL Email',
              'IRC Channel',
              'Deliverable Type',
              'Deliverable Name',
-             'Latest Version'))
-        for managed in ['managed', 'unmanaged']:
-            for model in [MILESTONE, INTERMEDIARY]:
-                short_model = model.rpartition('-')[-1]
-                dbm_teams = sorted(deliverables_by_model[model][managed].items())
-                for team_name, team_deliverables in dbm_teams:
-                    team = teams[team_name]
-                    for d in sorted(team_deliverables, key=lambda d: d.name):
-                        writer.writerow(
-                            (managed,
-                             short_model,
-                             team.name.lower(),
-                             team.data['ptl']['irc'],
-                             team.data['ptl']['email'],
-                             team.data.get('irc-channel'),
-                             d.type,
-                             d.name,
-                             latest_versions.get(d.name, 'not found')))
+             'Pre-RC1',
+             'RC1',
+             'Branched at',
+             'Latest RC',
+             'Release Notes',
+             'Comments')
+        )
+        for model in [MILESTONE, INTERMEDIARY, TRAILING]:
+            short_model = model.rpartition('-')[-1]
+            dbm_teams = sorted(deliverables_by_model[model].items())
+            for team_name, team_deliverables in dbm_teams:
+                team = teams[team_name]
+                for d in sorted(team_deliverables, key=lambda d: d.name):
+                    writer.writerow(
+                        (short_model,
+                         team.name.lower(),
+                         team.data['ptl']['irc'],
+                         team.data['ptl']['email'],
+                         team.data.get('irc-channel'),
+                         d.type,
+                         d.name,
+                         latest_versions.get(d.name, 'not found'),
+                         '',  # RC1
+                         '',  # Branched at
+                         '',  # Latest RC
+                         release_notes.get(d.name, ''),  # Release notes
+                         '')  # Comments
+                    )
+
     else:
-        for managed in ['managed', 'unmanaged']:
-            print('{}\n'.format(managed))
-            for model in [MILESTONE, INTERMEDIARY]:
-                print('  * {}\n'.format(model))
-                dbm_teams = sorted(deliverables_by_model[model][managed].items())
-                for team_name, team_deliverables in dbm_teams:
-                    team = teams[team_name]
-                    print('    * {}'.format(team_name))
-                    print('      * PTL: {} - {}'.format(
-                        team.data['ptl']['irc'],
-                        team.data['ptl']['email'],
-                    ))
-                    print('      * IRC: {}'.format(team.data.get('irc-channel', '')))
-                    print('      * Deliverables')
-                    for d in sorted(team_deliverables, key=lambda d: d.name):
-                        v = latest_versions.get(d.name, 'not found')
-                        print('        * {d.name} ({d.type}) [{v}]'.format(d=d, v=v))
-                    print()
+        for model in [MILESTONE, INTERMEDIARY, TRAILING]:
+            print('{}\n'.format(model))
+            dbm_teams = sorted(deliverables_by_model[model].items())
+            for team_name, team_deliverables in dbm_teams:
+                team = teams[team_name]
+                print('  * {}'.format(team_name))
+                print('    * PTL: {} - {}'.format(
+                    team.data['ptl']['irc'],
+                    team.data['ptl']['email'],
+                ))
+                print('    * IRC: {}'.format(team.data.get('irc-channel', '')))
+                print('    * Deliverables')
+                for d in sorted(team_deliverables, key=lambda d: d.name):
+                    v = latest_versions.get(d.name, 'not found')
+                    print('      * {d.name} ({d.type}) [{v}]'.format(d=d, v=v))
+                print()
