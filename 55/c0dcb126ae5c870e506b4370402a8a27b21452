@@ -1,0 +1,10 @@
+Code-Review+2: Davanum Srinivas (dims) <davanum@gmail.com>
+Code-Review+1: Tony Breeds <tony@bakeyournoodle.com>
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Workflow+1: Thierry Carrez <thierry@openstack.org>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Mon, 29 Aug 2016 10:37:53 +0000
+Reviewed-on: https://review.openstack.org/359351
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
