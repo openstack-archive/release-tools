@@ -21,6 +21,32 @@ import os.path
 import yaml
 
 
+def get_latest_deliverable_versions(deliverable_files, verbose):
+    for filename in deliverable_files:
+        if verbose:
+            print('\n{}'.format(filename))
+        with open(filename, 'r') as f:
+            deliverable_data = yaml.safe_load(f)
+        deliverable_name = os.path.basename(filename)[:-5]  # drop .yaml
+        releases = deliverable_data.get('releases')
+        if not releases:
+            if verbose:
+                print('#  no releases')
+            continue
+        latest_release = releases[-1]
+        projects = latest_release.get('projects')
+        if not projects:
+            if verbose:
+                print('#  no projects')
+            continue
+        yield(
+            (deliverable_data['team'],
+             deliverable_name,
+             latest_release['version'],
+             filename)
+        )
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -50,21 +76,8 @@ def main():
         print('Scanning {}'.format(pattern))
     deliverable_files = sorted(glob.glob(pattern))
 
-    for filename in deliverable_files:
-        if args.verbose:
-            print('\n{}'.format(filename))
-        with open(filename, 'r') as f:
-            deliverable_data = yaml.safe_load(f)
-        releases = deliverable_data.get('releases')
-        if not releases:
-            if args.verbose:
-                print('#  no releases')
-            continue
-        latest_release = releases[-1]
-        projects = latest_release.get('projects')
-        if not projects:
-            if args.verbose:
-                print('#  no projects')
-            continue
-        for p in latest_release['projects']:
-            print('{} {}'.format(p['repo'], latest_release['version']))
+    deliverables = sorted(get_latest_deliverable_versions(
+        deliverable_files, args.verbose)
+    )
+    for team, deliverable, version, filename in deliverables:
+        print('{} {} {}'.format(team, deliverable, version))
