@@ -39,7 +39,7 @@ NEW_BRANCH="feature/$(echo $FEATURE | sed -e 's|^feature/||')"
 
 setup_temp_space feature-branch-$PROJECT
 clone_repo openstack/$REPO
-cd $REPO
+cd openstack/$REPO
 LANG=C git review -s
 
 if $(git branch -r | grep $NEW_BRANCH > /dev/null); then
