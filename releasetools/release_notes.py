@@ -14,6 +14,7 @@
 
 from __future__ import unicode_literals
 
+import codecs
 import glob
 import os
 import random
@@ -167,7 +168,7 @@ def parse_readme(library_path):
                          % library_path)
         return sections
 
-    with open(readme_path, 'r') as fh:
+    with codecs.open(readme_path, 'r', encoding='utf-8') as fh:
         for line in fh:
             for (name, key_name) in [("Bugs:", "bug_url"),
                                      ("Source:", 'source_url')]:
