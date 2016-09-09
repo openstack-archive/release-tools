@@ -15,6 +15,7 @@
 from __future__ import print_function
 
 import argparse
+import csv
 import glob
 import os.path
 
@@ -55,6 +56,11 @@ def main():
         help='path to the releases repository for automatic scanning',
     )
     parser.add_argument(
+        '--dashboard', '-d',
+        default=None,
+        help='the name of a CSV file exported from the release dashboard',
+    )
+    parser.add_argument(
         '--verbose', '-v',
         action='store_true',
         default=False,
@@ -79,5 +85,45 @@ def main():
     deliverables = sorted(get_latest_deliverable_versions(
         deliverable_files, args.verbose)
     )
-    for team, deliverable, version, filename in deliverables:
-        print('{:<25} {}'.format(deliverable, version))
+
+    if args.dashboard:
+        # Compare the latest version with what is known in the
+        # dashboard file and report on discrepancies.
+        with open(args.dashboard, 'r') as f:
+            reader = csv.DictReader(f)
+            dash = {
+                row['Deliverable Name'].lower(): row
+                for row in reader
+            }
+        for team, deliverable, version, filename in deliverables:
+            dash_info = dash.get(deliverable.lower(), {})
+            if not dash_info:
+                print(deliverable, 'NOT IN DASHBOARD')
+                continue
+            # Search the version fields for the dashboard in order to
+            # find the version specified.
+            not_it = []
+            for fn in ['Pre-RC1', 'RC1', 'Latest RC']:
+                if version == dash_info[fn]:
+                    if args.verbose:
+                        print(deliverable, version, fn)
+                    break
+                not_it.append((fn, dash_info[fn]))
+            else:
+                # Report that we have a version later than the most
+                # recently known version from the dashboard.
+                for ni in not_it[::-1]:
+                    if ni[1]:
+                        print(
+                            '{} version {} LATER THAN {} version {}'.format(
+                                deliverable,
+                                version,
+                                ni[0],
+                                ni[1],
+                            )
+                        )
+                        break
+    else:
+        # Just dump the versions that are found.
+        for team, deliverable, version, filename in deliverables:
+            print('{:<25} {}'.format(deliverable, version))
