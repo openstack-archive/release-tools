@@ -329,7 +329,7 @@ def generate_release_notes(library, library_path,
             ldr,
             versions_to_include=[end_revision],
         )
-        reno_notes = rst2txt.convert(rst_notes)
+        reno_notes = rst2txt.convert(rst_notes).decode('utf-8')
     else:
         reno_notes = ''
 
