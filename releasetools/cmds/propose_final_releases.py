@@ -54,6 +54,12 @@ def main():
         help='path to the releases repository for automatic scanning',
     )
     parser.add_argument(
+        '--all',
+        default=False,
+        action='store_true',
+        help='process all deliverables, including release:cycle-trailing',
+    )
+    parser.add_argument(
         '--verbose', '-v',
         action='store_true',
         default=False,
@@ -69,6 +75,17 @@ def main():
     if not os.path.exists(deliverables_dir):
         parser.error('{} does not exist'.format(deliverables_dir))
 
+    team_data = governance.get_team_data(args.project_list)
+    teams = [
+        governance.Team(n, i)
+        for n, i in team_data.items()
+    ]
+    deliverables = {
+        d.name: d
+        for t in teams
+        for d in t.deliverables.values()
+    }
+
     pattern = os.path.join(deliverables_dir,
                            args.series, '*.yaml')
     if args.verbose:
@@ -78,6 +95,7 @@ def main():
     for filename in deliverable_files:
         if args.verbose:
             print('\n{}'.format(filename))
+        deliverable_name = os.path.basename(filename)[:-5]
         with open(filename, 'r') as f:
             deliverable_data = yaml.safe_load(f)
         releases = deliverable_data.get('releases')
@@ -95,6 +113,12 @@ def main():
             if args.verbose:
                 print('#  not a release candidate')
             continue
+        deliverable = deliverables.get(deliverable_name)
+        if deliverable and 'release:cycle-trailing' in deliverable.tags:
+            if args.verbose:
+                print('#  {} is a cycle-trailing project'.format(deliverable_name))
+            if not args.all:
+                continue
         new_version = latest_release['version'].split('.0rc')[0]
         diff_start = get_prior_branch_point(new_version)
         deliverable_data['releases'].append({
