@@ -16,7 +16,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-set -e
+set -ex
 
 if [ $# -lt 1 ]; then
     echo "Usage: $0 path-to-repository [version]"
