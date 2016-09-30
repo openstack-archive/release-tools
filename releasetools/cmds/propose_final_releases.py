@@ -109,9 +109,12 @@ def main():
             if args.verbose:
                 print('#  no projects')
             continue
-        if 'rc' not in latest_release['version']:
+        for pre_rel in ['a', 'b', 'rc']:
+            if pre_rel in latest_release['version']:
+                break
+        else:  # we did not find any pre_rel
             if args.verbose:
-                print('#  not a release candidate')
+                    print('#  not a release candidate')
             continue
         deliverable = deliverables.get(deliverable_name)
         if deliverable and 'release:cycle-trailing' in deliverable.tags:
@@ -119,7 +122,11 @@ def main():
                 print('#  {} is a cycle-trailing project'.format(deliverable_name))
             if not args.all:
                 continue
-        new_version = latest_release['version'].split('.0rc')[0]
+        # The new version is the same as the latest release version
+        # without the pre-release component at the end.
+        new_version = '.'.join(
+            latest_release['version'].split('.')[:-1]
+        )
         diff_start = get_prior_branch_point(new_version)
         deliverable_data['releases'].append({
             'version': new_version,
