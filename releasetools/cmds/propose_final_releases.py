@@ -15,11 +15,16 @@
 from __future__ import print_function
 
 import argparse
+import atexit
 import glob
 import os.path
+import re
+import shutil
+import tempfile
 
 import yaml
 
+from releasetools import gitutils
 from releasetools import governance
 
 PROJECT_TEMPLATE = '''\
@@ -28,17 +33,48 @@ PROJECT_TEMPLATE = '''\
 
 VERSION_TEMPLATE = '''\
   - version: {version}
-    diff-start: {diff_start}
+    {diff_start_comment}diff-start: {diff_start}
     projects:
 {projects}
 '''
 
+PRE_RELEASE = re.compile('(a|b|rc)')
 
-def get_prior_branch_point(version):
-    "Assuming we always branch on the rc1 tag..."
-    parts = version.split('.')
-    prior = int(parts[0]) - 1
-    return '{}.0.0.0rc1'.format(prior)
+
+def get_prior_branch_point(workdir, repo, branch):
+    """Return the tag of the base of the branch.
+
+    The diff-start is the old version is the tag on the commit where
+    we created the branch. To determine that, we need to clone the
+    repo and look at the branch.
+
+    See
+    http://lists.openstack.org/pipermail/openstack-dev/2016-October/104901.html
+    for a better description of what the desired tag info is.
+
+    """
+    gitutils.clone_repo(workdir, repo)
+    branch_base = gitutils.get_branch_base(
+        workdir, repo, branch,
+    )
+    if branch_base:
+        return gitutils.get_latest_tag(
+            workdir, repo, branch_base,
+        )
+    # Work backwards from the most recent commit looking for the first
+    # version that is not a pre-release, and assume that is the
+    # previous release on a non-branching repository like for the
+    # os-*-config tools.
+    start = None
+    while True:
+        print('  looking for version before {}'.format(start))
+        version = gitutils.get_latest_tag(workdir, repo, start)
+        if not version:
+            return None
+        if not PRE_RELEASE.search(version):
+            return version
+        start = '{}^'.format(version)
+    return version
 
 
 def main():
@@ -54,6 +90,13 @@ def main():
         help='path to the releases repository for automatic scanning',
     )
     parser.add_argument(
+        '--no-cleanup',
+        dest='cleanup',
+        default=True,
+        action='store_false',
+        help='do not remove temporary files',
+    )
+    parser.add_argument(
         '--all',
         default=False,
         action='store_true',
@@ -64,6 +107,10 @@ def main():
         action='store_true',
         default=False,
         help='produce detailed output',
+    )
+    parser.add_argument(
+        'prior_series',
+        help='the name of the previous series',
     )
     parser.add_argument(
         'series',
@@ -85,6 +132,19 @@ def main():
         for t in teams
         for d in t.deliverables.values()
     }
+
+    workdir = tempfile.mkdtemp(prefix='releases-')
+    print('creating temporary files in %s' % workdir)
+
+    def cleanup_workdir():
+        if args.cleanup:
+            try:
+                shutil.rmtree(workdir)
+            except:
+                pass
+        else:
+            print('not cleaning up %s' % workdir)
+    atexit.register(cleanup_workdir)
 
     pattern = os.path.join(deliverables_dir,
                            args.series, '*.yaml')
@@ -127,7 +187,10 @@ def main():
         new_version = '.'.join(
             latest_release['version'].split('.')[:-1]
         )
-        diff_start = get_prior_branch_point(new_version)
+        branch = 'stable/{}'.format(args.prior_series)
+        diff_start = get_prior_branch_point(
+            workdir, projects[0]['repo'], branch,
+        )
         deliverable_data['releases'].append({
             'version': new_version,
             'diff_start': diff_start,
@@ -143,6 +206,7 @@ def main():
         new_block = VERSION_TEMPLATE.format(
             version=new_version,
             diff_start=diff_start,
+            diff_start_comment=('# ' if diff_start is None else ''),
             projects=projects,
         ).rstrip() + '\n'
         with open(filename, 'a') as f:

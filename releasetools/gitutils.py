@@ -78,3 +78,87 @@ def get_modified_deliverable_file_content(reporoot, filenames):
             yield (deliverable_name, series_name, version,
                    project['repo'], project['hash'],
                    send_announcements_to)
+
+
+def clone_repo(workdir, repo):
+    "Check out the code."
+    dest = os.path.join(workdir, repo)
+    if os.path.exists(dest):
+        return
+    cmd = [
+        'zuul-cloner',
+        '--workspace', workdir,
+    ]
+    cache_dir = os.environ.get('ZUUL_CACHE_DIR', '/opt/git')
+    if cache_dir and os.path.exists(cache_dir):
+        cmd.extend(['--cache-dir', cache_dir])
+    cmd.extend([
+        'git://git.openstack.org',
+        repo,
+    ])
+    subprocess.check_call(cmd)
+    # Force an update, just in case the local version is still out of
+    # date.
+    print('Updating newly cloned repository in %s' % dest)
+    subprocess.check_call(
+        ['git', 'fetch', '-v', '--tags'],
+        cwd=dest,
+    )
+
+
+def get_latest_tag(workdir, repo, sha=None):
+    cmd = ['git', 'describe', '--abbrev=0']
+    if sha is not None:
+        cmd.append(sha)
+    try:
+        return subprocess.check_output(
+            cmd,
+            cwd=os.path.join(workdir, repo),
+            stderr=subprocess.STDOUT,
+        ).strip()
+    except subprocess.CalledProcessError as e:
+        print('WARNING failed to retrieve latest tag: %s [%s]' %
+              (e, e.output.strip()))
+        return None
+
+
+def get_branch_base(workdir, repo, branch):
+    "Return SHA at base of branch."
+    # http://stackoverflow.com/questions/1527234/finding-a-branch-point-with-git
+    # git rev-list $(git rev-list --first-parent ^origin/stable/newton master | tail -n1)^^!
+    #
+    # Determine the first parent.
+    cmd = [
+        'git',
+        'rev-list',
+        '--first-parent',
+        '^origin/{}'.format(branch),
+        'master',
+    ]
+    try:
+        parents = subprocess.check_output(
+            cmd,
+            cwd=os.path.join(workdir, repo),
+            stderr=subprocess.STDOUT,
+        ).strip()
+    except subprocess.CalledProcessError as e:
+        print('WARNING failed to retrieve branch base: %s [%s]' %
+              (e, e.output.strip()))
+        return None
+    parent = parents.splitlines()[-1]
+    # Now get the ^^! commit
+    cmd = [
+        'git',
+        'rev-list',
+        '{}^^!'.format(parent),
+    ]
+    try:
+        return subprocess.check_output(
+            cmd,
+            cwd=os.path.join(workdir, repo),
+            stderr=subprocess.STDOUT,
+        ).strip()
+    except subprocess.CalledProcessError as e:
+        print('WARNING failed to retrieve branch base: %s [%s]' %
+              (e, e.output.strip()))
+        return None
