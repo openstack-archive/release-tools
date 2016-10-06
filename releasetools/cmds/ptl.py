@@ -107,12 +107,13 @@ def main():
         print('No official team {!r}'.format(args.team))
         team = {}
 
-    ptl = team['ptl']
-    print(_TEMPLATE.format(
-        name=ptl.get('name'),
-        irc=ptl.get('irc'),
-        email=ptl.get('email'),
-        irc_channel=team.get('irc-channel'),
-        liaison_name=team_liaison.get('Liaison'),
-        liaison_irc=team_liaison.get('IRC Handle'),
-    ))
+    if 'ptl' in team:
+        ptl = team['ptl']
+        print(_TEMPLATE.format(
+            name=ptl.get('name'),
+            irc=ptl.get('irc'),
+            email=ptl.get('email'),
+            irc_channel=team.get('irc-channel'),
+            liaison_name=team_liaison.get('Liaison'),
+            liaison_irc=team_liaison.get('IRC Handle'),
+        ))
