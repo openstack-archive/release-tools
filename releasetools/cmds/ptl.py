@@ -20,6 +20,20 @@ from releasetools import governance
 
 import mwclient
 
+ALIASES = {
+    'chef': 'Chef OpenStack',
+    'app-catalog': 'Community App Catalog',
+    'infra': 'Infrastructure',
+    'charms': 'OpenStack Charms',
+    'docs': 'Documentation',
+    'ux': 'OpenStack UX',
+    'deb': 'Packaging-deb',
+    'rpm': 'Packaging-rpm',
+    'puppet': 'Puppet OpenStack',
+    'qa': 'Quality Assurance',
+    'relmgt': 'Release Management',
+    'stable': 'Stable branch maintenance',
+}
 
 _TEMPLATE = '''
 Name        : {name}
@@ -79,10 +93,13 @@ def get_wiki_table(page_content, section):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        'team',
+        'team', nargs='+',
         help='the team name',
     )
     args = parser.parse_args()
+
+    args.team = ' '.join(args.team)
+    args.team = ALIASES.get(args.team.lower(), args.team)
 
     team_data = governance.get_team_data()
     # Allow for case-insensitive search
