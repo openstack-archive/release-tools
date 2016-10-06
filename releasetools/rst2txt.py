@@ -32,7 +32,6 @@ from docutils import writers
 from six.moves import zip_longest
 
 from sphinx import addnodes
-from sphinx.locale import admonitionlabels
 
 
 def convert(source):
@@ -730,7 +729,7 @@ class TextTranslator(nodes.NodeVisitor):
 
     def _make_depart_admonition(name):
         def depart_admonition(self, node):
-            self.end_state(first=admonitionlabels[name] + ': ')
+            self.end_state(first=name.title() + ': ')
         return depart_admonition
 
     visit_attention = _visit_admonition
