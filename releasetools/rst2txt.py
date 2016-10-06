@@ -937,15 +937,12 @@ class TextTranslator(nodes.NodeVisitor):
         pass
 
     def visit_problematic(self, node):
-        self.add_text('>>')
+        pass
 
     def depart_problematic(self, node):
-        self.add_text('<<')
+        pass
 
     def visit_system_message(self, node):
-        self.new_state(0)
-        self.add_text('<SYSTEM MESSAGE: %s>' % node.astext())
-        self.end_state()
         raise nodes.SkipNode
 
     def visit_comment(self, node):
