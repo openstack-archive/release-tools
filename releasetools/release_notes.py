@@ -331,6 +331,10 @@ def generate_release_notes(library, library_path,
         )
         reno_notes = rst2txt.convert(rst_notes).decode('utf-8')
     else:
+        sys.stderr.write(
+            'WARNING: Did not find revision %r in %r, skipping reno' %
+            (end_revision, ldr.versions)
+        )
         reno_notes = ''
 
     params = dict(readme_sections)
