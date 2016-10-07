@@ -91,15 +91,17 @@ This release is part of the {{series}} {% if stable_series %}stable {% endif %}r
 {%- endif %}
 {% if source_url %}
 
-With source available at:
+The source is available from:
 
     {{ source_url }}
 {% endif %}
+
+Download the package from:
+
 {% if pypi_url %}
-
-With package available at:
-
     {{ pypi_url }}
+{% else %}
+    https://tarballs.openstack.org/{{project}}/
 {% endif %}
 {% if bug_url %}
 
