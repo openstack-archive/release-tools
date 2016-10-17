@@ -99,7 +99,7 @@ class Repository(object):
 
 
 def get_repositories(team_data, team_name=None, deliverable_name=None,
-                     tags=[], code_only=False):
+                     tags=[], code_only=False, cycle_based=False):
     """Return a sequence of repositories, possibly filtered.
 
     :param team_data: The result of calling :func:`get_team_data`
@@ -111,6 +111,8 @@ def get_repositories(team_data, team_name=None, deliverable_name=None,
         have. Can be empty.
     :param code_only: Boolean indicating whether to return only code
       repositories (ignoring specs and cookiecutter templates).
+    :param cycle_based: Boolean indicating whether to return all code
+      repositories for projects following the release cycle.
 
     """
     if tags:
@@ -136,4 +138,10 @@ def get_repositories(team_data, team_name=None, deliverable_name=None,
                     continue
                 if code_only and not repository.code_related:
                     continue
+                if cycle_based:
+                    for tag in repository.tags:
+                        if tag.startswith('release:cycle-'):
+                            break
+                    else:  # no match found in loop
+                        continue
                 yield repository

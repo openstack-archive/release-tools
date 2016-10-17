@@ -45,6 +45,12 @@ def main():
         default=[],
         help='the name of a tag, such as "release:managed"',
     )
+    parser.add_argument(
+        '--cycle-based',
+        action='store_true',
+        default=False,
+        help='include all cycle-based code repositories',
+    )
     args = parser.parse_args()
 
     team_data = governance.get_team_data(url=args.project_list)
@@ -54,6 +60,7 @@ def main():
         args.deliverable,
         args.tag,
         code_only=args.code_only,
+        cycle_based=args.cycle_based,
     )
     for repo in sorted(repos, key=operator.attrgetter('name')):
         print(repo.name)
