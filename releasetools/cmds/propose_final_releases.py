@@ -170,7 +170,7 @@ def main():
                 print('#  no projects')
             continue
         for pre_rel in ['a', 'b', 'rc']:
-            if pre_rel in latest_release['version']:
+            if pre_rel in str(latest_release['version']):
                 break
         else:  # we did not find any pre_rel
             if args.verbose:
