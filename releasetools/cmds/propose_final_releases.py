@@ -183,9 +183,10 @@ def main():
             if not args.all:
                 continue
         # The new version is the same as the latest release version
-        # without the pre-release component at the end.
+        # without the pre-release component at the end. Make sure it
+        # has 3 sets of digits.
         new_version = '.'.join(
-            latest_release['version'].split('.')[:-1]
+            (latest_release['version'].split('.')[:-1] + ['0'])[:3]
         )
         branch = 'stable/{}'.format(args.prior_series)
         diff_start = get_prior_branch_point(
