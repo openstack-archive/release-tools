@@ -51,6 +51,12 @@ def main():
         default=False,
         help='include all cycle-based code repositories',
     )
+    parser.add_argument(
+        '--include-team',
+        action='store_true',
+        default=False,
+        help='Also include the team name for each repository',
+    )
     args = parser.parse_args()
 
     team_data = governance.get_team_data(url=args.project_list)
@@ -63,4 +69,8 @@ def main():
         cycle_based=args.cycle_based,
     )
     for repo in sorted(repos, key=operator.attrgetter('name')):
-        print(repo.name)
+        if args.include_team:
+            print("%s %s" % (governance.get_repo_owner(team_data, repo.name),
+                             repo.name))
+        else:
+            print(repo.name)
