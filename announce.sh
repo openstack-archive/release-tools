@@ -121,11 +121,11 @@ SERIES=$(get_tag_meta series)
 # The type of release this is.
 RELEASETYPE=$(get_tag_meta release-type)
 
-# The recipient for announcements is part of the commit message left
-# by release.sh.
-ANNOUNCE=$(get_tag_meta announce)
-if [[ ! -z "$ANNOUNCE" ]]; then
-    email_to="--email-to $ANNOUNCE"
+# The recipient for announcements should always be the
+# release-announce@lists.openstack.org ML (except for release-test)
+email_to="--email-to release-announce@lists.openstack.org"
+if [[ "$SHORTNAME" == "release-test" ]]; then
+    email_to="--email-to release-job-failures@lists.openstack.org"
 fi
 
 # Figure out if that series is a stable branch or not. We don't
