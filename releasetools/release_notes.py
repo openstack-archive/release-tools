@@ -223,6 +223,7 @@ def generate_release_notes(library, library_path,
                            include_pypi_link,
                            changes_only,
                            first_release,
+                           library_name=None,
                            ):
     """Return the text of the release notes.
 
@@ -250,6 +251,7 @@ def generate_release_notes(library, library_path,
         the list of changes, without any extra data.
     :param first_release: Boolean indicating whether this is the first
         release of the project
+    :param library_name: Name of the library to avoid calling setup.py
 
     """
 
@@ -257,21 +259,24 @@ def generate_release_notes(library, library_path,
     if series == 'independent':
         series = ''
 
-    if not os.path.isfile(os.path.join(library_path, "setup.py")):
-        raise RuntimeError("No 'setup.py' file found in %s\n" % library_path)
-
     if not email_from:
         raise RuntimeError('No email-from specified')
 
-    # Get the python library/program description...
-    cmd = [sys.executable, 'setup.py', '--description']
-    stdout, stderr = run_cmd(cmd, cwd=library_path)
-    description = stdout.strip()
+    if os.path.isfile(os.path.join(library_path, "setup.py")):
+        # Get the python library/program description...
+        cmd = [sys.executable, 'setup.py', '--description']
+        stdout, stderr = run_cmd(cmd, cwd=library_path)
+        description = stdout.strip()
 
-    # Get the python library/program name
-    cmd = [sys.executable, 'setup.py', '--name']
-    stdout, stderr = run_cmd(cmd, cwd=library_path)
-    library_name = stdout.strip()
+        # Get the python library/program name
+        cmd = [sys.executable, 'setup.py', '--name']
+        stdout, stderr = run_cmd(cmd, cwd=library_path)
+        library_name = stdout.strip()
+    else:
+        description = ''
+        if library_name is None:
+            raise RuntimeError(('No library name supplied and %s is not a '
+                                'python project' % (library_path)))
 
     # Get the commits that are in the desired range...
     git_range = "%s..%s" % (start_revision, end_revision)

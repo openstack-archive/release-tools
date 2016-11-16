@@ -66,6 +66,11 @@ def main():
                         action='store_true',
                         help="this is a stable release",
                         )
+    parser.add_argument('--library-name',
+                        action='store',
+                        help=('Provide the Library name rather than calling '
+                              'setup.py to get it'),
+                        )
 
     email_group = parser.add_argument_group('email settings')
     email_group.add_argument(
@@ -114,6 +119,7 @@ def main():
         include_pypi_link=args.include_pypi_link,
         changes_only=args.changes_only,
         first_release=args.first_release,
+        library_name=args.library_name,
     )
     print(notes.encode('utf-8'))
     return 0
