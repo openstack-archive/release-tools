@@ -69,7 +69,7 @@ EMAIL_HEADER_TPL = """
 From: {{email_from}}
 To: {{email_to}}
 Reply-To: {{email_reply_to}}
-Subject: [new]{{email_tags}} {{project}} {{end_rev}} release{% if series %} ({{series}}){% endif %}
+Subject: {{email_tags}} {{project}} {{end_rev}}{% if series %} ({{series}}){% endif %}
 {% endif %}
 """
 
