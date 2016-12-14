@@ -25,6 +25,9 @@ def main():
                         help="library directory, for example"
                              " 'openstack/cliff'",
                         )
+    parser.add_argument('library_name', action='store',
+                        help='The name of the library being released',
+                        )
     parser.add_argument("start_revision", metavar='revision',
                         action="store",
                         help="start revision, for example '1.8.0'",
@@ -65,6 +68,11 @@ def main():
                         default=False,
                         action='store_true',
                         help="this is a stable release",
+                        )
+    parser.add_argument('--description',
+                        action='store',
+                        help=('A brief description for the library being '
+                              'released'),
                         )
 
     email_group = parser.add_argument_group('email settings')
@@ -114,6 +122,8 @@ def main():
         include_pypi_link=args.include_pypi_link,
         changes_only=args.changes_only,
         first_release=args.first_release,
+        library_name=args.library_name,
+        description=args.description,
     )
     print(notes.encode('utf-8'))
     return 0
