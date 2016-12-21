@@ -24,7 +24,7 @@ import sys
 import jinja2
 from oslo_concurrency import processutils
 import parawrap
-from reno import defaults as reno_defaults
+from reno import config as reno_config
 from reno import formatter
 from reno import loader
 
@@ -311,15 +311,14 @@ def generate_release_notes(library, library_path,
     change_header.append("-" * len(change_header[0]))
 
     # Look for reno notes for this version.
+    cfg = reno_config.Config(
+        reporoot=library_path,
+    )
     branch = None
     if is_stable and series:
         branch = 'origin/stable/%s' % series
-    ldr = loader.Loader(
-        reporoot=library_path,
-        notesdir='%s/%s' % (reno_defaults.RELEASE_NOTES_SUBDIR,
-                            reno_defaults.NOTES_SUBDIR),
-        branch=branch,
-    )
+    cfg.override(branch=branch)
+    ldr = loader.Loader(conf=cfg)
     if end_revision in ldr.versions:
         rst_notes = formatter.format_report(
             ldr,
