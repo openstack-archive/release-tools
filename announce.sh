@@ -181,7 +181,7 @@ release-notes \
     --email \
     $email_to \
     $email_tags \
-    --series $SERIES \
+    --series "$SERIES" \
     $stable \
     $first_release \
     . "$library_name" "$DIFF_START" "$VERSION" \
