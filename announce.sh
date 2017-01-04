@@ -104,7 +104,7 @@ fi
 function get_tag_meta {
     typeset fieldname="$1"
 
-    echo "$TAG_META" | grep "^meta:$fieldname:" | cut -f2 -d' '
+    echo "$TAG_META" | grep "^meta:$fieldname:" | sed "s/meta:$fieldname: *//"
 }
 
 # How far back should we look for release info? If there is no
