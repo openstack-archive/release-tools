@@ -32,34 +32,30 @@ from releasetools import rst2txt
 
 
 EMOTIONS = [
-    'amped',
-    'chuffed',
-    'content',
-    'delighted',
-    'eager',
-    'ecstatic',
-    'enthusiastic',
-    'excited',
-    'exuberant',
-    'frolicsome',
-    'glad',
-    'gleeful',
-    'glowing',
-    'grateful',
-    'happy',
-    'high-spirited',
-    'jazzed',
-    'joyful',
-    'jubilant',
-    'mirthful',
-    'overjoyed',
-    'pleased',
-    'psyched',
-    'pumped',
-    'satisfied',
-    'stoked',
-    'thrilled',
-    'tickled pink',
+    'are amped to',
+    'are chuffed to',
+    'contentedly',
+    'are delighted to',
+    'eagerly',
+    'are ecstatic to',
+    'enthusiastically',
+    'are excited to',
+    'exuberantly',
+    'are glad to',
+    'are gleeful to',
+    'are happy to',
+    'high-spiritedly',
+    'are jazzed to',
+    'joyfully',
+    'jubilantly',
+    'are overjoyed to',
+    'are pleased to',
+    'are psyched to',
+    'are pumped to',
+    'are satisfied to',
+    'are stoked to',
+    'are thrilled to',
+    'are tickled pink to',
 ]
 
 # The email headers for generating a message to go right into sendmail
@@ -79,7 +75,7 @@ PYPI_URL_TPL = 'https://pypi.python.org/pypi/%s'
 # to correctly wrap at paragraph boundaries...
 
 HEADER_RELEASE_TPL = """
-We are {{ emotion }} to announce the release of:
+We {{ emotion }} announce the release of:
 
 {% if description %}
 {{ project }} {{ end_rev }}: {{ description }}
