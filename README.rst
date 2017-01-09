@@ -844,35 +844,6 @@ Freeze individual changes that have been proposed after the stable freeze
 period started.  References to these reviews will be appended to
 2014.1.4-freeze.txt to be unfrozen later on.
 
-
-aclmanager.py
--------------
-
-A script to handle pre-release/post-release ACLs on stable/$SERIES branches.
-
-The 'acls' action helps to produce a patch over openstack-infra/project-config
-that inserts a specific ACL for stable/$SERIES.
-
-The 'groups' action helps to adjust the membership of $PROJ-release-branch
-Gerrit group, based on which stage the release branch is at. At pre-release
-we remove $PROJ-stable-maint, and add the $PROJ-release and Release Managers
-group (pre_release subaction). At post-release, we remove $PROJ-release and
-Release Managers, and add $PROJ-stable-maint (post_release subaction).
-
-Examples:
-
-To create the ACL patch for stable/newton:
-
-::
-
-  ./aclmanager.py acls ~/branches/openstack-infra/project-config newton
-
-To set the pre-release group membership:
-
-::
-  ./aclmanager.py groups pre_release ttx
-
-
 autokick.py
 -----------
 
