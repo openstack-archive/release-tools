@@ -219,7 +219,7 @@ def generate_release_notes(library, library_path,
                            show_dates, skip_requirement_merges,
                            is_stable, series,
                            email, email_from,
-                           email_to, email_reply_to, email_tags,
+                           email_reply_to, email_tags,
                            include_pypi_link,
                            changes_only,
                            first_release,
@@ -241,7 +241,6 @@ def generate_release_notes(library, library_path,
     :param email: Boolean indicating whether the output format should
         be an email message.
     :param email_from: String containing the sender email address.
-    :param email_to: String containing the email recipient.
     :param email_reply_to: String containing the email reply-to address.
     :param email_tags: String containing the email header topic tags to add.
     :param include_pypi_link: Boolean indicating whether or not to
@@ -327,6 +326,13 @@ def generate_release_notes(library, library_path,
             (end_revision, ldr.versions)
         )
         reno_notes = ''
+
+    # The recipient for announcements should always be the
+    # release-announce@lists.openstack.org ML (except for
+    # release-test and release candidates)
+    email_to = 'release-announce@lists.openstack.org'
+    if library == 'openstack-release-test':
+        email_to = 'release-job-failures@lists.openstack.org'
 
     params = dict(readme_sections)
     params.update({

@@ -82,11 +82,6 @@ def main():
         help="output a fully formed email message",
     )
     email_group.add_argument(
-        "--email-to",
-        default="openstack-dev@lists.openstack.org",
-        help="recipient of the email, defaults to %(default)s",
-    )
-    email_group.add_argument(
         "--email-reply-to",
         default="openstack-dev@lists.openstack.org",
         help="follow-up for discussions, defaults to %(default)s",
@@ -116,7 +111,6 @@ def main():
         series=args.series,
         email=args.email,
         email_from=args.email_from,
-        email_to=args.email_to,
         email_reply_to=args.email_reply_to,
         email_tags=args.email_tags,
         include_pypi_link=args.include_pypi_link,

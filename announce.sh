@@ -121,13 +121,6 @@ SERIES=$(get_tag_meta series)
 # The type of release this is.
 RELEASETYPE=$(get_tag_meta release-type)
 
-# The recipient for announcements should always be the
-# release-announce@lists.openstack.org ML (except for release-test)
-email_to="--email-to release-announce@lists.openstack.org"
-if [[ "$SHORTNAME" == "release-test" ]]; then
-    email_to="--email-to release-job-failures@lists.openstack.org"
-fi
-
 # Figure out if that series is a stable branch or not. We don't
 # release pre-releases on stable branches, so we only need to check
 # for stable if the release type is a normal release.
@@ -179,7 +172,6 @@ echo
 echo "Generating email body in $relnotes_file"
 release-notes \
     --email \
-    $email_to \
     $email_tags \
     --series "$SERIES" \
     $stable \
