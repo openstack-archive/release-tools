@@ -32,6 +32,14 @@ source $TOOLSDIR/functions
 REPODIR=$(cd $1 && pwd)
 VERSION=$2
 
+# If the version looks like an alpha or beta, ignore it. The script
+# for producing release notes has templates for regular releases and
+# release candidates.
+if [[ $VERSION =~ (a|b) ]]; then
+    echo "No announcements are generated for alpha or beta releases."
+    exit 0
+fi
+
 # The repository directory may be named something other than what the
 # repository is, if we're running under CI or someone has checked it
 # out locally to an alternate name. Use the git remote URL as a source
