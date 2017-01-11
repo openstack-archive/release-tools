@@ -150,6 +150,35 @@ CHANGES_ONLY_TPL = """{{ change_header }}
 {% endfor %}
 """
 
+RELEASE_CANDIDATE_TPL = """
+Hello everyone,
+
+A new release candidate for {{project}} for the end of the {{series|capitalize}}
+cycle is available!  You can find the source code tarball at:
+
+    https://tarballs.openstack.org/{{project}}/
+
+Unless release-critical issues are found that warrant a release
+candidate respin, this candidate will be formally released as the
+final {{series|capitalize}} release. You are therefore strongly
+encouraged to test and validate this tarball!
+
+Alternatively, you can directly test the stable/{{series|lower}} release
+branch at:
+
+    http://git.openstack.org/cgit/openstack/{{project}}/log/?h=stable/{{series|lower}}
+
+{% if bug_url -%}
+If you find an issue that could be considered release-critical, please
+file it at:
+
+    {{bug_url}}
+{%- endif %}
+
+and tag it *{{series|lower}}-rc-potential* to bring it to the {{project}}
+release crew's attention.
+"""
+
 
 def parse_readme(library_path):
     sections = {
@@ -254,6 +283,8 @@ def generate_release_notes(library, library_path,
     :param description: Description of the library
 
     """
+    # Determine if this is a release candidate or not.
+    is_release_candidate = 'rc' in end_revision
 
     # Do not mention the series in independent model since there is none
     if series == 'independent':
@@ -333,6 +364,8 @@ def generate_release_notes(library, library_path,
     email_to = 'release-announce@lists.openstack.org'
     if library == 'openstack-release-test':
         email_to = 'release-job-failures@lists.openstack.org'
+    elif is_release_candidate:
+        email_to = 'openstack-dev@lists.openstack.org'
 
     params = dict(readme_sections)
     params.update({
@@ -369,7 +402,10 @@ def generate_release_notes(library, library_path,
         if email:
             email_header = expand_template(EMAIL_HEADER_TPL.strip(), params)
             response.append(email_header.lstrip())
-        header = expand_template(HEADER_RELEASE_TPL.strip(), params)
-        response.append(parawrap.fill(header))
-        response.append(expand_template(CHANGE_RELEASE_TPL, params))
+        if is_release_candidate:
+            response.append(expand_template(RELEASE_CANDIDATE_TPL, params))
+        else:
+            header = expand_template(HEADER_RELEASE_TPL.strip(), params)
+            response.append(parawrap.fill(header))
+            response.append(expand_template(CHANGE_RELEASE_TPL, params))
     return '\n'.join(response)
