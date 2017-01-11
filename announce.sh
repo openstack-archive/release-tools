@@ -176,6 +176,7 @@ release-notes \
     --series "$SERIES" \
     $stable \
     $first_release \
+    --tarball-dir-name "$SHORTNAME" \
     . "$library_name" "$DIFF_START" "$VERSION" \
     $include_pypi_link \
     --description "$description" \

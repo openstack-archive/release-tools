@@ -101,7 +101,7 @@ Download the package from:
 {% if pypi_url %}
     {{ pypi_url }}
 {% else %}
-    https://tarballs.openstack.org/{{project}}/
+    https://tarballs.openstack.org/{{tarball_dir_name}}/
 {% endif %}
 {% if bug_url %}
 
@@ -156,7 +156,7 @@ Hello everyone,
 A new release candidate for {{project}} for the end of the {{series|capitalize}}
 cycle is available!  You can find the source code tarball at:
 
-    https://tarballs.openstack.org/{{project}}/
+    https://tarballs.openstack.org/{{tarball_dir_name}}/
 
 Unless release-critical issues are found that warrant a release
 candidate respin, this candidate will be formally released as the
@@ -252,7 +252,8 @@ def generate_release_notes(library, library_path,
                            include_pypi_link,
                            changes_only,
                            first_release,
-                           library_name, description
+                           library_name, description,
+                           tarball_dir_name,
                            ):
     """Return the text of the release notes.
 
@@ -281,6 +282,8 @@ def generate_release_notes(library, library_path,
         release of the project
     :param library_name: Name of the library
     :param description: Description of the library
+    :param tarball_dir_name: The directory on tarballs.openstack.org
+        containing the package.
 
     """
     # Determine if this is a release candidate or not.
@@ -389,6 +392,7 @@ def generate_release_notes(library, library_path,
         'email_tags': email_tags,
         'reno_notes': reno_notes,
         'first_release': first_release,
+        'tarball_dir_name': tarball_dir_name,
     })
     if include_pypi_link:
         params['pypi_url'] = PYPI_URL_TPL % library_name
