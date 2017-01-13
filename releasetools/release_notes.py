@@ -168,6 +168,10 @@ branch at:
 
     http://git.openstack.org/cgit/openstack/{{project}}/log/?h=stable/{{series|lower}}
 
+Release notes for {{project}} can be found at:
+
+    http://docs.openstack.org/releasenotes/{{project}}/
+
 {% if bug_url -%}
 If you find an issue that could be considered release-critical, please
 file it at:
