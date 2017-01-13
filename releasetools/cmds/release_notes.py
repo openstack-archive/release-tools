@@ -74,10 +74,11 @@ def main():
                         help=('A brief description for the library being '
                               'released'),
                         )
-    parser.add_argument('--tarball-dir-name',
+    parser.add_argument('--publishing-dir-name',
                         action='store',
                         help=('The directory on tarballs.openstack.org '
-                              'containing the package'),
+                              'and docs.openstack.org containing the '
+                              'published artifacts for this package'),
                         )
 
     email_group = parser.add_argument_group('email settings')
@@ -123,7 +124,7 @@ def main():
         first_release=args.first_release,
         library_name=args.library_name,
         description=args.description,
-        tarball_dir_name=args.tarball_dir_name or args.library_name,
+        publishing_dir_name=args.publishing_dir_name or args.library_name,
     )
     print(notes.encode('utf-8'))
     return 0
