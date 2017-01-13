@@ -173,10 +173,10 @@ If you find an issue that could be considered release-critical, please
 file it at:
 
     {{bug_url}}
-{%- endif %}
 
 and tag it *{{series|lower}}-rc-potential* to bring it to the {{project}}
 release crew's attention.
+{%- endif %}
 """
 
 
