@@ -344,25 +344,28 @@ def generate_release_notes(library, library_path,
     change_header.append("-" * len(change_header[0]))
 
     # Look for reno notes for this version.
-    cfg = reno_config.Config(
-        reporoot=library_path,
-    )
-    branch = None
-    if is_stable and series:
-        branch = 'origin/stable/%s' % series
-    cfg.override(branch=branch)
-    ldr = loader.Loader(conf=cfg)
-    if end_revision in ldr.versions:
-        rst_notes = formatter.format_report(
-            ldr,
-            versions_to_include=[end_revision],
+    if not changes_only:
+        cfg = reno_config.Config(
+            reporoot=library_path,
         )
-        reno_notes = rst2txt.convert(rst_notes).decode('utf-8')
+        branch = None
+        if is_stable and series:
+            branch = 'origin/stable/%s' % series
+        cfg.override(branch=branch)
+        ldr = loader.Loader(conf=cfg)
+        if end_revision in ldr.versions:
+            rst_notes = formatter.format_report(
+                ldr,
+                versions_to_include=[end_revision],
+            )
+            reno_notes = rst2txt.convert(rst_notes).decode('utf-8')
+        else:
+            sys.stderr.write(
+                'WARNING: Did not find revision %r in %r, skipping reno\n' %
+                (end_revision, ldr.versions)
+            )
+            reno_notes = ''
     else:
-        sys.stderr.write(
-            'WARNING: Did not find revision %r in %r, skipping reno' %
-            (end_revision, ldr.versions)
-        )
         reno_notes = ''
 
     # The recipient for announcements should always be the
