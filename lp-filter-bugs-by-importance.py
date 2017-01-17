@@ -22,7 +22,7 @@ import sys
 from launchpadlib.launchpad import Launchpad
 
 
-VALID_IMPORTANCES = ('Undecided', 'Wishlist', 'Low', 'Normal', 'High', 'Critical')
+VALID_IMPORTANCES = ('Undecided', 'Wishlist', 'Low', 'Medium', 'High', 'Critical')
 
 
 def _parse_args():
