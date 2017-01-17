@@ -53,7 +53,7 @@ function list_changes {
         release-notes \
             --show-dates \
             --changes-only \
-            . $prev_tag $end_sha
+            . $(basename $repo) $prev_tag $end_sha
     fi
 }
 
