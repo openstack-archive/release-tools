@@ -38,12 +38,12 @@ export PAGER=
 setup_temp_space 'list-unreleased'
 
 function list_changes {
+    title "Unreleased changes in $repo"
     clone_repo $repo $branch
     if [[ $? -ne 0 ]]; then
         return 1
     fi
     cd $repo
-    title "Unreleased changes in $repo"
     prev_tag=$(get_last_tag)
     if [ -z "$prev_tag" ]; then
         echo "$repo has not yet been released"

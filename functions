@@ -107,7 +107,6 @@ function clone_repo {
     if [ -z "$branch" ]; then
         branch="master"
     fi
-    title "Cloning $repo"
     output=$({ zuul-cloner --branch "$branch" git://git.openstack.org $repo \
                && (cd $repo && git review -s && git remote -v update \
                    && git fetch -v --tags); } 2>&1)
