@@ -28,7 +28,9 @@ TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
 
 if [[ -z "$VIRTUAL_ENV" ]]; then
-    tox -e venv --notest
+    if [[ ! -d .tox/venv ]]; then
+        tox -e venv --notest
+    fi
     source ./.tox/venv/bin/activate
 fi
 
