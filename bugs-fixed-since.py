@@ -23,6 +23,7 @@ from git import Repo
 
 
 BUG_PATTERN = r'Bug:\s+#?(?P<bugnum>\d+)'
+CHANGEID_PATTERN = r'Change-Id:\s+(?P<id>[0-9a-zA-Z]+)'
 
 
 def _parse_args():
@@ -36,7 +37,29 @@ def _parse_args():
     parser.add_argument(
         '--start', '-s', required=True,
         help='git hash to start search from')
+    parser.add_argument(
+        '--skip-backported', '-B',
+        action='store_true',
+        help='whether to skip patches backported to all stable branches',
+    )
     return parser.parse_args()
+
+
+def _backported_to_all_stable_branches(repo, id_):
+    for ref in repo.refs:
+        if ref.name.startswith('origin/stable/'):
+            for commit in repo.iter_commits('..%s' % ref.name):
+                if id_ == _extract_changeid(commit):
+                    break
+            else:
+                return False
+    return True
+
+
+def _extract_changeid(commit):
+    for match in re.finditer(CHANGEID_PATTERN, commit.message):
+        id_ = match.group('id')
+        return id_
 
 
 def main():
@@ -54,6 +77,17 @@ def main():
     bugs = set()
 
     for commit in repo.iter_commits(rev):
+        id_ = _extract_changeid(commit)
+        if id_ is None:
+            # probably a merge commit, skip
+            continue
+
+        # skip patches backported into all branches
+        if (args.skip_backported and
+                _backported_to_all_stable_branches(repo, id_)):
+            continue
+
+        # collect every bug number mentioned in the message
         for match in re.finditer(BUG_PATTERN, commit.message):
             bugs.add(match.group('bugnum'))
 

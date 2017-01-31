@@ -948,6 +948,13 @@ Example::
 
   ./bugs-fixed-since.py -r ../neutron --start=8.0.0
 
+Use ``-B`` option to ignore patches that were already backported into all
+stable branches.
+
+Example::
+
+  ./bugs-fixed-since.py -B -r ../neutron --start=8.0.0
+
 
 lp-filter-bugs-by-importance.py
 -------------------------------
