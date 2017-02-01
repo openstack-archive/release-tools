@@ -955,6 +955,13 @@ Example::
 
   ./bugs-fixed-since.py -B -r ../neutron --start=8.0.0
 
+Use ``-e`` option to ignore patches that don't apply cleanly to one of stable
+branches.
+
+Example::
+
+  ./bugs-fixed-since.py -e -r ../neutron --start=8.0.0
+
 
 lp-filter-bugs-by-importance.py
 -------------------------------
