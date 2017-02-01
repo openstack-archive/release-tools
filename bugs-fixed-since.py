@@ -19,6 +19,7 @@ This tool will list bugs that were fixed in project master.
 import argparse
 import re
 
+from git import cmd
 from git import Repo
 
 
@@ -42,6 +43,12 @@ def _parse_args():
         action='store_true',
         help='whether to skip patches backported to all stable branches',
     )
+    parser.add_argument(
+        '--easy-backport', '-e',
+        action='store_true',
+        default=False,
+        help='whether to include easy (no git conflicts) backports only',
+    )
     return parser.parse_args()
 
 
@@ -60,6 +67,24 @@ def _extract_changeid(commit):
     for match in re.finditer(CHANGEID_PATTERN, commit.message):
         id_ = match.group('id')
         return id_
+
+
+def _is_easy_backport(repo, commit):
+    g_cmd = cmd.Git(working_dir=repo.working_tree_dir)
+    for ref in repo.refs:
+        # consider a patch easy to backport if only it cleanly applies to all
+        # stable branches; otherwise it will potentially require more work to
+        # resolve git conflicts
+        if ref.name.startswith('origin/stable/'):
+            g_cmd.checkout(ref.name)
+            try:
+                g_cmd.cherry_pick(commit.hexsha)
+            except cmd.GitCommandError:
+                # cherry-pick does not have a 'dry run' mode, so we need to
+                # actually clean up after a failure
+                g_cmd.cherry_pick(abort=True)
+                return False
+    return True
 
 
 def main():
@@ -85,6 +110,11 @@ def main():
         # skip patches backported into all branches
         if (args.skip_backported and
                 _backported_to_all_stable_branches(repo, id_)):
+            continue
+
+        # skip patches that result in git conflicts in any of stable branches
+        if (args.easy_backport and
+                not _is_easy_backport(repo, commit)):
             continue
 
         # collect every bug number mentioned in the message
