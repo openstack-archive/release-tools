@@ -225,25 +225,6 @@ the change but leaving out the email message boilerplate. This mode
 is useful for examining the list of unreleased changes in a project
 to decide if a release is warranted and to pick a version number.
 
-
-list_stable_unreleased_changes.sh
----------------------------------
-
-Runs list_unreleased_changes.sh with the given branch for all
-repositories tagged with ``stable:follows-policy``.
-
-
-::
-
-  ./list_stable_unreleased_changes.sh stable/liberty
-
-
-is equivalent to:
-
-::
-
-  ./list_unreleased_changes.sh stable/liberty $(list-deliverables --repos --series liberty)
-
 make_stable_branch.sh
 ---------------------
 
