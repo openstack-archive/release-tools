@@ -243,13 +243,6 @@ is equivalent to:
   ./list_unreleased_changes.sh stable/kilo $(list-deliverables --repos --code-only --team Oslo)
 
 
-list_library_unreleased_changes.sh
-----------------------------------
-
-Runs list_unreleased_changes.sh for all libraries managed by any
-project.
-
-
 list_stable_unreleased_changes.sh
 ---------------------------------
 
