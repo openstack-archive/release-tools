@@ -378,19 +378,6 @@ requirements repositories and then run the script as::
 
   $ check_library_constraints.sh /path/to/requirements-repository stable/mitaka
 
-propose-final-releases
-----------------------
-
-Command to edit the deliverable files in a releases repository to
-propose final releases. The command modifies files in an existing copy
-of the repository and does not invoke git at all, so you need to
-create a branch before running it then review the output, commit the
-changes, and push the patch to gerrit.
-
-::
-
-  $ propose-final-releases -r ~/repos/openstack/releases mitaka
-
 ptl
 ---
 
