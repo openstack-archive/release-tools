@@ -258,20 +258,6 @@ requirements repositories and then run the script as::
 
   $ check_library_constraints.sh /path/to/requirements-repository stable/mitaka
 
-ptl
----
-
-Report information about the PTL of a project by querying the
-governance repository.
-
-::
-
-    $ ptl "release management"
-    
-    Name        : Doug Hellmann
-    IRC Nick    : dhellmann
-    IRC Channel : openstack-release
-    Email       : doug@doughellmann.com
 
 milestone-checkup
 -----------------
