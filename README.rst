@@ -244,7 +244,7 @@ master branch.
 
 ::
 
-  ./list_unreleased_changes.sh stable/kilo $(list-repos --code-only --team Oslo)
+  ./list_unreleased_changes.sh stable/kilo $(list-deliverables --repos --team Oslo)
 
 Print the list of changes in the ``stable/kilo`` branch of all Oslo
 libraries.
@@ -264,7 +264,7 @@ is equivalent to:
 
 ::
 
-  ./list_unreleased_changes.sh stable/kilo $(list-repos --code-only --team Oslo)
+  ./list_unreleased_changes.sh stable/kilo $(list-deliverables --repos --code-only --team Oslo)
 
 
 list_library_unreleased_changes.sh
@@ -290,7 +290,7 @@ is equivalent to:
 
 ::
 
-  ./list_unreleased_changes.sh stable/liberty $(list-repos --tag stable:follows-policy)
+  ./list_unreleased_changes.sh stable/liberty $(list-deliverables --repos --series liberty)
 
 make_stable_branch.sh
 ---------------------
@@ -334,17 +334,6 @@ created.
 ::
 
   ./make_feature_branch.sh keystoneauth_integration python-keystoneclient 4776495adfadbf5240a9e0f169990ce139af9549
-
-list-repos
-----------
-
-Read the project list from the governance repository and print a list
-of the repositories, filtered by team and/or tag.
-
-::
-
-  list-repos --team oslo
-  list-repos --tag release:managed --tag type:library
 
 latest-deliverable-versions
 ---------------------------
