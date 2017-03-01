@@ -355,7 +355,8 @@ def generate_release_notes(library, library_path,
         ldr = loader.Loader(conf=cfg)
         if end_revision in ldr.versions:
             rst_notes = formatter.format_report(
-                ldr,
+                loader=ldr,
+                config=cfg,
                 versions_to_include=[end_revision],
             )
             reno_notes = rst2txt.convert(rst_notes).decode('utf-8')
