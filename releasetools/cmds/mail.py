@@ -28,12 +28,21 @@ import smtplib
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', default='lists.openstack.org',
-                        help='the SMTP server')
+                        help=('the SMTP server Valid forms are: server, '
+                              'server:port, user:pw@server or '
+                              'user:pw@server:port.  Default: %(default)s')
     parser.add_argument('-v', dest='verbose',
                         action='store_true', default=False,
                         help='turn on extra debugging output')
     parser.add_argument('infile', help='the file containing the email')
     args = parser.parse_args()
+
+    user = None
+    pw = None
+
+    if args.server.find('@'):
+        creds, , args.server = args.server.partition('@')
+        user, _, pw = creds.partition(':')
 
     with open(args.infile, 'r') as f:
         msg = email.message_from_file(f)
@@ -43,6 +52,9 @@ def main():
         server.set_debuglevel(True)
     try:
         tolist = [address.strip() for address in msg['to'].split(",")]
+        if pw is not None:
+            server.starttls()
+            server.login(user, pw)
         server.sendmail(msg['from'], tolist, msg.as_string())
     finally:
         server.quit()
