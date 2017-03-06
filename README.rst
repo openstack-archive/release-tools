@@ -225,15 +225,6 @@ the change but leaving out the email message boilerplate. This mode
 is useful for examining the list of unreleased changes in a project
 to decide if a release is warranted and to pick a version number.
 
-latest-deliverable-versions
----------------------------
-
-Show each repository and the latest tag recorded in the deliverable
-file associated with that repo.
-
-::
-
-  latest-deliverable-versions -r ~/repos/openstack/releases mitaka
 
 
 launchpad-login
