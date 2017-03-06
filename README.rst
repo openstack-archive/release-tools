@@ -225,49 +225,6 @@ the change but leaving out the email message boilerplate. This mode
 is useful for examining the list of unreleased changes in a project
 to decide if a release is warranted and to pick a version number.
 
-make_stable_branch.sh
----------------------
-
-This script makes a stable branch from an existing tag and updates the
-.gitreview file in the new branch for future submissions.
-
-::
-
-  ./make_stable_branch.sh kilo openstack/oslo.config 1.9.2
-
-batch-stable-branches
----------------------
-
-This command generates a series of calls to make_stable_branch.sh
-using the governance repository and releases repository as inputs.
-
-::
-
-  batch-stable-branches --tag type:library --tag release:has-stable-branches --tag release:managed -r ~/repos/openstack/releases mitaka
-
-branch_from_yaml.sh
--------------------
-
-This script looks at the deliverable files to decide how to create
-stable branches.
-
-::
-
-  $ branch_from_yaml.sh ~/repos/openstack/releases mitaka
-  $ branch_from_yaml.sh ~/repos/openstack/releases mitaka
-  $ branch_from_yaml.sh ~/repos/openstack/releases mitaka deliverables/_independent/openstack-ansible.yaml
-
-make_feature_branch.sh
-----------------------
-
-Feature branches need to have "feature/" at the beginning of the name
-and should have their ``.gitreview`` updated when the branch is
-created.
-
-::
-
-  ./make_feature_branch.sh keystoneauth_integration python-keystoneclient 4776495adfadbf5240a9e0f169990ce139af9549
-
 latest-deliverable-versions
 ---------------------------
 
@@ -277,16 +234,6 @@ file associated with that repo.
 ::
 
   latest-deliverable-versions -r ~/repos/openstack/releases mitaka
-
-update_git_review.sh
---------------------
-
-Update the .gitreview file in a specific branch of a checked out
-repositories.
-
-::
-
-  ./update_git_review.sh stable/kilo ~/repos/openstack/oslo.*
 
 
 launchpad-login
