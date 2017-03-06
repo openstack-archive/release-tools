@@ -226,23 +226,6 @@ is useful for examining the list of unreleased changes in a project
 to decide if a release is warranted and to pick a version number.
 
 
-list_oslo_unreleased_changes.sh
--------------------------------
-
-Runs list_unreleased_changes.sh for all of the Oslo library
-repositories.
-
-::
-
-  ./list_oslo_unreleased_changes.sh stable/kilo
-
-is equivalent to:
-
-::
-
-  ./list_unreleased_changes.sh stable/kilo $(list-deliverables --repos --code-only --team Oslo)
-
-
 list_stable_unreleased_changes.sh
 ---------------------------------
 
