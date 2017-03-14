@@ -773,6 +773,13 @@ Example::
 
   ./bugs-fixed-since.py -r ../neutron --start=8.0.0
 
+Use ``--stop`` option to list bugs mentioned in stable branch messages stopping
+from a specified commit.
+
+Example::
+
+  ./bugs-fixed-since.py -B -r ../neutron --start=8.0.0 --stop=origin/stable/mitaka
+
 Use ``-B`` option to ignore patches that were already backported into all
 stable branches.
 

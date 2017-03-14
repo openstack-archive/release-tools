@@ -39,6 +39,10 @@ def _parse_args():
         '--start', '-s', required=True,
         help='git hash to start search from')
     parser.add_argument(
+        '--stop', '-st',
+        help='git hash to stop search to',
+    )
+    parser.add_argument(
         '--skip-backported', '-B',
         action='store_true',
         help='whether to skip patches backported to all stable branches',
@@ -99,7 +103,7 @@ def main():
     # make sure that we work with the latest code
     repo.remotes.origin.fetch()
 
-    latest = repo.refs['origin/master'].commit
+    latest = repo.refs[args.stop if args.stop else 'origin/master'].commit
     rev = '%s..%s' % (args.start, latest.hexsha)
 
     # avoid duplicates
