@@ -39,20 +39,22 @@ def main():
 
     user = None
     pw = None
+    server = args.server
 
-    if args.server.find('@'):
-        creds, _, args.server = args.server.partition('@')
+    if '@' in server:
+        creds, _, server = args.server.partition('@')
         user, _, pw = creds.partition(':')
 
     with open(args.infile, 'r') as f:
         msg = email.message_from_file(f)
 
-    server = smtplib.SMTP(args.server)
+    tolist = [address.strip() for address in msg['to'].split(",")]
+
+    server = smtplib.SMTP(server)
     if args.verbose:
         server.set_debuglevel(True)
     try:
-        tolist = [address.strip() for address in msg['to'].split(",")]
-        if pw is not None:
+        if pw:
             server.starttls()
             server.login(user, pw)
         server.sendmail(msg['from'], tolist, msg.as_string())
