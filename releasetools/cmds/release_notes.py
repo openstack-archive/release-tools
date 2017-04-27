@@ -126,5 +126,5 @@ def main():
         description=args.description,
         publishing_dir_name=args.publishing_dir_name or args.library_name,
     )
-    print(notes.encode('utf-8'))
+    print(notes)
     return 0

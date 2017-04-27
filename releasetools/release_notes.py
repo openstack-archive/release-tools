@@ -12,9 +12,6 @@
 
 """Generates a standard set of release notes for a repository."""
 
-from __future__ import unicode_literals
-
-import codecs
 import glob
 import os
 import random
@@ -193,7 +190,7 @@ def parse_readme(library_path):
     for k in readme_formats:
         readme_path = os.path.join(library_path, 'README.%s' % k)
         try:
-            f = open(readme_path, 'r')
+            f = open(readme_path, 'r', encoding='utf-8')
             f.close()
             break
         except IOError:
@@ -203,7 +200,7 @@ def parse_readme(library_path):
                          % library_path)
         return sections
 
-    with codecs.open(readme_path, 'r', encoding='utf-8') as fh:
+    with open(readme_path, 'r', encoding='utf-8') as fh:
         for line in fh:
             for (name, key_name) in [("Bugs:", "bug_url"),
                                      ("Source:", 'source_url')]:
