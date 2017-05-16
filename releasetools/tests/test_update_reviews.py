@@ -10,11 +10,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import json
 
+import fixtures
+import json
 import mock
 from oslotest import base
-from oslotest import mockpatch
 import requests_mock
 
 from releasetools import update_reviews
@@ -28,8 +28,8 @@ class TestUpdateReviews(base.BaseTestCase):
             'password': mock.sentinel.password,
             'url': 'https://review.openstack.org/',
         }
-        po = mockpatch.PatchObject(update_reviews, '_read_config',
-                                   return_value=fake_conf)
+        po = fixtures.MockPatchObject(update_reviews, '_read_config',
+                                      return_value=fake_conf)
         self.useFixture(po)
 
     def test_update_my_reviews(self):
@@ -37,12 +37,12 @@ class TestUpdateReviews(base.BaseTestCase):
         u_r = update_reviews.UpdateReviews(mock.sentinel.project)
 
         sample_reviews = [mock.sentinel.r1, mock.sentinel.r2]
-        po = mockpatch.PatchObject(u_r, '_list_my_reviews',
-                                   return_value=sample_reviews)
+        po = fixtures.MockPatchObject(u_r, '_list_my_reviews',
+                                      return_value=sample_reviews)
         list_my_reviews_mock = self.useFixture(po).mock
 
         update_review_mock = self.useFixture(
-            mockpatch.PatchObject(u_r, '_update_review')).mock
+            fixtures.MockPatchObject(u_r, '_update_review')).mock
 
         u_r.update_my_reviews()
 
@@ -58,12 +58,12 @@ class TestUpdateReviews(base.BaseTestCase):
                                            updating_review_cb=cb)
 
         sample_reviews = [mock.sentinel.r1, mock.sentinel.r2]
-        po = mockpatch.PatchObject(u_r, '_list_my_reviews',
-                                   return_value=sample_reviews)
+        po = fixtures.MockPatchObject(u_r, '_list_my_reviews',
+                                      return_value=sample_reviews)
         self.useFixture(po).mock
 
         self.useFixture(
-            mockpatch.PatchObject(u_r, '_update_review')).mock
+            fixtures.MockPatchObject(u_r, '_update_review')).mock
 
         u_r.update_my_reviews()
 
