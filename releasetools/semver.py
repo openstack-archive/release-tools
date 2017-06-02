@@ -99,10 +99,13 @@ def sanity_check_version(new_version, existing_versions):
                     % format_version(new_version)
                 )
     if existing_versions:
-        latest_version = existing_versions[-1]
-        if new_version[0] > latest_version[0]:
-            warnings.append(
-                '%r is a major version increment over %r' %
-                (format_version(new_version), format_version(latest_version))
-            )
+        for latest_numerical_version in reversed(existing_versions):
+            if type(latest_numerical_version[0]) != int:
+                continue
+            if new_version[0] > latest_numerical_version[0]:
+                warnings.append(
+                    '%r is a major version increment over %r' %
+                    (format_version(new_version), format_version(latest_numerical_version))
+                )
+            break
     return warnings
