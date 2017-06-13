@@ -35,13 +35,14 @@ def main():
     lp = Launchpad.login_with('openstack-releasing', 'production')
     bugnums = [line.strip() for line in sys.stdin.readlines()]
     for bugnum in bugnums:
-        bug = lp.bugs[bugnum]
-        tag = args.tag
-        tags = bug.tags
-        if tag not in tags:
-            tags.append(tag)
-            bug.tags = tags
-            bug.lp_save()
+        if bugnum:
+            bug = lp.bugs[bugnum]
+            tag = args.tag
+            tags = bug.tags
+            if tag not in tags:
+                tags.append(tag)
+                bug.tags = tags
+                bug.lp_save()
 
 
 if __name__ == '__main__':
