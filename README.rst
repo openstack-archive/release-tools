@@ -426,20 +426,20 @@ default).
 
 ::
 
-  ./expire_old_bug_reports.py nova --no_dry_run
+  ./expire_old_bug_reports.py nova --no-dry-run
 
 Actually expire old bug reports of *Nova*.
 
 ::
 
-  ./expire_old_bug_reports.py nova --no_dry_run --credentials-file cred.txt
+  ./expire_old_bug_reports.py nova --no-dry-run --credentials-file cred.txt
 
 Use a credentials file to expire bug reports (see `launchpad-login`_).
 
 ::
 
   export LP_CREDS_FILE=path/to/my/lp/credentials/files/cred.txt
-  ./expire_old_bug_reports.py nova --no_dry_run
+  ./expire_old_bug_reports.py nova --no-dry-run
 
 Use an environment variable to access the credentials file instead of the
 ``--credentials-file`` flag.
