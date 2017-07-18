@@ -18,6 +18,7 @@ function print_help {
     echo " -h, --help              This help message"
     echo " -q, --quiet             Turn off unimportant messages"
     echo " --remote <remote>       Set the remote to delete branches from (default: gerrit)"
+    echo " -w, --warn-exit         Exit on any warnings"
     echo ""
 }
 
@@ -34,6 +35,7 @@ EOL_MESSAGE=""
 DEBUG=
 REMOTE=gerrit
 VERBOSE=true
+WARN_EXIT=false
 
 while true; do
     case "$1" in
@@ -56,6 +58,11 @@ while true; do
             ;;
         --remote)
             REMOTE=$2
+            shift
+            shift
+            ;;
+        -w|--warn-exit)
+            WARN_EXIT=true
             shift
             shift
             ;;
@@ -125,6 +132,12 @@ function delete_branch {
     $DEBUG git push $REMOTE --delete refs/heads/$BRANCH
 }
 
+function warning_message {
+    echo "WARNING: $1"
+    if [ $WARN_EXIT = true ]; then
+        exit 1
+    fi
+}
 
 while (( "$#" )); do
     project=$1
@@ -135,7 +148,7 @@ while (( "$#" )); do
             echo "$project not found on filesystem. Will attempt to clone"
             $DEBUG git clone git://git.openstack.org/$project $project
         else
-            echo "$project is not a git repo"
+            warning_message "$project is not a git repo"
             echo "skipping..."
             continue
         fi
@@ -146,7 +159,7 @@ while (( "$#" )); do
     git remote update --prune
 
     if ! git rev-parse remotes/$REMOTE/$BRANCH >/dev/null 2>&1; then
-        echo "$project does not have a branch $BRANCH"
+        warning_message "$project does not have a branch $BRANCH"
         echo "skipping..."
         popd
         continue
