@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 function print_help {
     echo ""
@@ -92,7 +92,7 @@ function abandon_reviews {
         if [ $VERBOSE = true ]; then
             echo "Found commit $rev to abandon"
         fi
-        $DEBUG ssh -p 29418 review.openstack.org gerrit review --project $project --abandon --message '"$EOL_MESSAGE"' $rev
+        $DEBUG ssh -p 29418 review.openstack.org gerrit review --project $project --abandon --message \"$EOL_MESSAGE\" $rev
     done
 }
 
@@ -122,7 +122,7 @@ function delete_branch {
     if [ $VERBOSE = true ]; then
         echo "About to delete the branch $BRANCH from $project (rev $rev)"
     fi
-    $DEBUG git push $REMOTE --delete $BRANCH
+    $DEBUG git push $REMOTE --delete refs/heads/$BRANCH
 }
 
 
