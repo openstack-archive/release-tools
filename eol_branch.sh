@@ -131,12 +131,18 @@ while (( "$#" )); do
     shift
 
     if ! [ -d $project/.git ]; then
-        echo "$project is not a git repo"
-        echo "skipping..."
-        continue
+        if ! [ -d $project ]; then
+            echo "$project not found on filesystem. Will attempt to clone"
+            $DEBUG git clone git://git.openstack.org/$project $project
+        else
+            echo "$project is not a git repo"
+            echo "skipping..."
+            continue
+        fi
     fi
 
     pushd $project
+    git review -s
     git remote update --prune
 
     if ! git rev-parse remotes/$REMOTE/$BRANCH >/dev/null 2>&1; then
