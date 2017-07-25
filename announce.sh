@@ -16,7 +16,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-set -ex
+set -e
 
 if [ $# -lt 1 ]; then
     echo "Usage: $0 path-to-repository [version]"
@@ -25,6 +25,8 @@ if [ $# -lt 1 ]; then
     echo "Example: $0 ~/repos/openstack/oslo.rootwrap 3.0.3"
     exit 2
 fi
+
+set -x
 
 TOOLSDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $TOOLSDIR/functions
