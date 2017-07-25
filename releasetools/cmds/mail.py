@@ -57,6 +57,6 @@ def main():
         if pw:
             server.starttls()
             server.login(user, pw)
-        server.sendmail(msg['from'], tolist, msg.as_string())
+        server.sendmail(msg['from'], tolist, msg.as_string().encode('utf-8'))
     finally:
         server.quit()
