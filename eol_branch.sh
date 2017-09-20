@@ -167,6 +167,20 @@ while (( "$#" )); do
       fi
     fi
 
+    # Add some hardening around incorrect looking remote url's
+    remote_url=`git config --get remote.$REMOTE.url`
+    if [[ $remote_url != *"$project.git" && $remote_url != *"$project" ]]; then
+      warning_message "The url for remote $REMOTE does not end with $project or
+      $project.git. This may be deliberate, but it's more likely that the
+      project has a mis-configured .gitreview file pointing to the wrong
+      repository. This is the case in many of the (now retired) deb-* packages
+      where their remotes were set to the upstream project instead of their own
+      deb repository."
+      echo "skipping..."
+      popd
+      continue
+    fi
+
     git remote update --prune
 
     if ! git rev-parse remotes/$REMOTE/$BRANCH >/dev/null 2>&1; then
