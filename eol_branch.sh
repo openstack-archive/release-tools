@@ -22,7 +22,7 @@ function print_help {
     echo ""
 }
 
-OPTS=`getopt -o dhq --long eol-message:,dry,help,quiet,remote: -n $0 -- "$@"`
+OPTS=`getopt -o dhqw --long eol-message:,dry,help,quiet,remote:,warn-exit -n $0 -- "$@"`
 if [ $? != 0 ] ; then
     echo "Failed parsing options." >&2
     print_help
@@ -63,7 +63,6 @@ while true; do
             ;;
         -w|--warn-exit)
             WARN_EXIT=true
-            shift
             shift
             ;;
         --)
