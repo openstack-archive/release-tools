@@ -154,7 +154,19 @@ while (( "$#" )); do
     fi
 
     pushd $project
-    git review -s
+
+    if ! git config remote.$REMOTE.url >/dev/null 2>&1; then
+        if ! [ -f .gitreview ]; then
+            # Work around projects with missing .gitreview files. This usually
+            # happens when a probject is no longer maintained.
+            user=`git config --global gitreview.username`
+            warning_message "Guessing remote manually"
+            git remote add $REMOTE ssh://$user@review.openstack.org:29418/$project.git
+        else
+            git review -s
+        fi
+    fi
+
     git remote update --prune
 
     if ! git rev-parse remotes/$REMOTE/$BRANCH >/dev/null 2>&1; then
