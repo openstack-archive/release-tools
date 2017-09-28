@@ -92,9 +92,9 @@ function abandon_reviews {
     fi
 
     gerrit_query="--current-patch-set status:open project:$project branch:$BRANCH"
-    ssh -p 29418 review.openstack.org gerrit query $gerrit_query |
-        grep revision | while read -r line; do
-        rev=`echo $line | cut -b 11-`
+    revisions=($(ssh -p 29418 review.openstack.org gerrit query $gerrit_query |
+                 grep '^    revision: [a-f0-9]\{40\}$' | cut -b 15-))
+    for rev in "${revisions[@]}"; do
         if [ $VERBOSE = true ]; then
             echo "Found commit $rev to abandon"
         fi
