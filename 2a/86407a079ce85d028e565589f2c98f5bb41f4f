@@ -1,0 +1,9 @@
+Code-Review+2: Sean McGinnis <sean.mcginnis@gmail.com>
+Workflow+1: Sean McGinnis <sean.mcginnis@gmail.com>
+Code-Review+2: Jeremy Stanley <fungi@yuggoth.org>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Thu, 19 Oct 2017 23:44:49 +0000
+Reviewed-on: https://review.openstack.org/513559
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
