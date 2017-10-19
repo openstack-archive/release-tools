@@ -46,7 +46,7 @@ fi
 # repository is, if we're running under CI or someone has checked it
 # out locally to an alternate name. Use the git remote URL as a source
 # of better information for the real repository name.
-REMOTE_URL=$(cd $REPODIR && git config --get remote.origin.url)
+REMOTE_URL=$(cd $REPODIR && git config --get remote.origin.url || echo "")
 if [ ! -z "$REMOTE_URL" ]; then
     SHORTNAME=$(basename $REMOTE_URL)
     REPOORGNAME=$(basename $(dirname $REMOTE_URL))
