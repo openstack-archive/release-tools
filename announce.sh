@@ -46,8 +46,16 @@ fi
 # repository is, if we're running under CI or someone has checked it
 # out locally to an alternate name. Use the git remote URL as a source
 # of better information for the real repository name.
-SHORTNAME=$(basename $(cd $REPODIR && git config --get remote.origin.url))
-REPOORGNAME=$(basename $(dirname $(cd $REPODIR && git config --get remote.origin.url)))
+REMOTE_URL=$(cd $REPODIR && git config --get remote.origin.url)
+if [ ! -z "$REMOTE_URL" ]; then
+    SHORTNAME=$(basename $REMOTE_URL)
+    REPOORGNAME=$(basename $(dirname $REMOTE_URL))
+else
+    # WARNING(dhellmann): This formulation only works in CI where the
+    # workspace structure matches the git repo names upstream.
+    SHORTNAME=$(basename $REPODIR)
+    REPOORGNAME=$(basename $(dirname $REPODIR))
+fi
 
 # Assign a default "from" email address if one is not specified by the
 # user's environment.
