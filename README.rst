@@ -867,3 +867,37 @@ Example::
   ./bugs-fixed-since.py [...] --start=8.0.0 | ./lp-tag.py foo-tag
 
 This command will add the 'foo-tag' tag to all bugs fixed since 8.0.0.
+
+End of Life
+===========
+
+The ``eol_branch.sh`` script is provided to end-of-life branches.  It
+will abandon any changes on the to-be-removed branch, create a
+``branch-eol`` tag at the current branch ``HEAD`` and then remove the
+branch.
+
+To run the script, ensure you are either in the "Release Managers"
+group or a gerrit admin.  add yourself to "Project Bootstrappers"
+temporarily in ``review.openstack.org`` (note: this is a gerrit
+limitation with branch deletion permissions.  This may not be required
+in the future).  Be careful and remember to remove yourself at the end
+to avoid accidental changes.
+
+Usually the release team will have provided the branches to remove
+grouped by project in an easy to use format.  The command goes
+something like::
+
+  eol_branch.sh -- stable/oldbranch oldbranch-eol openstack/project1 openstack/python-project1
+
+It's usually best to run under ``screen`` and save the log file in
+case of unintended consequences.
+
+gpg tips
+--------
+
+Tags will be signed, so ensure ``gpg`` is setup correctly for password
+caching or you will have to type your password a lot.  ``gpg2`` has
+better support for ``gpg-agent``, so ``git config --global gpg.program
+gpg2`` will probably just "do the right thing" (note if you're
+migrating from ``gpg``, you may need to import your keys with
+``gpg2 --import < ~/.gnupg/secreing.gpg``).
