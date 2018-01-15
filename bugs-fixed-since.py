@@ -24,6 +24,7 @@ from git import Repo
 
 
 BUG_PATTERN = r'Bug:\s+#?(?P<bugnum>\d+)'
+STORYBOARD_PATTERN = r'Story:\s+#?(?P<storynum>\d+)'
 CHANGEID_PATTERN = r'Change-Id:\s+(?P<id>[0-9a-zA-Z]+)'
 
 
@@ -52,6 +53,12 @@ def _parse_args():
         action='store_true',
         default=False,
         help='whether to include easy (no git conflicts) backports only',
+    )
+    parser.add_argument(
+        '--include-storyboard', '-sb',
+        action='store_true',
+        default=False,
+        help='whether to also include storyboard entries (stories)',
     )
     return parser.parse_args()
 
@@ -128,6 +135,9 @@ def main():
         # collect every bug number mentioned in the message
         for match in re.finditer(BUG_PATTERN, commit.message):
             bugs.add(match.group('bugnum'))
+        if args.include_storyboard:
+            for match in re.finditer(STORYBOARD_PATTERN, commit.message):
+                bugs.add('storyboard:' + match.group('storynum'))
 
     for bug in bugs:
         print(bug)
