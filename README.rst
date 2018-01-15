@@ -767,7 +767,7 @@ features."
 bugs-fixed-since.py
 -------------------
 
-List bugs mentioned in master commit messages starting from a specified commit.
+List Launchpad bugs mentioned in master commit messages starting from a specified commit.
 
 Example::
 
@@ -793,6 +793,12 @@ branches.
 Example::
 
   ./bugs-fixed-since.py -e -r ../neutron --start=8.0.0
+
+Use ``-sb`` option to also include StoryBoard bugs
+
+Example::
+
+  ./bugs-fixed-since.py -sb -r ../octavia --start=1.0.0
 
 
 lp-filter-bugs-by-importance.py
