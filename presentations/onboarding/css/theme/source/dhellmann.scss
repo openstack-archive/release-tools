@@ -1,0 +1,111 @@
+/**
+ * Personal theme based on simple.css.
+ *
+ * This theme is Copyright (C) 2017 Doug Hellmann. It is MIT licensed.
+ * This theme is Copyright (C) 2012 Owen Versteeg, https://github.com/StereotypicalApps. It is MIT licensed.
+ * reveal.js is Copyright (C) 2011-2012 Hakim El Hattab, http://hakim.se
+ */
+
+
+// Default mixins and settings -----------------
+@import "../template/mixins";
+@import "../template/settings";
+// ---------------------------------------------
+
+
+
+// Include theme-specific fonts
+@import url(https://fonts.googleapis.com/css?family=News+Cycle:400,700);
+@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic);
+
+
+// Override theme settings (see ../template/settings.scss)
+$mainFont: 'Lato', sans-serif;
+$mainColor: #000;
+$headingFont: 'News Cycle', Impact, sans-serif;
+$headingColor: #000;
+$headingTextShadow: none;
+$headingTextTransform: none;
+$backgroundColor: #fff;
+$linkColor: #00008B;
+$linkColorHover: lighten( $linkColor, 20% );
+$selectionBackgroundColor: rgba(0, 0, 0, 0.99);
+
+section.has-dark-background {
+	&, h1, h2, h3, h4, h5, h6 {
+	    color: #fff;
+    }
+}
+
+
+// Theme template ------------------------------
+@import "../template/theme";
+// ---------------------------------------------
+
+/*
+** dhellmann
+*/
+
+.reveal {
+    h1, h2, h3, h4, h5, h6 {
+        &.left {
+            text-align: left;
+            margin-left: 1em;
+        }
+        &.code, & tt {
+            font-family: Monaco, monospace;
+        }
+    }
+
+    pre {
+        width: 98%;
+    }
+
+    tt {
+        font-family: Monaco, monospace;
+    }
+
+    small {
+        font-size: 0.5em;
+    }
+
+    .slides section {
+
+        .fragment.highlight-yellow, .fragment.highlight-current-yellow {
+            opacity: 1;
+            visibility: inherit;
+        }
+
+        .fragment.highlight-yellow.visible {
+            background-color: yellow;
+            border: 3px solid black;
+        }
+
+        .fragment.highlight-current-yellow.current-fragment {
+            background-color: yellow;
+            border: 3px solid black;
+        }
+
+        /* lineselect.js */
+        pre span.selected {
+            border: .15em solid #f66;
+            padding: .15em .15em .05em .15em;
+            margin: -.30em -.30em -.20em -.30em;
+            font-weight: bold;
+        }
+
+        /* lineselect.js */
+        code span.selected {
+            border: .15em solid yellow;
+            background-color: yellow;
+            padding: .15em .15em .05em .15em;
+            margin: -.30em -.30em -.20em -.30em;
+            font-weight: bold;
+        }
+    }
+
+    aside.controls-off {
+        visibility: hidden;
+    }
+
+}
