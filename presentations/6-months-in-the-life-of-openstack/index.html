@@ -1,0 +1,168 @@
+<!--[[[cog
+from tools.showcode import showcode, runscript
+import re
+]]]-->
+<!--[[[end]]]-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>6 Months in the Life of OpenStack</title>
+
+    <meta name="author" content="OpenStack Release Team">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/dhellmann.css" id="theme">
+    <link rel="stylesheet" href="css/selectable.css" id="theme">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/github.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides">
+
+        <section>
+          <h2>6 Months in the Life of OpenStack</h2>
+          <h3>OpenStack Rocky PTG</h3>
+          <h4>Release Team</h4>
+        </section>
+
+        <section>
+          <h2>Create your other slides here</h2>
+        </section>
+
+        <section>
+          <h2>Resources</h2>
+          <p><small>
+            <a href="http://git.openstack.org/cgit/openstack-infra/release-tools/tree/presentation-6-months-in-the-life-of-openstack">openstack-infra/release-tools/presentation-6-months-in-the-life-of-openstack</a>
+            </a>
+          </small></p>
+          <p class="creativecommons">
+            <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+              <img alt="Creative Commons License" src="img/cc-by-80x15.png" />
+            </a>
+            <span>&nbsp;This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creativle Commons Attribution 4.0 International License</a>.</span>
+          </p>
+        </section>
+
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+	<script src="js/jquery-3.1.1.js"></script>
+    <script src="js/reveal.js"></script>
+	<script src="js/lineselect.js"></script>
+
+    <script>
+
+      function _prev_slide() {
+          if (!_reveal_navigation_active()) {
+              return;
+          }
+          console.log('reveal: prev');
+          Reveal.navigatePrev();
+      };
+
+      function _next_slide() {
+          if (!_reveal_navigation_active()) {
+              return;
+          }
+          console.log('reveal: next');
+          Reveal.navigateNext();
+      };
+
+      function _reveal_navigation_active () {
+          return !document.querySelector( '.reveal' ).classList.contains('reveal-nav-off');
+      };
+
+      function _toggle_reveal_navigation () {
+          if (_reveal_navigation_active()) {
+              console.log('reveal: turning off nav');
+              document.querySelector( '.reveal' ).classList.add('reveal-nav-off');
+              document.querySelector('aside.controls').classList.add('controls-off');
+          } else {
+              console.log('reveal: turning on nav');
+              document.querySelector( '.reveal' ).classList.remove('reveal-nav-off');
+              document.querySelector('aside.controls').classList.remove('controls-off');
+          };
+      };
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        keyboard: {
+          // Use Logitech presenter remote black screen button
+          // to control when we are changing slides vs. selected lines.
+          190: _toggle_reveal_navigation,
+          // p, page up
+          80: _prev_slide,
+          33: _prev_slide,
+          // n, page down
+          78: _next_slide,
+          34: _next_slide,
+          // h, left
+          72: _prev_slide,
+          37: _prev_slide,
+          // l, right
+          76: _next_slide,
+          39: _next_slide,
+        },
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+
+    <script>
+      /* find all of the lineselect nodes and add spans for their lines */
+      $(function() {
+        $('.lineselect_selectable').each(function (i, e) {
+          var $e = $(e);
+          var h = $e.html();
+          h = h.replace(/\n\n/g, "\n \n");
+          h = h.replace(/\n/g, "</span>\n<span class='line'>");
+          h = "<span class='line'>" + h + "</span>";
+          $e.html(h);
+        });
+        /* enable lineselect for the line nodes */
+        $(".lineselect_selectable").each(function () {
+          $(this).lineselect({ lines: "span.line" });
+        });
+      });
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,41 @@
+/* lineselect.js */
+.reveal {
+
+    .slides section {
+
+        .fragment.highlight-yellow, .fragment.highlight-current-yellow {
+            opacity: 1;
+            visibility: inherit;
+        }
+
+        .fragment.highlight-yellow.visible {
+            background-color: yellow;
+            border: 3px solid black;
+        }
+
+        .fragment.highlight-current-yellow.current-fragment {
+            background-color: yellow;
+            border: 3px solid black;
+        }
+
+        pre span.selected {
+            border: .15em solid #f66;
+            padding: .15em .15em .05em .15em;
+            margin: -.30em -.30em -.20em -.30em;
+            font-weight: bold;
+        }
+
+        code span.selected {
+            border: .15em solid yellow;
+            background-color: yellow;
+            padding: .15em .15em .05em .15em;
+            margin: -.30em -.30em -.20em -.30em;
+            font-weight: bold;
+        }
+    }
+
+    aside.controls-off {
+        visibility: hidden;
+    }
+
+}
