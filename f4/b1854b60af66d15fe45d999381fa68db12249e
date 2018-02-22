@@ -1,0 +1,9 @@
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Code-Review+2: Doug Hellmann <doug@doughellmann.com>
+Workflow+1: Doug Hellmann <doug@doughellmann.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Thu, 22 Feb 2018 20:43:22 +0000
+Reviewed-on: https://review.openstack.org/534808
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
