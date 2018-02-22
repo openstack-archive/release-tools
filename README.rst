@@ -874,6 +874,34 @@ Example::
 
 This command will add the 'foo-tag' tag to all bugs fixed since 8.0.0.
 
+
+sb-filter-stories-by-tag.py
+---------------------------
+
+Reads the list of StoryBoard story numbers on stdin, filters out stories
+matching a tag.
+
+Example::
+
+  ./bugs-fixed-since.py [...] -sb --start=1.0.0 | \
+  ./sb-filter-stories-by-tag.py in-stable-pike
+
+List stories fixed in master since 1.0.0 that do not have relevant fixes merged
+in stable/pike.
+
+
+sb-tag.py
+---------
+
+Appends a tag to stories specified on stdin.
+
+Example::
+
+  ./bugs-fixed-since.py [...] -sb --start=1.0.0 | \
+  ./sb-tag.py foo-tag
+
+This command will add the 'foo-tag' tag to all stories fixed since 1.0.0.
+
 End of Life
 ===========
 
