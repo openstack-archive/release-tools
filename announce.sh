@@ -62,7 +62,10 @@ fi
 export EMAIL=${EMAIL:-no-reply@openstack.org}
 
 if [[ -z "$VIRTUAL_ENV" ]]; then
-    (cd $TOOLSDIR && tox -e venv --notest)
+    if ! (cd $TOOLSDIR && tox -e venv --notest); then
+        echo "Failed to build virtualenv"
+        exit 1
+    fi
     source $TOOLSDIR/.tox/venv/bin/activate
 fi
 
