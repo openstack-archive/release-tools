@@ -1,0 +1,8 @@
+Code-Review+2: Sean McGinnis <sean.mcginnis@gmail.com>
+Workflow+1: Sean McGinnis <sean.mcginnis@gmail.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Wed, 25 Apr 2018 19:37:55 +0000
+Reviewed-on: https://review.openstack.org/564317
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
