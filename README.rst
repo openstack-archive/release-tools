@@ -106,24 +106,6 @@ The top-level scripts call the various base tools to get their work done.
    repository to
    ``openstack-infra/project-config/jenkins/scripts/release-tools``.
 
-announce.sh
------------
-
-This script generates an email message ready to be sent to announce
-the release of a library or other tool. Note that the EMAIL environment
-variable needs to be set prior to running the tool.
-
-Example:
-
-::
-
-  ./announce.sh ~/repos/openstack/oslo.rootwrap
-  ./announce.sh ~/repos/openstack/oslo.rootwrap 3.0.3
-
-The output goes to ``relnotes/`` in a file named for the project and
-version. For example, the announcement for the rootwrap release above
-would be written to ``relnotes/oslo.rootwrap-3.0.3``.
-
 rccut.sh
 --------
 
