@@ -1,0 +1,9 @@
+Code-Review+2: Sean McGinnis <sean.mcginnis@gmail.com>
+Code-Review+2: Thierry Carrez <thierry@openstack.org>
+Workflow+1: Thierry Carrez <thierry@openstack.org>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Wed, 04 Jul 2018 09:39:28 +0000
+Reviewed-on: https://review.openstack.org/579188
+Project: openstack-infra/release-tools
+Branch: refs/heads/master
